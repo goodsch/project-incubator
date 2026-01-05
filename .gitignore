@@ -1,0 +1,15 @@
+# Swap files
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor directories
+.idea/
+.vscode/
+
+# Dependencies
+node_modules/
