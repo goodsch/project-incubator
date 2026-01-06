@@ -30,11 +30,14 @@ At the end of the workflow, you get a complete Claude Code workspace with:
 
 ```bash
 # Clone template for your project
-gh repo create my-new-project --template Project-Incubator --private
+gh repo create my-new-project --template goodsch/project-incubator --private --clone
 cd my-new-project
+
+# Run setup (installs plugins, hook deps)
+./setup.sh
 ```
 
-Or use GitHub's "Use this template" button.
+Or use GitHub's "Use this template" button, then clone and run `./setup.sh`.
 
 ### 2. (Optional) Add brain dump materials
 
