@@ -93,7 +93,7 @@ Apply Clear Thought tools at decision points:
 ### Step 4: Document Expansion
 Update the project with expansion results:
 
-**File: `projects/[name]/expansion.md`**
+**File: `expansion.md` (at project root)**
 ```markdown
 # Expansion Summary
 

@@ -1,10 +1,6 @@
 ---
 name: specify
 description: PRD generation session for Phase 3. Transforms expansion into structured specification with versioning.
-arguments:
-  - name: project-name
-    description: Name of the project (optional if only one project exists)
-    required: false
 ---
 
 # /specify

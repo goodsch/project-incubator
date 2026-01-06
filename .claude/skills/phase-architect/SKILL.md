@@ -113,7 +113,7 @@ Use Clear Thought `pre-mortem`:
 
 ### Step 6: Document Decisions
 
-**File: `projects/[name]/decisions/architecture.md`**
+**File: `decisions/architecture.md`**
 
 ```markdown
 # Architecture Decisions

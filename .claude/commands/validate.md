@@ -1,10 +1,6 @@
 ---
 name: validate
 description: Check if current phase gate criteria are met. Must pass validation before advancing to next phase.
-arguments:
-  - name: project-name
-    description: Name of the project (optional if only one project exists)
-    required: false
 ---
 
 # /validate
@@ -20,7 +16,7 @@ Check if current phase gate criteria are met.
 ### Phase 1 (CAPTURE) Validation
 
 Check:
-- [ ] `projects/{name}/CONTEXT.md` exists
+- [ ] `CONTEXT.md` exists (at project root)
 - [ ] File contains >50 words (excluding headers/metadata)
 - [ ] Content is substantive (not just placeholders)
 

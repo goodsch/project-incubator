@@ -293,6 +293,102 @@ Combine with flags: `c -c` (continue last), `c -r` (recent list)
 
 ---
 
+---
+
+## 11. ADHD-Optimized Patterns
+
+### Core Principles
+
+Based on ADHD neuroscience research and Claude Code best practices:
+
+| ADHD Challenge | Design Solution | Implementation |
+|----------------|-----------------|----------------|
+| **Working Memory** (3-5 items) | One action per screen | TodoWrite for ALL multi-step tasks |
+| **Time Blindness** | Visual countdowns | Status line with token usage, session time |
+| **Task Initiation** | Obvious first step | `/go` command, clear next actions |
+| **Dopamine Seeking** | Immediate feedback | Celebration hooks, progress tracking |
+| **Object Permanence** | Everything visible | Notion scratchpads, persistent memory |
+| **Context Switching** | Minimal transitions | Git worktrees, parallel agents |
+| **Rejection Sensitivity** | Compassionate copy | Non-judgmental error handling |
+
+### Golden Rules
+
+1. **MORE feedback, not less** - Celebrations, progress visibility
+2. **External memory is mandatory** - Notion, Obsidian, persistent MCPs
+3. **Voice-first reduces friction** - WhisperFlow pattern
+4. **Small scopes prevent overwhelm** - One feature per prompt
+5. **Forgiveness over punishment** - No broken streaks, flexible goals
+6. **Fresh context beats long context** - `/compact` often
+7. **Parallel agents match hyperfocus** - Work on multiple fronts
+
+### ADHD-Friendly CLAUDE.md Pattern
+
+```markdown
+## Working Style
+- Break tasks into smallest possible steps
+- Celebrate completions explicitly
+- Never shame for interruptions or restarts
+- Default to voice-friendly short responses
+
+## Session Management
+- Use TodoWrite for ALL multi-step tasks
+- Update persistent memory in real-time
+- Write handoff notes before context fills
+
+## Guardrails
+- No more than 3 parallel threads
+- Always confirm before destructive operations
+- Proactively remind about breaks after 90 minutes
+```
+
+### Recommended Hooks for ADHD
+
+```json
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write",
+        "hooks": [{
+          "type": "command",
+          "command": "echo '✅ File written successfully!'"
+        }]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [{
+          "type": "command",
+          "command": "echo '🎉 Task completed! Great work!'"
+        }]
+      }
+    ]
+  }
+}
+```
+
+### Voice-First Workflow (WhisperFlow)
+
+1. Stream thoughts via voice (superwhisper/MacWhisper)
+2. Claude converts to structured tickets/briefs
+3. Agents execute in parallel
+4. **ADHD Benefit:** Reduces friction, works WITH hyperfocus
+
+### Status Line for ADHD
+
+```
+[sonnet] main 📊 12.3k/100k | ⏱️ 45min | 🎯 3/7 tasks
+```
+
+Components:
+- Model name (know what you're using)
+- Git branch (context awareness)
+- Token usage bar (visual progress)
+- Session time (combat time blindness)
+- Task progress (momentum visibility)
+
+---
+
 ## Sources
 
 - [awesome-claude-code](https://github.com/hesreallyhim/awesome-claude-code) (19.2k★)
@@ -300,3 +396,5 @@ Combine with flags: `c -c` (continue last), `c -r` (recent list)
 - [claude-code-tips](https://github.com/ykdojo/claude-code-tips) (411★)
 - [awesome-claude-code-subagents](https://github.com/VoltAgent/awesome-claude-code-subagents) (6.8k★)
 - [awesomeclaude.ai](https://awesomeclaude.ai)
+- [ADHD Design Expert Skill](https://claude-plugins.dev/skills/@erichowens/some_claude_skills/adhd-design-expert)
+- [Claude as External Brain](https://zackproser.com/blog/claude-external-brain-adhd-autistic)

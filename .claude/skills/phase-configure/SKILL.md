@@ -107,7 +107,7 @@ For each potential skill from skill-library.md:
 3. Decide: include, adapt, or skip
 4. Note any custom skills to create
 
-**Document in:** `projects/{name}/config/skills.md`
+**Document in:** `config/skills.md`
 
 ```markdown
 # Skills Configuration
@@ -132,7 +132,7 @@ For each potential skill from skill-library.md:
 
 From mcp-library.md:
 
-**Document in:** `projects/{name}/config/mcp.md`
+**Document in:** `config/mcp.md`
 
 ```markdown
 # MCP Server Recommendations
@@ -153,7 +153,7 @@ From mcp-library.md:
 
 From hooks-library.md:
 
-**Document in:** `projects/{name}/config/hooks.md`
+**Document in:** `config/hooks.md`
 
 ```markdown
 # Hooks Configuration
@@ -173,7 +173,7 @@ From hooks-library.md:
 
 From context-patterns.md:
 
-**Document in:** `projects/{name}/config/context.md`
+**Document in:** `config/context.md`
 
 ```markdown
 # Context Pattern
@@ -191,7 +191,7 @@ From context-patterns.md:
 
 ### Step 8: Compile Configuration Summary
 
-Create `projects/{name}/config/summary.md`:
+Create `config/summary.md`:
 
 ```markdown
 # Configuration Summary
@@ -275,7 +275,7 @@ This is **optional** - prebuilt libraries cover most common cases. Only scout wh
 - Specific integrations not in libraries
 - User explicitly requests exploration
 
-Scouted resources are documented in `projects/{name}/scouted-resources.md`.
+Scouted resources are documented in `scouted-resources.md`.
 
 ## What NOT to Do
 

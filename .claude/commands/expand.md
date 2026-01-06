@@ -1,10 +1,6 @@
 ---
 name: expand
 description: Socratic expansion session for Phase 2. Works through the 6 macro questions using Clear Thought mental models.
-arguments:
-  - name: project-name
-    description: Name of the project (optional if only one project exists)
-    required: false
 ---
 
 # /expand
@@ -102,7 +98,7 @@ Socratic expansion session for Phase 2.
    ```
 
 6. **Document expansion**
-   Create `projects/{name}/expansion.md` with all answers
+   Create `expansion.md` (at project root) with all answers
 
 7. **Validate with user**
    ```

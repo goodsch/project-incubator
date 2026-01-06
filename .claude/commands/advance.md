@@ -1,10 +1,6 @@
 ---
 name: advance
 description: Attempt to advance to the next phase. Runs validation first - blocks if gate criteria not met.
-arguments:
-  - name: project-name
-    description: Name of the project (optional if only one project exists)
-    required: false
 ---
 
 # /advance
@@ -166,7 +162,7 @@ Run /seed to generate your project!
 Your project has been fully generated!
 
 Output location:
-projects/{project-name}/output/
+output/
 
 Contents:
 - CLAUDE.md (project instructions)

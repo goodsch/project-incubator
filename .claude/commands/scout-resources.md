@@ -22,8 +22,8 @@ Read: .claude/resources/hooks-library.md
 ```
 
 Compare against project requirements from:
-- `projects/{name}/decisions/architecture.md`
-- `projects/{name}/spec/vN.md`
+- `decisions/architecture.md`
+- `spec/vN.md`
 
 ### Step 2: Search for Resources
 
@@ -53,7 +53,7 @@ For each discovered resource, assess:
 
 ### Step 4: Document Findings
 
-Create `projects/{name}/scouted-resources.md`:
+Create `scouted-resources.md`:
 
 ```markdown
 # Scouted Resources for {project-name}
@@ -98,8 +98,8 @@ Should any be added to the main libraries for future projects?
 
 ## Output
 
-- `projects/{name}/scouted-resources.md` - Discovery documentation
-- Updates to `projects/{name}/config/` files if resources selected
+- `scouted-resources.md` - Discovery documentation
+- Updates to `config/` files if resources selected
 
 ## Notes
 

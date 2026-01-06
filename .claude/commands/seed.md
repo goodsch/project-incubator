@@ -1,10 +1,6 @@
 ---
 name: seed
 description: Generate the complete output project for Phase 6. Creates ready-to-use Claude Code workspace with all configurations, documentation, and scaffolding.
-arguments:
-  - name: project-name
-    description: Name of the project (optional if only one project exists)
-    required: false
 ---
 
 # /seed
@@ -23,7 +19,7 @@ Generate the complete output project.
 
 2. **Create output directory structure**
    ```
-   projects/{name}/output/
+   output/
    ├── CLAUDE.md
    ├── CONTEXT.md
    ├── README.md
@@ -183,7 +179,7 @@ Generate the complete output project.
     🎉 PROJECT GENERATED: {project-name}
     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-    Location: projects/{name}/output/
+    Location: output/
 
     Contents:
     ├── CLAUDE.md (project instructions)
@@ -202,10 +198,10 @@ Generate the complete output project.
 
     Next Steps:
     1. Copy output/ to your desired location:
-       cp -r projects/{name}/output ~/projects/{name}
+       cp -r output ~/projects/{project-name}
 
     2. Navigate there:
-       cd ~/projects/{name}
+       cd ~/projects/{project-name}
 
     3. Install dependencies (if any):
        {install command}
@@ -234,7 +230,7 @@ User: /seed
 Claude: Let me generate your project...
 
         Creating output directory...
-        ✅ Created projects/therapy-tracker/output/
+        ✅ Created output/
 
         Generating CLAUDE.md...
         ✅ Written CLAUDE.md (project instructions)

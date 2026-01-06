@@ -17,7 +17,7 @@ Transform the expanded understanding into a structured Product Requirements Docu
 
 ## PRD Structure
 
-**File: `projects/[name]/spec/v1.md`**
+**File: `spec/v1.md` (at project root)**
 
 ```markdown
 # [Project Name] - Product Requirements Document

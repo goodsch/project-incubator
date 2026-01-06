@@ -1,10 +1,6 @@
 ---
 name: status
-description: Show current phase and gate status for a project. Displays progress through the 6-phase workflow.
-arguments:
-  - name: project-name
-    description: Name of the project (optional if only one project exists)
-    required: false
+description: Show current phase and gate status. Displays progress through the 6-phase workflow.
 ---
 
 # /status

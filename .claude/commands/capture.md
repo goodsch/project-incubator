@@ -1,10 +1,6 @@
 ---
 name: capture
 description: Guided capture session for Phase 1. Helps user articulate their idea into CONTEXT.md with zero friction.
-arguments:
-  - name: project-name
-    description: Name of the project (optional if only one project exists)
-    required: false
 ---
 
 # /capture
@@ -13,7 +9,7 @@ Guided capture session for Phase 1.
 
 ## Prerequisites
 
-- Project must exist (run /new-project first)
+- Project must be initialized (run /init first)
 - Must be in Phase 1 (CAPTURE)
 
 ## Process
@@ -42,7 +38,7 @@ Guided capture session for Phase 1.
    ```
 
 4. **Capture to CONTEXT.md**
-   - Write everything to projects/{name}/CONTEXT.md
+   - Write everything to CONTEXT.md (at project root)
    - Preserve the user's voice
    - Add timestamps
    - Note any questions that came up

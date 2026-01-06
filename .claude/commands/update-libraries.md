@@ -59,10 +59,10 @@ Compare current libraries against sources:
 
 ### Step 3: Review Scouted Resources
 
-Check all project scouted-resources.md files:
+Check the project's scouted-resources.md if it exists:
 
 ```bash
-find projects/ -name "scouted-resources.md" -exec cat {} \;
+cat scouted-resources.md
 ```
 
 Identify resources recommended for library addition.

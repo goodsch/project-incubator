@@ -1,20 +1,24 @@
-# Project Incubator
+# Project Incubator (GitHub Template)
 
-A deterministic Claude Code workspace for transforming project ideas into complete, pre-seeded Claude Code project directories.
+A deterministic Claude Code workspace template for transforming project ideas into complete, pre-seeded Claude Code project directories.
+
+## What This Is
+
+**This is a GitHub template repository.** Clone it uniquely for each new project to avoid context bleed between developments.
 
 ## What This Does
 
-Project Incubator guides non-coders through a structured 6-phase workflow:
+Project Incubator guides non-coders through a structured workflow:
 
 ```
-CAPTURE → EXPAND → SPECIFY → ARCHITECT → CONFIGURE → SEED
+[BRAINDUMP] → CAPTURE → EXPAND → SPECIFY → ARCHITECT → CONFIGURE → SEED
 ```
 
 Each phase has explicit gate criteria. You cannot skip phases. The system ensures completeness before generating output.
 
 ## Output
 
-For each project, you get a complete Claude Code workspace with:
+At the end of the workflow, you get a complete Claude Code workspace with:
 - **CLAUDE.md** - Project instructions optimized for "vibe coding"
 - **Documentation** - PRD, architecture decisions, workflow guide
 - **Skills, commands, agents** - Pre-configured for your tech stack
@@ -22,39 +26,67 @@ For each project, you get a complete Claude Code workspace with:
 
 ## Quick Start
 
-1. **Open this workspace**
-   ```bash
-   cd ~/claude-workspaces/Project-Incubator
-   claude
-   ```
+### 1. Create a new project from this template
 
-2. **Create a new project**
-   ```
-   /new-project my-idea
-   ```
+```bash
+# Clone template for your project
+gh repo create my-new-project --template Project-Incubator --private
+cd my-new-project
+```
 
-3. **Dump your idea**
-   Open `projects/my-idea/CONTEXT.md` and write your raw idea.
-   Don't worry about structure - just get it out of your head.
+Or use GitHub's "Use this template" button.
 
-4. **Follow the workflow**
-   ```
-   /status              # See where you are
-   /validate            # Check if ready to advance
-   /advance             # Move to next phase
-   ```
+### 2. (Optional) Add brain dump materials
 
-5. **Phase-specific commands**
-   ```
-   /capture             # Phase 1: Guided idea capture
-   /expand              # Phase 2: Socratic exploration
-   /specify             # Phase 3: PRD generation
-   /architect           # Phase 4: Technical design
-   /configure           # Phase 5: Claude Code config
-   /seed                # Phase 6: Generate project
-   ```
+If you have accumulated notes, AI transcripts, or reference materials:
 
-## The Six Phases
+```bash
+# Add files to braindump/
+cp ~/notes/my-idea.md braindump/
+cp ~/downloads/claude-chat-export.json braindump/
+```
+
+### 3. Initialize the project
+
+```bash
+claude
+```
+
+Then run:
+```
+/init my-project-name
+```
+
+This will:
+- Detect any brain dump materials
+- Create CONTEXT.md and status.json
+- Create Notion Ideation Canvas (if Notion MCP available)
+- Start Phase 0 (braindump processing) or Phase 1 (capture)
+
+### 4. Follow the workflow
+
+```
+/status              # See where you are
+/validate            # Check if ready to advance
+/advance             # Move to next phase
+```
+
+### 5. Phase-specific commands
+
+```
+/braindump           # Phase 0: Process accumulated materials
+/capture             # Phase 1: Guided idea capture
+/expand              # Phase 2: Socratic exploration
+/specify             # Phase 3: PRD generation
+/architect           # Phase 4: Technical design
+/configure           # Phase 5: Claude Code config
+/seed                # Phase 6: Generate project
+```
+
+## The Phases
+
+### Phase 0: BRAINDUMP (Optional)
+Process accumulated materials through meta-analysis and AI dream phase. Only runs if you have files in `braindump/`.
 
 ### Phase 1: CAPTURE
 Get your raw idea into CONTEXT.md. Voice-to-text friendly. No structure required.
@@ -76,7 +108,7 @@ Transform expansion into formal PRD with:
 - Acceptance criteria
 - Scope boundaries
 
-Versioned specs (v1.md → v2.md → v3.md)
+Versioned specs (v1.md -> v2.md -> v3.md)
 
 ### Phase 4: ARCHITECT
 Design technical implementation:
@@ -110,26 +142,52 @@ Generate the complete project directory, ready for "vibe coding".
 - Structured reasoning for trade-offs
 - Pre-mortem for risk identification
 
-### Auto-Activation
-- Skills suggest themselves based on context
-- Hooks detect what you're working on
-- Guardrails prevent premature advancement
+### Brain Dump Processing
+- Process accumulated notes, AI transcripts, reference projects
+- Extract explicit and implicit ideas
+- AI dream phase for creative synthesis
 
-### Multiple Projects
-- Work on multiple projects simultaneously
-- Each project tracks its own progress
-- Independent phase states
+### Notion Integration (Optional)
+- Living Idea Dump List for ongoing capture
+- Ideation Canvas for cross-session persistence
+- Session Dashboard for "Where was I?" context
 
-### Templates
-- Web app (Vue/React/Svelte)
-- CLI tool (TypeScript/Python)
-- Automation (Python/workflows)
+### ADHD-Optimized
+- Voice-to-text friendly throughout
+- Low friction capture
+- Visual progress tracking
+- External memory via Notion
+
+## Directory Structure
+
+```
+{project-name}/              # Cloned from template
+├── CLAUDE.md                # Workspace instructions
+├── CONTEXT.md               # Raw idea (created by /init)
+├── status.json              # Phase tracking (created by /init)
+├── README.md                # This file
+├── braindump/               # Brain dump materials (before /init)
+├── spec/                    # Versioned PRDs
+├── decisions/               # Architecture decisions
+├── config/                  # Claude Code config
+├── output/                  # Generated project
+├── templates/               # Project type templates
+│   ├── web-app/
+│   ├── cli-tool/
+│   └── automation/
+└── .claude/
+    ├── skills/              # Phase skills + rules
+    ├── commands/            # Workflow commands
+    ├── agents/              # Specialized agents
+    └── hooks/               # Auto-activation
+```
 
 ## Requirements
 
 - Claude Code CLI
 - Node.js (for hooks)
 - Clear Thought MCP server (recommended)
+- Notion MCP (optional, for persistence)
 
 ## Setup
 
@@ -138,40 +196,13 @@ Dependencies are installed in `.claude/hooks/`:
 cd .claude/hooks && npm install
 ```
 
-The workspace is ready to use after cloning.
-
-## Directory Structure
-
-```
-Project-Incubator/
-├── CLAUDE.md              # Workspace instructions
-├── README.md              # This file
-├── projects/              # Your projects go here
-│   └── {project-name}/
-│       ├── CONTEXT.md     # Raw idea
-│       ├── status.json    # Phase tracking
-│       ├── expansion.md   # Expanded understanding
-│       ├── spec/          # Versioned PRDs
-│       ├── decisions/     # Architecture decisions
-│       ├── config/        # Claude Code config
-│       └── output/        # Generated project
-├── templates/             # Project type templates
-│   ├── web-app/
-│   ├── cli-tool/
-│   └── automation/
-└── .claude/
-    ├── skills/            # Phase skills + rules
-    ├── commands/          # Workflow commands
-    ├── agents/            # Specialized agents
-    └── hooks/             # Auto-activation
-```
-
 ## Philosophy
 
 - **Friction is intentional** - Gates ensure completeness
 - **Non-coder optimized** - Voice-friendly, plain language
 - **Vibe coding ready** - Output projects are Claude-friendly
 - **Clear Thought enhanced** - Structured reasoning built in
+- **Template per project** - No context bleed between projects
 
 ## License
 

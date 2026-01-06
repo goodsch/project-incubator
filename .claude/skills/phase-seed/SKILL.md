@@ -12,7 +12,7 @@ Generate the complete, ready-to-use Claude Code project directory based on all p
 ## Prerequisites
 
 - Phase 5 (CONFIGURE) must be complete
-- All configuration files in `projects/{name}/config/`
+- All configuration files in `config/`
 - User has approved the configuration
 
 ## Input Files
@@ -28,7 +28,7 @@ Read these from the project directory:
 
 ## Output Structure
 
-**Generate in:** `projects/{name}/output/`
+**Generate in:** `output/`
 
 ```
 output/
@@ -343,7 +343,7 @@ Based on architecture:
 🎉 PROJECT GENERATED: {project-name}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Location: projects/{name}/output/
+Location: output/
 
 Contents:
 ├── CLAUDE.md (with Clear Thought prescribed)
@@ -367,13 +367,13 @@ MCP Servers to Install:
 
 Next Steps:
 1. Copy to desired location:
-   cp -r projects/{name}/output ~/projects/{name}
+   cp -r output ~/projects/{project-name}
 
 2. Install hook dependencies (if hooks included):
-   cd ~/projects/{name}/.claude/hooks && npm install
+   cd ~/projects/{project-name}/.claude/hooks && npm install
 
 3. Navigate and start Claude:
-   cd ~/projects/{name}
+   cd ~/projects/{project-name}
    claude
 
 4. Follow docs/WORKFLOW.md to start building!

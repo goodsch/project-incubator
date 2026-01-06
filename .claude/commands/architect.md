@@ -1,10 +1,6 @@
 ---
 name: architect
 description: Technical architecture session for Phase 4. Uses Clear Thought trade-off-matrix and pre-mortem. Documents all decisions with rationale.
-arguments:
-  - name: project-name
-    description: Name of the project (optional if only one project exists)
-    required: false
 ---
 
 # /architect

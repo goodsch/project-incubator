@@ -1,10 +1,6 @@
 ---
 name: configure
 description: Claude Code configuration session for Phase 5. Determines CLAUDE.md content, skills, commands, agents, and MCP recommendations for the output project.
-arguments:
-  - name: project-name
-    description: Name of the project (optional if only one project exists)
-    required: false
 ---
 
 # /configure
@@ -99,7 +95,7 @@ Claude Code configuration session for Phase 5.
    ```
 
 8. **Document configuration**
-   Create files in `projects/{name}/config/`:
+   Create files in `config/` (at project root):
    - `claude-md-content.md` - CLAUDE.md draft
    - `skills.md` - Skills list
    - `commands.md` - Commands list

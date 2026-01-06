@@ -21,6 +21,33 @@ MCP servers to recommend for output projects based on project type and requireme
 **Key Tools:** `sequentialthinking`
 **When to Recommend:** Projects with complex logic
 
+## Memory & Persistence
+
+### notionApi (Notion MCP)
+**Purpose:** External brain, persistent working memory across sessions
+**Best For:** Multi-session projects, voice-first workflows, ADHD users
+**Key Tools:**
+- `API-post-search` - Find pages/databases
+- `API-patch-block-children` - Append content
+- `API-post-page` - Create pages
+- `API-query-data-source` - Query databases
+**When to Recommend:** Projects requiring session persistence, idea incubation, team collaboration
+**ADHD Benefit:** Everything visible, nothing hidden - combats object permanence issues
+**Config:** Requires Notion integration token
+
+### mem0
+**Purpose:** Full memory system with 30+ data source connectors
+**Best For:** Long-running projects needing semantic memory
+**Key Tools:** Memory storage, retrieval, semantic search
+**When to Recommend:** Complex projects with extensive context requirements
+**Note:** More heavyweight than Anthropic Memory Server
+
+### anthropic-memory-server
+**Purpose:** Simple key-value persistent memory
+**Best For:** Basic persistent storage needs
+**When to Recommend:** Simpler projects that need session continuity
+**Config:** Lightweight setup
+
 ## Database & Backend
 
 ### supabase
@@ -80,8 +107,22 @@ MCP servers to recommend for output projects based on project type and requireme
 | CLI Tool | clear-thought, filesystem |
 | Automation | clear-thought, filesystem, fetch |
 | API/Backend | clear-thought, postgresql, github |
-| Research | clear-thought, brave-search, fetch |
+| Research | clear-thought, brave-search, fetch, notionApi |
 | Testing | clear-thought, playwright |
+| Multi-Session | clear-thought, notionApi or mem0 |
+| ADHD-Optimized | clear-thought, notionApi, sequential-thinking |
+
+## ADHD-Friendly MCP Selection
+
+For users with ADHD, prioritize MCPs that provide:
+
+| Need | MCP | Why |
+|------|-----|-----|
+| External memory | notionApi | Persistent scratchpads visible across sessions |
+| Visual progress | clear-thought | Structured reasoning with visible checkpoints |
+| Task breakdown | clear-thought (decomposition) | Micro-chunking for manageable steps |
+| Decision support | clear-thought (trade-off-matrix) | Reduces cognitive load |
+| Context continuity | mem0 or notionApi | Never lose track of where you were |
 
 ## Output Project MCP Config
 

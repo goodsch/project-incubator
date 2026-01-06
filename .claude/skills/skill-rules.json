@@ -14,7 +14,7 @@
         ]
       },
       "fileTriggers": {
-        "pathPatterns": ["projects/*/CONTEXT.md"],
+        "pathPatterns": ["CONTEXT.md"],
         "contentPatterns": ["^$", "TODO", "idea"]
       }
     },
@@ -31,7 +31,7 @@
         ]
       },
       "fileTriggers": {
-        "pathPatterns": ["projects/*/CONTEXT.md"],
+        "pathPatterns": ["CONTEXT.md"],
         "contentPatterns": [".{50,}"]
       },
       "blockMessage": "Phase 2 (EXPAND) requires Phase 1 (CAPTURE) to be complete.\n\nRun /validate to check if CONTEXT.md meets the gate criteria (>50 words of substantive content).\n\nIf validated, run /advance to proceed to Phase 2.",
@@ -52,7 +52,7 @@
         ]
       },
       "fileTriggers": {
-        "pathPatterns": ["projects/*/spec/*.md"]
+        "pathPatterns": ["spec/*.md"]
       },
       "blockMessage": "Phase 3 (SPECIFY) requires Phase 2 (EXPAND) to be complete.\n\nAll macro questions must be answered:\n1. Who is the primary user?\n2. What is the core problem?\n3. What does success look like?\n4. What are the essential features?\n5. What is out of scope?\n6. What does this replace/complement?\n\nRun /validate to check status.",
       "skipConditions": {
@@ -72,7 +72,7 @@
         ]
       },
       "fileTriggers": {
-        "pathPatterns": ["projects/*/decisions/*.md"]
+        "pathPatterns": ["decisions/*.md"]
       },
       "blockMessage": "Phase 4 (ARCHITECT) requires Phase 3 (SPECIFY) to be complete.\n\nPRD must pass completeness checklist:\n- Overview section present\n- Features section with acceptance criteria\n- User interaction model defined\n- Constraints & scope documented\n\nRun /validate to check PRD completeness.",
       "skipConditions": {

@@ -1,0 +1,23 @@
+{
+  "mcpServers": {
+    "notionApi": {
+      "command": "npx",
+      "args": ["-y", "@notionhq/notion-mcp-server"],
+      "envFile": ".env"
+    },
+    "clear-thought": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@kastalien-research/thoughtbox"]
+    },
+    "sequential-thinking": {
+      "command": "npx",
+      "args": ["-y", "@anthropic/sequential-thinking-mcp"]
+    },
+    "firecrawl": {
+      "command": "npx",
+      "args": ["-y", "firecrawl-mcp"],
+      "envFile": ".env"
+    }
+  }
+}

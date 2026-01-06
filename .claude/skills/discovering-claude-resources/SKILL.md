@@ -174,7 +174,7 @@ When used during Phase 5 (CONFIGURE):
 1. Identify gaps in prebuilt resource libraries
 2. Run this skill to discover missing resources
 3. Evaluate discoveries against project requirements
-4. Document in `projects/{name}/scouted-resources.md`
+4. Document in `scouted-resources.md`
 5. Update project config with selected resources
 
 ## Best Practice Curation
