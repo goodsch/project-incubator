@@ -23,48 +23,14 @@ braindump/ has files?
 
 ## Process
 
-### Step 1: Configure Environment
-
-Check if `.env` exists and prompt for API keys:
-
-```bash
-# Ensure .env exists
-if [ ! -f ".env" ]; then
-    cp .env.example .env
-fi
-```
-
-**Prompt for optional integrations:**
-
-Use AskUserQuestion to gather API credentials:
-
-1. **Notion API Key** (optional)
-   - Enables: Ideation Canvas, Living Idea Dump List, cross-session persistence
-   - Get from: https://www.notion.so/my-integrations
-   - If provided, write to `.env` as `NOTION_API_KEY=`
-
-2. **Firecrawl API URL** (optional)
-   - Enables: Web research, resource discovery during CONFIGURE phase
-   - Get from: https://firecrawl.dev
-   - If provided, write to `.env` as `FIRECRAWL_API_URL=`
-
-**Skip option:** User can skip by leaving blank - integrations will be disabled.
-
-After gathering values, update `.env`:
-```bash
-# Write values to .env (only if provided)
-sed -i "s|^NOTION_API_KEY=.*|NOTION_API_KEY=${notion_key}|" .env
-sed -i "s|^FIRECRAWL_API_URL=.*|FIRECRAWL_API_URL=${firecrawl_url}|" .env
-```
-
-### Step 2: Check Brain Dump Folder
+### Step 1: Check Brain Dump Folder
 
 ```bash
 # Check if braindump/ contains any files (excluding .gitkeep)
 files=$(find braindump/ -type f ! -name '.gitkeep' 2>/dev/null | wc -l)
 ```
 
-### Step 3: Route Based on Content
+### Step 2: Route Based on Content
 
 **If braindump/ has files:**
 1. Confirm project name with user
@@ -81,7 +47,7 @@ files=$(find braindump/ -type f ! -name '.gitkeep' 2>/dev/null | wc -l)
 3. Create Notion Ideation Canvas (if available)
 4. Begin Phase 1: CAPTURE directly
 
-### Step 4: Initialize Project Files
+### Step 3: Initialize Project Files
 
 **Create CONTEXT.md:**
 ```markdown
@@ -120,7 +86,7 @@ files=$(find braindump/ -type f ! -name '.gitkeep' 2>/dev/null | wc -l)
 }
 ```
 
-### Step 5: Create Notion Integration (Optional)
+### Step 4: Create Notion Integration (Optional)
 
 If Notion MCP is available:
 
@@ -136,7 +102,7 @@ mcp__notionApi__API-post-page to create:
 - Include Living Idea Dump List
 ```
 
-### Step 6: Confirm Initialization
+### Step 5: Confirm Initialization
 
 **With brain dump materials:**
 ```
@@ -144,10 +110,6 @@ Project '{project-name}' initialized!
 
 Detected {X} files in braindump/ folder.
 Starting Phase 0: BRAINDUMP processing.
-
-Integrations:
-  Notion: ✅ Configured / ⏭️ Skipped
-  Firecrawl: ✅ Configured / ⏭️ Skipped
 
 I'll analyze your materials to extract:
 - Explicit ideas, goals, features
@@ -165,9 +127,6 @@ No brain dump materials detected.
 Starting Phase 1: CAPTURE.
 
 Location: ./
-Integrations:
-  Notion: ✅ Configured / ⏭️ Skipped
-  Firecrawl: ✅ Configured / ⏭️ Skipped
 Notion Canvas: [Link to Ideation Canvas if created]
 
 Next steps:

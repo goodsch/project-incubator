@@ -5,6 +5,7 @@
 set -e
 
 echo "🚀 Setting up Project Incubator..."
+echo ""
 
 # Install Claude Code plugins
 echo "📦 Installing Claude Code plugins..."
@@ -28,15 +29,31 @@ fi
 
 # Create .env from example if it doesn't exist
 if [ ! -f ".env" ] && [ -f ".env.example" ]; then
-    echo "📝 Creating .env from example..."
     cp .env.example .env
-    echo "  ✅ .env created - update with your API keys"
+fi
+
+echo ""
+echo "🔑 Configure API keys (optional - press Enter to skip)"
+echo ""
+
+# Prompt for Notion API key
+read -p "Notion API Key (https://notion.so/my-integrations): " notion_key
+if [ -n "$notion_key" ]; then
+    sed -i "s|^NOTION_API_KEY=.*|NOTION_API_KEY=${notion_key}|" .env
+    echo "  ✅ Notion API key configured"
+fi
+
+# Prompt for Firecrawl API URL
+read -p "Firecrawl API URL (https://firecrawl.dev): " firecrawl_url
+if [ -n "$firecrawl_url" ]; then
+    sed -i "s|^FIRECRAWL_API_URL=.*|FIRECRAWL_API_URL=${firecrawl_url}|" .env
+    echo "  ✅ Firecrawl API URL configured"
 fi
 
 echo ""
 echo "✅ Setup complete!"
 echo ""
 echo "Next steps:"
-echo "  1. Update .env with your Notion API key (optional)"
-echo "  2. Run 'claude' to start"
-echo "  3. Run '/init your-project-name' to initialize"
+echo "  1. Run 'claude' to start"
+echo "  2. Run '/init your-project-name' to initialize"
+echo ""
