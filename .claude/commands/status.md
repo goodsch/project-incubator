@@ -35,10 +35,15 @@ PROJECT: {name}
   │ 6. SEED        {✓ or ○}                        │
   └────────────────────────────────────────────────┘
 
-  ⏭️ NEXT: {next action from Notion or status.json}
+  🚧 BLOCKERS: {blockers from Design Doc, or "None"}
+  ⚠️ ACTIVE GAPS: {gaps/questions needing resolution}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+⏭️ NEXT: {directive action - imperative mood}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
+
+**IMPORTANT:** Always end with a directive NEXT action in imperative mood ("Do X", not "You could do X").
 
 Legend:
 - ✓ = Complete
@@ -50,9 +55,15 @@ Legend:
 
 1. Read `status.json` from project root
 2. Fetch Notion Design Doc using page ID from status.json
-3. Parse PROJECT SNAPSHOT section for current state
-4. **Check Quick Capture page** for any pending items
-5. Display combined local + Notion status
+3. Parse from Design Doc:
+   - PROJECT SNAPSHOT: Status, Phase, Next action
+   - Current Blockers section
+   - Active Gaps section
+   - OPEN QUESTIONS: Any marked as 🚧 blocking
+   - ASSUMPTIONS: Any marked as ⚠️ unvalidated
+4. **Check Quick Capture database** for any pending items
+5. Display combined local + Notion status with blockers/gaps prominently
+6. **Always end with a single directive NEXT action**
 
 ## Quick Capture Check
 

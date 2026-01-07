@@ -17,10 +17,18 @@ From the analysis docs:
 ## Execution
 
 1. Read status.json for current phase
-2. **Check Quick Capture page first** for any pending items
+2. **Check Quick Capture database first** for any pending items
 3. Fetch Notion Design Doc for current state
-4. Determine the single most important next action
-5. Present it clearly and directly
+4. **Check for blockers/gaps** that need resolution before proceeding:
+   - Current Blockers section
+   - Active Gaps section
+   - Blocking (🚧) open questions
+   - Unvalidated (⚠️) critical assumptions
+5. Determine the single most important next action based on:
+   - First: Resolve any blockers
+   - Then: Fill any critical gaps
+   - Then: Phase-specific next step
+6. Present it as a **directive command** (imperative mood)
 
 ## Quick Capture Priority
 

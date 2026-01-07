@@ -14,7 +14,12 @@ After pasting, replace `{{PROJECT_NAME}}` with your actual project name and `{{D
 | **Current Phase** | 0 - BRAINDUMP |
 | **Last touched** | {{DATE}} |
 | **Next action** | Add materials to braindump/ or skip to Phase 1 |
-| **Blockers** | None |
+
+### 🚧 Current Blockers
+*None - ready to proceed*
+
+### ⚠️ Active Gaps
+*None identified yet*
 
 ### Phase Progress
 
@@ -46,13 +51,45 @@ After pasting, replace `{{PROJECT_NAME}}` with your actual project name and `{{D
 
 **Purpose:** [What problem does this solve? For whom?]
 
-**Scope:**
-- ✅ IN: [What's included in this project]
-- ❌ OUT: [What's explicitly NOT part of this]
-
 **Key actors:**
 - [Who or what interacts with this system?]
 - [Users? Other systems? APIs?]
+
+---
+
+## ✅ IN SCOPE
+
+*What this project DOES include:*
+
+- [ ] [Core feature 1]
+- [ ] [Core feature 2]
+- [ ] [Core feature 3]
+
+---
+
+## 🚫 OUT OF SCOPE
+
+*What this project explicitly does NOT include (prevents scope creep):*
+
+- ❌ [Not doing X]
+- ❌ [Not building Y]
+- ❌ [V2 feature - deferred]
+
+*Reference this section when conversations drift. If something's not here, it's fair game.*
+
+---
+
+## 🤔 ASSUMPTIONS
+
+*Things we're taking for granted (must be validated):*
+
+| Assumption | Status | Notes |
+|------------|--------|-------|
+| *None yet* | | |
+
+**Status:** ✅ Validated | ⚠️ Unvalidated | ❌ Rejected
+
+*Surface assumptions explicitly. Invalid assumptions kill projects.*
 
 ---
 
@@ -114,13 +151,32 @@ graph TD
 
 ## ❓ OPEN QUESTIONS
 
-- [ ] What's the MVP scope?
-- [ ] Who's the primary user persona?
-- [ ] What's the key differentiator from existing tools?
-- [ ] What's the data model?
-- [ ] What integrations are essential vs nice-to-have?
+*Questions that need answers to proceed. Blocking questions marked with 🚧*
 
-*Add questions as they arise. Check them off when answered (move answer to Decisions Log).*
+| Question | Priority | Blocking? | Answer |
+|----------|----------|-----------|--------|
+| What's the MVP scope? | High | 🚧 | |
+| Who's the primary user persona? | High | 🚧 | |
+| What's the key differentiator? | Medium | | |
+| What's the data model? | Medium | | |
+| What integrations are essential? | Low | | |
+
+*When answered → Move to Decisions Log*
+
+---
+
+## ⚡ RISKS & UNKNOWNS
+
+*What could go wrong? What don't we know yet?*
+
+| Risk | Likelihood | Impact | Mitigation |
+|------|------------|--------|------------|
+| *None identified yet* | | | |
+
+**Likelihood:** High / Medium / Low
+**Impact:** High / Medium / Low
+
+*Identify risks early. Unknown unknowns kill projects.*
 
 ---
 
