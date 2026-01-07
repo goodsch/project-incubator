@@ -220,6 +220,101 @@ echo "   URL: $PAGE_URL"
 echo ""
 
 # ============================================
+# STEP 2b: Create Quick Capture Page
+# ============================================
+CAPTURE_PAGE_ID=""
+CAPTURE_PAGE_URL=""
+
+if [ -n "$NOTION_TOKEN" ]; then
+    echo -e "${CYAN}   Creating Quick Capture page...${NC}"
+
+    CAPTURE_RESPONSE=$(curl -s -X POST "https://api.notion.com/v1/pages" \
+        -H "Authorization: Bearer $NOTION_TOKEN" \
+        -H "Content-Type: application/json" \
+        -H "Notion-Version: 2022-06-28" \
+        -d @- << PAYLOAD
+{
+  "parent": {"type": "page_id", "page_id": "$PAGE_ID"},
+  "properties": {
+    "title": {
+      "title": [{"type": "text", "text": {"content": "📥 Quick Capture"}}]
+    }
+  },
+  "children": [
+    {"object": "block", "type": "callout", "callout": {"rich_text": [{"type": "text", "text": {"content": "Drop ideas, thoughts, issues here anytime. Claude reviews this at session start."}}], "icon": {"type": "emoji", "emoji": "💡"}}},
+    {"object": "block", "type": "heading_2", "heading_2": {"rich_text": [{"type": "text", "text": {"content": "Ideas"}}]}},
+    {"object": "block", "type": "paragraph", "paragraph": {"rich_text": [{"type": "text", "text": {"content": ""}}]}},
+    {"object": "block", "type": "heading_2", "heading_2": {"rich_text": [{"type": "text", "text": {"content": "Issues / Bugs"}}]}},
+    {"object": "block", "type": "paragraph", "paragraph": {"rich_text": [{"type": "text", "text": {"content": ""}}]}},
+    {"object": "block", "type": "heading_2", "heading_2": {"rich_text": [{"type": "text", "text": {"content": "Features"}}]}},
+    {"object": "block", "type": "paragraph", "paragraph": {"rich_text": [{"type": "text", "text": {"content": ""}}]}},
+    {"object": "block", "type": "heading_2", "heading_2": {"rich_text": [{"type": "text", "text": {"content": "Questions"}}]}},
+    {"object": "block", "type": "paragraph", "paragraph": {"rich_text": [{"type": "text", "text": {"content": ""}}]}},
+    {"object": "block", "type": "divider", "divider": {}},
+    {"object": "block", "type": "paragraph", "paragraph": {"rich_text": [{"type": "text", "text": {"content": "Tip: Use Notion mobile or web to quickly add items here"}}]}}
+  ]
+}
+PAYLOAD
+    )
+
+    CAPTURE_PAGE_ID=$(echo "$CAPTURE_RESPONSE" | jq -r '.id // empty')
+    if [ -n "$CAPTURE_PAGE_ID" ] && [ "$CAPTURE_PAGE_ID" != "null" ]; then
+        CAPTURE_PAGE_ID_CLEAN=$(echo "$CAPTURE_PAGE_ID" | tr -d '-')
+        CAPTURE_PAGE_URL="https://www.notion.so/${CAPTURE_PAGE_ID_CLEAN}"
+        echo -e "   ${GREEN}✓${NC} Created: Quick Capture"
+    else
+        echo -e "   ${YELLOW}⚠️${NC} Could not create Quick Capture page"
+    fi
+fi
+
+# ============================================
+# STEP 2c: Create Claude Scratch Page
+# ============================================
+SCRATCH_PAGE_ID=""
+SCRATCH_PAGE_URL=""
+
+if [ -n "$NOTION_TOKEN" ]; then
+    echo -e "${CYAN}   Creating Claude Scratch page...${NC}"
+
+    SCRATCH_RESPONSE=$(curl -s -X POST "https://api.notion.com/v1/pages" \
+        -H "Authorization: Bearer $NOTION_TOKEN" \
+        -H "Content-Type: application/json" \
+        -H "Notion-Version: 2022-06-28" \
+        -d @- << PAYLOAD
+{
+  "parent": {"type": "page_id", "page_id": "$PAGE_ID"},
+  "properties": {
+    "title": {
+      "title": [{"type": "text", "text": {"content": "🤖 Claude Scratch"}}]
+    }
+  },
+  "children": [
+    {"object": "block", "type": "callout", "callout": {"rich_text": [{"type": "text", "text": {"content": "Claude's working memory - notes, thinking, context that persists between sessions."}}], "icon": {"type": "emoji", "emoji": "🧠"}}},
+    {"object": "block", "type": "heading_2", "heading_2": {"rich_text": [{"type": "text", "text": {"content": "Current Focus"}}]}},
+    {"object": "block", "type": "paragraph", "paragraph": {"rich_text": [{"type": "text", "text": {"content": "[What Claude is currently working through]"}}]}},
+    {"object": "block", "type": "heading_2", "heading_2": {"rich_text": [{"type": "text", "text": {"content": "Open Threads"}}]}},
+    {"object": "block", "type": "paragraph", "paragraph": {"rich_text": [{"type": "text", "text": {"content": "[Things to pick up next session]"}}]}},
+    {"object": "block", "type": "heading_2", "heading_2": {"rich_text": [{"type": "text", "text": {"content": "Insights & Patterns"}}]}},
+    {"object": "block", "type": "paragraph", "paragraph": {"rich_text": [{"type": "text", "text": {"content": "[Observations about the project]"}}]}},
+    {"object": "block", "type": "heading_2", "heading_2": {"rich_text": [{"type": "text", "text": {"content": "Session Notes"}}]}},
+    {"object": "block", "type": "paragraph", "paragraph": {"rich_text": [{"type": "text", "text": {"content": "$TODAY - Workspace initialized"}}]}}
+  ]
+}
+PAYLOAD
+    )
+
+    SCRATCH_PAGE_ID=$(echo "$SCRATCH_RESPONSE" | jq -r '.id // empty')
+    if [ -n "$SCRATCH_PAGE_ID" ] && [ "$SCRATCH_PAGE_ID" != "null" ]; then
+        SCRATCH_PAGE_ID_CLEAN=$(echo "$SCRATCH_PAGE_ID" | tr -d '-')
+        SCRATCH_PAGE_URL="https://www.notion.so/${SCRATCH_PAGE_ID_CLEAN}"
+        echo -e "   ${GREEN}✓${NC} Created: Claude Scratch"
+    else
+        echo -e "   ${YELLOW}⚠️${NC} Could not create Claude Scratch page"
+    fi
+fi
+echo ""
+
+# ============================================
 # STEP 3: Create Local Structure
 # ============================================
 echo -e "${BLUE}Step 3: Creating Local Structure${NC}"
@@ -286,8 +381,20 @@ cat > status.json << EOF
 {
   "project": "$PROJECT_NAME",
   "slug": "$PROJECT_SLUG",
-  "notionPageId": "$PAGE_ID_CLEAN",
-  "notionPageUrl": "$PAGE_URL",
+  "notion": {
+    "designDoc": {
+      "id": "$PAGE_ID_CLEAN",
+      "url": "$PAGE_URL"
+    },
+    "quickCapture": {
+      "id": "${CAPTURE_PAGE_ID_CLEAN:-}",
+      "url": "${CAPTURE_PAGE_URL:-}"
+    },
+    "claudeScratch": {
+      "id": "${SCRATCH_PAGE_ID_CLEAN:-}",
+      "url": "${SCRATCH_PAGE_URL:-}"
+    }
+  },
   "framework": "project-incubator",
   "currentPhase": 0,
   "phaseName": "braindump",
@@ -413,6 +520,8 @@ sed -e "s/{{PROJECT_NAME}}/$PROJECT_NAME/g" \
     -e "s/{{PROJECT_SLUG}}/$PROJECT_SLUG/g" \
     -e "s/{{PAGE_ID}}/$PAGE_ID_CLEAN/g" \
     -e "s|{{PAGE_URL}}|$PAGE_URL|g" \
+    -e "s|{{CAPTURE_PAGE_URL}}|${CAPTURE_PAGE_URL:-[not created]}|g" \
+    -e "s|{{SCRATCH_PAGE_URL}}|${SCRATCH_PAGE_URL:-[not created]}|g" \
     -e "s/{{DATE}}/$TODAY/g" \
     CLAUDE.md.template > CLAUDE.md
 
@@ -502,8 +611,12 @@ cat > .env << EOF
 
 PROJECT_NAME="$PROJECT_NAME"
 PROJECT_SLUG="$PROJECT_SLUG"
-NOTION_PAGE_ID="$PAGE_ID_CLEAN"
-NOTION_PAGE_URL="$PAGE_URL"
+NOTION_DESIGN_DOC_ID="$PAGE_ID_CLEAN"
+NOTION_DESIGN_DOC_URL="$PAGE_URL"
+NOTION_QUICK_CAPTURE_ID="${CAPTURE_PAGE_ID_CLEAN:-}"
+NOTION_QUICK_CAPTURE_URL="${CAPTURE_PAGE_URL:-}"
+NOTION_SCRATCH_ID="${SCRATCH_PAGE_ID_CLEAN:-}"
+NOTION_SCRATCH_URL="${SCRATCH_PAGE_URL:-}"
 SKILL_NAME="incubator-$PROJECT_SLUG"
 EOF
 
@@ -546,8 +659,14 @@ echo "  - spec/ (specifications folder)"
 echo "  - ~/.claude/skills/incubator-$PROJECT_SLUG/ (voice skill)"
 echo "  - $ZIP_FILE (skill for web upload)"
 echo ""
-echo -e "${BLUE}Notion:${NC}"
+echo -e "${BLUE}Notion Pages:${NC}"
 echo "  - Design Doc: $PAGE_URL"
+if [ -n "$CAPTURE_PAGE_URL" ]; then
+    echo "  - Quick Capture: $CAPTURE_PAGE_URL"
+fi
+if [ -n "$SCRATCH_PAGE_URL" ]; then
+    echo "  - Claude Scratch: $SCRATCH_PAGE_URL"
+fi
 echo ""
 echo -e "${BLUE}Next steps:${NC}"
 echo ""

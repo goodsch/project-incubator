@@ -49,6 +49,24 @@ Legend:
 ## Process
 
 1. Read `status.json` from project root
-2. Fetch Notion page using page ID from status.json
+2. Fetch Notion Design Doc using page ID from status.json
 3. Parse PROJECT SNAPSHOT section for current state
-4. Display combined local + Notion status
+4. **Check Quick Capture page** for any pending items
+5. Display combined local + Notion status
+
+## Quick Capture Check
+
+If `status.json` has a `notion.quickCapture.id`:
+1. Fetch the Quick Capture page
+2. Look for any content under Ideas, Issues, Features, Questions sections
+3. If items found, show alert:
+
+```
+📥 QUICK CAPTURE ({count} items)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+{list items}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Review these before continuing? (y/N)
+```
+
+This ensures nothing captured between sessions gets lost.

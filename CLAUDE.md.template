@@ -6,8 +6,10 @@ This is a **Project Incubator** workspace for planning and designing **{{PROJECT
 
 ```yaml
 project_name: "{{PROJECT_NAME}}"
-notion_page_id: "{{PAGE_ID}}"
-notion_page_url: "{{PAGE_URL}}"
+notion:
+  design_doc: "{{PAGE_URL}}"
+  quick_capture: "{{CAPTURE_PAGE_URL}}"
+  claude_scratch: "{{SCRATCH_PAGE_URL}}"
 skill_name: "incubator-{{PROJECT_SLUG}}"
 ```
 
@@ -15,8 +17,16 @@ skill_name: "incubator-{{PROJECT_SLUG}}"
 
 This workspace helps transform ideas into structured, actionable plans using:
 - **Voice-first interaction** - Say "Let's work on {{PROJECT_NAME}}" to start
-- **Notion as persistent state** - Your Design Doc lives in Notion and syncs via MCP
+- **Notion as persistent state** - Design Doc, Quick Capture, and Scratch pages
 - **Executive function support** - Structure for ADHD minds, not bureaucracy
+
+## Notion Pages
+
+| Page | Purpose |
+|------|---------|
+| **Design Doc** | Main project document with phases, status, content |
+| **Quick Capture** | Inbox for ideas/issues between sessions - checked at start |
+| **Claude Scratch** | Claude's thinking space - persists notes between sessions |
 
 ## Quick Start
 
@@ -26,9 +36,10 @@ Start a planning session:
 ```
 
 The system will:
-1. Fetch the current Design Doc state from Notion
-2. Present your project snapshot (status, phase, next action)
-3. Offer guided or conversational mode
+1. **Check Quick Capture** for any items you added between sessions
+2. Fetch the current Design Doc state from Notion
+3. Present your project snapshot (status, phase, next action)
+4. Give you a directive next step
 
 ## Modes
 
@@ -77,6 +88,17 @@ When MCP is NOT available (mobile), Claude outputs paste-ready markdown.
 4. **Keep responses short** - Voice users can't scroll
 5. **Systems thinking** - Help visualize whole-to-parts relationships
 
+## Claude Scratch (For AI)
+
+Use the Claude Scratch page in Notion to persist your thinking between sessions:
+
+- **Current Focus**: What you're actively working through
+- **Open Threads**: Things to pick up next session
+- **Insights & Patterns**: Observations about the project
+- **Session Notes**: Brief log of what happened
+
+Update this page at the end of each session so you can resume context quickly.
+
 ---
 
-*This workspace was created with [Project Incubator](https://github.com/YOUR_USERNAME/project-incubator)*
+*This workspace was created with [Project Incubator](https://github.com/goodsch/project-incubator)*

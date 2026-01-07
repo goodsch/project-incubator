@@ -17,9 +17,32 @@ From the analysis docs:
 ## Execution
 
 1. Read status.json for current phase
-2. Fetch Notion page for current state
-3. Determine the single most important next action
-4. Present it clearly and directly
+2. **Check Quick Capture page first** for any pending items
+3. Fetch Notion Design Doc for current state
+4. Determine the single most important next action
+5. Present it clearly and directly
+
+## Quick Capture Priority
+
+**Always check Quick Capture before anything else.**
+
+If `status.json` has `notion.quickCapture.id` and the page has content:
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📥 YOU CAPTURED {count} THINGS SINCE LAST SESSION
+
+{list items briefly}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+⏭️ NEXT STEP
+
+Let's process these captures first. I'll categorize each one.
+Start by telling me about the first item: "{first item}"
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
+
+After processing captures, clear the Quick Capture sections and proceed to normal phase workflow.
 
 ## Output Format
 
