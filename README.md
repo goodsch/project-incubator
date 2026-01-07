@@ -198,6 +198,7 @@ For Claude web/mobile (no MCP):
 
 See the `docs/` folder for:
 - [Voice Patterns](docs/voice-patterns.md) - Voice command reference
+- [iOS Quick Capture](docs/ios-quick-capture.md) - Mobile capture setup with iOS Shortcuts
 - [Notion Integration](docs/notion-integration.md) - MCP tools guide
 - [Creating Projects](docs/creating-projects.md) - How to use this template
 - [Development Rules](docs/development-rules.md) - Design principles

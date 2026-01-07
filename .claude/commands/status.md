@@ -57,16 +57,18 @@ Legend:
 ## Quick Capture Check
 
 If `status.json` has a `notion.quickCapture.id`:
-1. Fetch the Quick Capture page
-2. Look for any content under Ideas, Issues, Features, Questions sections
-3. If items found, show alert:
+1. Fetch the Quick Capture **database** using `mcp__notion__notion-fetch`
+2. Filter for items where Processed = false (unchecked checkbox)
+3. If unprocessed items found, show alert:
 
 ```
-📥 QUICK CAPTURE ({count} items)
+📥 QUICK CAPTURE ({count} unprocessed items)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-{list items}
+{list items with their Type emoji}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Review these before continuing? (y/N)
 ```
 
 This ensures nothing captured between sessions gets lost.
+
+**Note:** Quick Capture is a database (not a page) to enable iOS Shortcut integration for mobile capture.

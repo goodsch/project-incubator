@@ -18,18 +18,27 @@ notion:
   quick_capture:
     id: "{{CAPTURE_PAGE_ID}}"
     url: "{{CAPTURE_PAGE_URL}}"
+    type: database  # For iOS Shortcut integration
   claude_scratch:
     id: "{{SCRATCH_PAGE_ID}}"
     url: "{{SCRATCH_PAGE_URL}}"
 ```
 
-## Three Notion Pages
+## Notion Resources
 
-| Page | Purpose | When to Check |
-|------|---------|---------------|
-| **Design Doc** | Main project state, phases, content | Every session |
-| **Quick Capture** | User's inbox for ideas/issues | **First thing** at session start |
-| **Claude Scratch** | Your notes that persist between sessions | Session start (read) and end (write) |
+| Resource | Type | Purpose | When to Check |
+|----------|------|---------|---------------|
+| **Design Doc** | Page | Main project state, phases, content | Every session |
+| **Quick Capture** | Database | User's inbox for ideas/issues (mobile-friendly) | **First thing** at session start |
+| **Claude Scratch** | Page | Your notes that persist between sessions | Session start (read) and end (write) |
+
+### Quick Capture Database Schema
+| Property | Type | Purpose |
+|----------|------|---------|
+| Capture | Title | The captured thought/idea |
+| Type | Select | 💡 Idea, 🐛 Issue, ✨ Feature, ❓ Question, 📝 Note |
+| Processed | Checkbox | Mark true after reviewing with user |
+| Created | Created time | Auto-set when item added |
 
 ---
 
@@ -160,10 +169,28 @@ Use these tools (NOT mcp__notionApi__):
 
 | Action | Tool |
 |--------|------|
-| Find page | `mcp__notion__notion-search` |
-| Read page | `mcp__notion__notion-fetch` |
-| Update section | `mcp__notion__notion-update-page` with `replace_content_range` |
-| Add content | `mcp__notion__notion-update-page` with `insert_content_after` |
+| Find page/database | `mcp__notion__notion-search` |
+| Read page or database | `mcp__notion__notion-fetch` |
+| Update page section | `mcp__notion__notion-update-page` with `replace_content_range` |
+| Add page content | `mcp__notion__notion-update-page` with `insert_content_after` |
+| Create database item | `mcp__notion__notion-create-pages` with `data_source_id` |
+| Update database item | `mcp__notion__notion-update-page` with `update_properties` |
+
+### Quick Capture Database Operations
+
+**Query unprocessed items:**
+```
+mcp__notion__notion-fetch with database ID
+Look for items where Processed = false (unchecked)
+```
+
+**Mark item as processed:**
+```
+mcp__notion__notion-update-page
+  page_id: [item ID]
+  command: "update_properties"
+  properties: {"Processed": "__YES__"}
+```
 
 ---
 
@@ -171,12 +198,13 @@ Use these tools (NOT mcp__notionApi__):
 
 When user triggers the skill, execute this sequence:
 
-### Step 1: Check Quick Capture (FIRST)
+### Step 1: Check Quick Capture Database (FIRST)
 ```
-Fetch quick_capture page
-If has content under Ideas/Issues/Features/Questions:
+Fetch quick_capture database using mcp__notion__notion-fetch
+Filter for items where Processed = false (unchecked)
+If unprocessed items exist:
   → Show: "📥 You captured {count} things since last session"
-  → List items
+  → List items with their Type
   → Process these BEFORE normal workflow
 ```
 
@@ -201,7 +229,7 @@ Parse PROJECT SNAPSHOT for status, phase, next action
 Phase: {phase} of 6 | Status: {status}
 Last touched: {date}
 
-{If Quick Capture had items: "📥 {count} new captures to process"}
+{If Quick Capture had unprocessed items: "📥 {count} new captures to process"}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ⏭️ NEXT: {directive action}
@@ -217,7 +245,14 @@ When user says "done", "we're done", or ends session:
    - Current Focus: What we were working on
    - Open Threads: Things to pick up next time
    - Session Notes: Brief log entry
-3. **Clear processed items** from Quick Capture
+3. **Mark processed captures** as Processed=true in database
+   ```
+   For each item reviewed this session:
+     mcp__notion__notion-update-page
+       page_id: [item ID]
+       command: "update_properties"
+       properties: {"Processed": "__YES__"}
+   ```
 4. **Confirm sync** before ending
 
 ---

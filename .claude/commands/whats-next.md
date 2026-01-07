@@ -24,15 +24,18 @@ From the analysis docs:
 
 ## Quick Capture Priority
 
-**Always check Quick Capture before anything else.**
+**Always check Quick Capture database before anything else.**
 
-If `status.json` has `notion.quickCapture.id` and the page has content:
+If `status.json` has `notion.quickCapture.id`:
+1. Fetch the database using `mcp__notion__notion-fetch`
+2. Filter for items where Processed = false (unchecked)
+3. If unprocessed items exist:
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 📥 YOU CAPTURED {count} THINGS SINCE LAST SESSION
 
-{list items briefly}
+{list items with Type emoji}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ⏭️ NEXT STEP
@@ -42,7 +45,15 @@ Start by telling me about the first item: "{first item}"
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
-After processing captures, clear the Quick Capture sections and proceed to normal phase workflow.
+After processing captures, mark each as Processed=true and proceed to normal phase workflow.
+
+**To mark as processed:**
+```
+mcp__notion__notion-update-page
+  page_id: [item ID]
+  command: "update_properties"
+  properties: {"Processed": "__YES__"}
+```
 
 ## Output Format
 

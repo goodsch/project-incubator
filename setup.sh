@@ -220,50 +220,65 @@ echo "   URL: $PAGE_URL"
 echo ""
 
 # ============================================
-# STEP 2b: Create Quick Capture Page
+# STEP 2b: Create Quick Capture Database
 # ============================================
-CAPTURE_PAGE_ID=""
-CAPTURE_PAGE_URL=""
+# Using a database (not a page) enables:
+# - iOS Shortcuts integration ("Create Document Without Opening")
+# - Siri voice capture ("Hey Siri, capture idea")
+# - Structured properties (type, processed status)
+# - Easy filtering of unprocessed items
+
+CAPTURE_DB_ID=""
+CAPTURE_DB_URL=""
 
 if [ -n "$NOTION_TOKEN" ]; then
-    echo -e "${CYAN}   Creating Quick Capture page...${NC}"
+    echo -e "${CYAN}   Creating Quick Capture database...${NC}"
 
-    CAPTURE_RESPONSE=$(curl -s -X POST "https://api.notion.com/v1/pages" \
+    CAPTURE_RESPONSE=$(curl -s -X POST "https://api.notion.com/v1/databases" \
         -H "Authorization: Bearer $NOTION_TOKEN" \
         -H "Content-Type: application/json" \
         -H "Notion-Version: 2022-06-28" \
         -d @- << PAYLOAD
 {
   "parent": {"type": "page_id", "page_id": "$PAGE_ID"},
+  "title": [{"type": "text", "text": {"content": "📥 Quick Capture"}}],
+  "description": [{"type": "text", "text": {"content": "Inbox for ideas captured on the go. Use iOS Shortcuts or Notion mobile to add items. Claude reviews unprocessed items at session start."}}],
+  "is_inline": true,
   "properties": {
-    "title": {
-      "title": [{"type": "text", "text": {"content": "📥 Quick Capture"}}]
+    "Capture": {
+      "title": {}
+    },
+    "Type": {
+      "select": {
+        "options": [
+          {"name": "💡 Idea", "color": "yellow"},
+          {"name": "🐛 Issue", "color": "red"},
+          {"name": "✨ Feature", "color": "blue"},
+          {"name": "❓ Question", "color": "purple"},
+          {"name": "📝 Note", "color": "gray"}
+        ]
+      }
+    },
+    "Processed": {
+      "checkbox": {}
+    },
+    "Created": {
+      "created_time": {}
     }
-  },
-  "children": [
-    {"object": "block", "type": "callout", "callout": {"rich_text": [{"type": "text", "text": {"content": "Drop ideas, thoughts, issues here anytime. Claude reviews this at session start."}}], "icon": {"type": "emoji", "emoji": "💡"}}},
-    {"object": "block", "type": "heading_2", "heading_2": {"rich_text": [{"type": "text", "text": {"content": "Ideas"}}]}},
-    {"object": "block", "type": "paragraph", "paragraph": {"rich_text": [{"type": "text", "text": {"content": ""}}]}},
-    {"object": "block", "type": "heading_2", "heading_2": {"rich_text": [{"type": "text", "text": {"content": "Issues / Bugs"}}]}},
-    {"object": "block", "type": "paragraph", "paragraph": {"rich_text": [{"type": "text", "text": {"content": ""}}]}},
-    {"object": "block", "type": "heading_2", "heading_2": {"rich_text": [{"type": "text", "text": {"content": "Features"}}]}},
-    {"object": "block", "type": "paragraph", "paragraph": {"rich_text": [{"type": "text", "text": {"content": ""}}]}},
-    {"object": "block", "type": "heading_2", "heading_2": {"rich_text": [{"type": "text", "text": {"content": "Questions"}}]}},
-    {"object": "block", "type": "paragraph", "paragraph": {"rich_text": [{"type": "text", "text": {"content": ""}}]}},
-    {"object": "block", "type": "divider", "divider": {}},
-    {"object": "block", "type": "paragraph", "paragraph": {"rich_text": [{"type": "text", "text": {"content": "Tip: Use Notion mobile or web to quickly add items here"}}]}}
-  ]
+  }
 }
 PAYLOAD
     )
 
-    CAPTURE_PAGE_ID=$(echo "$CAPTURE_RESPONSE" | jq -r '.id // empty')
-    if [ -n "$CAPTURE_PAGE_ID" ] && [ "$CAPTURE_PAGE_ID" != "null" ]; then
-        CAPTURE_PAGE_ID_CLEAN=$(echo "$CAPTURE_PAGE_ID" | tr -d '-')
-        CAPTURE_PAGE_URL="https://www.notion.so/${CAPTURE_PAGE_ID_CLEAN}"
-        echo -e "   ${GREEN}✓${NC} Created: Quick Capture"
+    CAPTURE_DB_ID=$(echo "$CAPTURE_RESPONSE" | jq -r '.id // empty')
+    if [ -n "$CAPTURE_DB_ID" ] && [ "$CAPTURE_DB_ID" != "null" ]; then
+        CAPTURE_DB_ID_CLEAN=$(echo "$CAPTURE_DB_ID" | tr -d '-')
+        CAPTURE_DB_URL="https://www.notion.so/${CAPTURE_DB_ID_CLEAN}"
+        echo -e "   ${GREEN}✓${NC} Created: Quick Capture (database)"
+        echo -e "   ${CYAN}ℹ️${NC}  Set up iOS Shortcut: Settings → Shortcuts → Notion → 'Create Document Without Opening'"
     else
-        echo -e "   ${YELLOW}⚠️${NC} Could not create Quick Capture page"
+        ERROR_MSG=$(echo "$CAPTURE_RESPONSE" | jq -r '.message // "Unknown error"')
+        echo -e "   ${YELLOW}⚠️${NC} Could not create Quick Capture database: $ERROR_MSG"
     fi
 fi
 
@@ -387,8 +402,9 @@ cat > status.json << EOF
       "url": "$PAGE_URL"
     },
     "quickCapture": {
-      "id": "${CAPTURE_PAGE_ID_CLEAN:-}",
-      "url": "${CAPTURE_PAGE_URL:-}"
+      "id": "${CAPTURE_DB_ID_CLEAN:-}",
+      "url": "${CAPTURE_DB_URL:-}",
+      "type": "database"
     },
     "claudeScratch": {
       "id": "${SCRATCH_PAGE_ID_CLEAN:-}",
@@ -471,8 +487,8 @@ if [ "$SKILL_CREATED" -eq 1 ]; then
         -e "s/{{PROJECT_SLUG}}/$PROJECT_SLUG/g" \
         -e "s/{{PAGE_ID}}/$PAGE_ID_CLEAN/g" \
         -e "s|{{PAGE_URL}}|$PAGE_URL|g" \
-        -e "s/{{CAPTURE_PAGE_ID}}/${CAPTURE_PAGE_ID_CLEAN:-}/g" \
-        -e "s|{{CAPTURE_PAGE_URL}}|${CAPTURE_PAGE_URL:-}|g" \
+        -e "s/{{CAPTURE_PAGE_ID}}/${CAPTURE_DB_ID_CLEAN:-}/g" \
+        -e "s|{{CAPTURE_PAGE_URL}}|${CAPTURE_DB_URL:-}|g" \
         -e "s/{{SCRATCH_PAGE_ID}}/${SCRATCH_PAGE_ID_CLEAN:-}/g" \
         -e "s|{{SCRATCH_PAGE_URL}}|${SCRATCH_PAGE_URL:-}|g" \
         -e "s/{{DATE}}/$TODAY/g" \
@@ -524,7 +540,7 @@ sed -e "s/{{PROJECT_NAME}}/$PROJECT_NAME/g" \
     -e "s/{{PROJECT_SLUG}}/$PROJECT_SLUG/g" \
     -e "s/{{PAGE_ID}}/$PAGE_ID_CLEAN/g" \
     -e "s|{{PAGE_URL}}|$PAGE_URL|g" \
-    -e "s|{{CAPTURE_PAGE_URL}}|${CAPTURE_PAGE_URL:-[not created]}|g" \
+    -e "s|{{CAPTURE_PAGE_URL}}|${CAPTURE_DB_URL:-[not created]}|g" \
     -e "s|{{SCRATCH_PAGE_URL}}|${SCRATCH_PAGE_URL:-[not created]}|g" \
     -e "s/{{DATE}}/$TODAY/g" \
     CLAUDE.md.template > CLAUDE.md
@@ -617,8 +633,9 @@ PROJECT_NAME="$PROJECT_NAME"
 PROJECT_SLUG="$PROJECT_SLUG"
 NOTION_DESIGN_DOC_ID="$PAGE_ID_CLEAN"
 NOTION_DESIGN_DOC_URL="$PAGE_URL"
-NOTION_QUICK_CAPTURE_ID="${CAPTURE_PAGE_ID_CLEAN:-}"
-NOTION_QUICK_CAPTURE_URL="${CAPTURE_PAGE_URL:-}"
+NOTION_QUICK_CAPTURE_ID="${CAPTURE_DB_ID_CLEAN:-}"
+NOTION_QUICK_CAPTURE_URL="${CAPTURE_DB_URL:-}"
+NOTION_QUICK_CAPTURE_TYPE="database"
 NOTION_SCRATCH_ID="${SCRATCH_PAGE_ID_CLEAN:-}"
 NOTION_SCRATCH_URL="${SCRATCH_PAGE_URL:-}"
 SKILL_NAME="incubator-$PROJECT_SLUG"
@@ -665,8 +682,8 @@ echo "  - $ZIP_FILE (skill for web upload)"
 echo ""
 echo -e "${BLUE}Notion Pages:${NC}"
 echo "  - Design Doc: $PAGE_URL"
-if [ -n "$CAPTURE_PAGE_URL" ]; then
-    echo "  - Quick Capture: $CAPTURE_PAGE_URL"
+if [ -n "$CAPTURE_DB_URL" ]; then
+    echo "  - Quick Capture (database): $CAPTURE_DB_URL"
 fi
 if [ -n "$SCRATCH_PAGE_URL" ]; then
     echo "  - Claude Scratch: $SCRATCH_PAGE_URL"
