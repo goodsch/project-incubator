@@ -91,59 +91,40 @@ echo "   Slug: $PROJECT_SLUG"
 echo ""
 
 # ============================================
-# STEP 2: Auto-create Notion Page
+# STEP 2: Create Notion Page via API
 # ============================================
 echo -e "${BLUE}Step 2: Creating Notion Design Doc${NC}"
 echo "-----------------------------------"
 echo ""
 
-# Prepare the template content
-TEMPLATE_CONTENT=$(cat notion-template/design-doc.md | sed "s/{{PROJECT_NAME}}/$PROJECT_NAME/g")
 TODAY=$(date +%Y-%m-%d)
-TEMPLATE_CONTENT=$(echo "$TEMPLATE_CONTENT" | sed "s/{{DATE}}/$TODAY/g")
 
-echo -e "${CYAN}   Creating page in Notion...${NC}"
+# Check for Notion API token
+NOTION_TOKEN="${NOTION_API_KEY:-}"
 
-# Create a temporary file with the prompt
-PROMPT_FILE=$(mktemp)
-cat > "$PROMPT_FILE" << EOF
-IMPORTANT: Use ONLY the mcp__notion__notion-create-pages tool. Do NOT search or use any other tools.
+# Try to load from .env if not set
+if [ -z "$NOTION_TOKEN" ] && [ -f "$HOME/.notion-token" ]; then
+    NOTION_TOKEN=$(cat "$HOME/.notion-token")
+fi
 
-Create a standalone Notion page (no parent - workspace level) with these exact parameters:
-
-{
-  "pages": [
-    {
-      "properties": {"title": "$PROJECT_NAME - Design Doc"},
-      "content": $(echo "$TEMPLATE_CONTENT" | jq -Rs .)
-    }
-  ]
-}
-
-After the page is created, output ONLY this format:
-PAGE_ID: <the-page-id-from-response>
-
-No explanation. No other text. Just PAGE_ID: followed by the ID.
-EOF
-
-# Run Claude to create the page - use allowedTools to prevent searching
-CLAUDE_OUTPUT=$(claude -p "$(cat "$PROMPT_FILE")" --allowedTools "mcp__notion__notion-create-pages" 2>&1) || {
-    echo -e "${RED}❌ Failed to create Notion page${NC}"
-    echo "   Error: $CLAUDE_OUTPUT"
+if [ -z "$NOTION_TOKEN" ]; then
+    echo -e "${YELLOW}No Notion API token found.${NC}"
     echo ""
-    echo -e "${YELLOW}Falling back to manual mode...${NC}"
-    rm -f "$PROMPT_FILE"
+    echo "To enable auto-creation, set up a Notion integration:"
+    echo "   1. Go to https://www.notion.so/my-integrations"
+    echo "   2. Create a new integration (Internal)"
+    echo "   3. Copy the API token"
+    echo "   4. Save it: echo 'your-token' > ~/.notion-token"
+    echo ""
+    echo "Or set NOTION_API_KEY environment variable."
+    echo ""
 
-    echo ""
-    echo -e "${CYAN}Why did auto-create fail?${NC}"
-    echo "   - Notion MCP tools may need permission approval first"
-    echo "   - Run 'claude' interactively and approve Notion tools once"
-    echo "   - Then re-run this setup script"
-    echo ""
-    echo -e "${CYAN}Or create the page manually:${NC}"
+    # Fall back to manual
+    echo -e "${CYAN}Manual setup:${NC}"
     echo "   1. Create a page titled '$PROJECT_NAME - Design Doc'"
     echo "   2. Copy contents from notion-template/design-doc.md"
     echo "   3. Replace {{PROJECT_NAME}} with '$PROJECT_NAME'"
+    echo "   4. Replace {{DATE}} with '$TODAY'"
     echo ""
     read -p "Press Enter when the Notion page is created..."
     echo ""
@@ -158,30 +139,69 @@ CLAUDE_OUTPUT=$(claude -p "$(cat "$PROMPT_FILE")" --allowedTools "mcp__notion__n
 
     PAGE_ID_CLEAN=$(echo "$PAGE_ID" | tr -d '-')
     PAGE_URL="https://www.notion.so/${PAGE_ID_CLEAN}"
+else
+    echo -e "${CYAN}   Creating page via Notion API...${NC}"
+
+    # Build the API request with blocks for the template
+    API_RESPONSE=$(curl -s -X POST "https://api.notion.com/v1/pages" \
+        -H "Authorization: Bearer $NOTION_TOKEN" \
+        -H "Content-Type: application/json" \
+        -H "Notion-Version: 2022-06-28" \
+        -d @- << PAYLOAD
+{
+  "parent": {"type": "workspace", "workspace": true},
+  "properties": {
+    "title": {
+      "title": [{"type": "text", "text": {"content": "$PROJECT_NAME - Design Doc"}}]
+    }
+  },
+  "children": [
+    {"object": "block", "type": "heading_1", "heading_1": {"rich_text": [{"type": "text", "text": {"content": "🎯 PROJECT SNAPSHOT"}}]}},
+    {"object": "block", "type": "paragraph", "paragraph": {"rich_text": [{"type": "text", "text": {"content": "Status: Ideating | Phase: 0 - BRAINDUMP | Last touched: $TODAY"}}]}},
+    {"object": "block", "type": "paragraph", "paragraph": {"rich_text": [{"type": "text", "text": {"content": "Next action: Add materials to braindump/ or skip to Phase 1"}}]}},
+    {"object": "block", "type": "divider", "divider": {}},
+    {"object": "block", "type": "heading_1", "heading_1": {"rich_text": [{"type": "text", "text": {"content": "💡 THE IDEA"}}]}},
+    {"object": "block", "type": "paragraph", "paragraph": {"rich_text": [{"type": "text", "text": {"content": "One-liner: [Not yet defined - complete in Phase 1]"}}]}},
+    {"object": "block", "type": "paragraph", "paragraph": {"rich_text": [{"type": "text", "text": {"content": "The spark: [What triggered this idea?]"}}]}},
+    {"object": "block", "type": "paragraph", "paragraph": {"rich_text": [{"type": "text", "text": {"content": "Core insight: [The non-obvious thing that makes this work]"}}]}},
+    {"object": "block", "type": "divider", "divider": {}},
+    {"object": "block", "type": "heading_1", "heading_1": {"rich_text": [{"type": "text", "text": {"content": "🏗️ SYSTEM OVERVIEW"}}]}},
+    {"object": "block", "type": "paragraph", "paragraph": {"rich_text": [{"type": "text", "text": {"content": "Purpose: [What problem does this solve? For whom?]"}}]}},
+    {"object": "block", "type": "paragraph", "paragraph": {"rich_text": [{"type": "text", "text": {"content": "Scope IN: [What's included] | OUT: [What's explicitly NOT part of this]"}}]}},
+    {"object": "block", "type": "divider", "divider": {}},
+    {"object": "block", "type": "heading_1", "heading_1": {"rich_text": [{"type": "text", "text": {"content": "🧩 COMPONENTS"}}]}},
+    {"object": "block", "type": "paragraph", "paragraph": {"rich_text": [{"type": "text", "text": {"content": "[Components will be added during Phase 2-3]"}}]}},
+    {"object": "block", "type": "divider", "divider": {}},
+    {"object": "block", "type": "heading_1", "heading_1": {"rich_text": [{"type": "text", "text": {"content": "❓ OPEN QUESTIONS"}}]}},
+    {"object": "block", "type": "to_do", "to_do": {"rich_text": [{"type": "text", "text": {"content": "What's the MVP scope?"}}], "checked": false}},
+    {"object": "block", "type": "to_do", "to_do": {"rich_text": [{"type": "text", "text": {"content": "Who's the primary user persona?"}}], "checked": false}},
+    {"object": "block", "type": "to_do", "to_do": {"rich_text": [{"type": "text", "text": {"content": "What's the key differentiator?"}}], "checked": false}},
+    {"object": "block", "type": "divider", "divider": {}},
+    {"object": "block", "type": "heading_1", "heading_1": {"rich_text": [{"type": "text", "text": {"content": "📜 SESSION LOG"}}]}},
+    {"object": "block", "type": "paragraph", "paragraph": {"rich_text": [{"type": "text", "text": {"content": "$TODAY - Page created with Design Doc template"}}]}}
+  ]
 }
+PAYLOAD
+    )
 
-rm -f "$PROMPT_FILE"
+    # Parse the response
+    PAGE_ID=$(echo "$API_RESPONSE" | jq -r '.id // empty')
 
-# Parse page ID from Claude output if we got it
-if [ -z "$PAGE_ID_CLEAN" ]; then
-    PAGE_ID=$(echo "$CLAUDE_OUTPUT" | grep -o 'PAGE_ID: [a-f0-9-]*' | sed 's/PAGE_ID: //' | head -1)
-
-    if [ -z "$PAGE_ID" ]; then
-        # Try alternative patterns
-        PAGE_ID=$(echo "$CLAUDE_OUTPUT" | grep -oE '[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}' | head -1)
-    fi
-
-    if [ -z "$PAGE_ID" ]; then
-        # Try without dashes
-        PAGE_ID=$(echo "$CLAUDE_OUTPUT" | grep -oE '[a-f0-9]{32}' | head -1)
-    fi
-
-    if [ -z "$PAGE_ID" ]; then
-        echo -e "${RED}❌ Could not parse page ID from Claude response${NC}"
-        echo "   Response was:"
-        echo "$CLAUDE_OUTPUT" | head -20
+    if [ -z "$PAGE_ID" ] || [ "$PAGE_ID" = "null" ]; then
+        ERROR_MSG=$(echo "$API_RESPONSE" | jq -r '.message // .code // "Unknown error"')
+        echo -e "${RED}❌ Failed to create Notion page${NC}"
+        echo "   Error: $ERROR_MSG"
         echo ""
-        echo "Enter the Notion page ID manually:"
+
+        # Fall back to manual
+        echo -e "${CYAN}Manual setup:${NC}"
+        echo "   1. Create a page titled '$PROJECT_NAME - Design Doc'"
+        echo "   2. Copy contents from notion-template/design-doc.md"
+        echo "   3. Replace {{PROJECT_NAME}} with '$PROJECT_NAME'"
+        echo ""
+        read -p "Press Enter when the Notion page is created..."
+        echo ""
+        echo "Enter the Notion page ID."
         read -p "Page ID: " PAGE_ID
 
         if [ -z "$PAGE_ID" ]; then
