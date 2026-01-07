@@ -155,15 +155,26 @@ Missing pieces detected during conversation:
 
 ## Guided Phases
 
-### Phase 1: CAPTURE (get the idea out)
-**Goal:** Extract the raw idea without judgment
+### Phase 1: CAPTURE (scenario-first)
+**Goal:** Get the idea out by walking through how it would be used
 
-Questions:
-- "What's the idea? Just dump it, don't worry about structure."
-- "What triggered this? What problem did you hit?"
-- "What's the insight - the thing that makes this work?"
+**Start with the scenario:**
+"Walk me through using this. You're the user - what do you do first? Then what happens?"
 
-→ Synthesize into THE IDEA section
+Let them narrate the experience. As they describe it, you're extracting:
+- **The trigger** - What situation made them reach for this?
+- **The flow** - Step by step, what happens?
+- **The insight** - What's the non-obvious thing that makes this work?
+- **Initial components** - What pieces emerge from the scenario?
+
+**Directive prompts:**
+- "You're using this for the first time. What's happening? What do you do?"
+- "Then what? Walk me through the next step."
+- "What did the system just do? How did it respond?"
+- "What's different now that you've used it?"
+
+→ Synthesize scenario into THE IDEA section
+→ Sketch initial flow in System Canvas (if visual helps)
 
 ### Phase 2: SCOPE (define boundaries)
 **Goal:** Clarify what this is and isn't

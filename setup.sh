@@ -331,6 +331,56 @@ PAYLOAD
         echo -e "   ${YELLOW}⚠️${NC} Could not create Claude Scratch page"
     fi
 fi
+
+# ============================================
+# STEP 2d: Create System Canvas Page
+# ============================================
+# Visual companion to the Design Doc - diagrams, flows, spatial thinking
+CANVAS_PAGE_ID=""
+CANVAS_PAGE_URL=""
+
+if [ -n "$NOTION_TOKEN" ]; then
+    echo -e "${CYAN}   Creating System Canvas page...${NC}"
+
+    CANVAS_RESPONSE=$(curl -s -X POST "https://api.notion.com/v1/pages" \
+        -H "Authorization: Bearer $NOTION_TOKEN" \
+        -H "Content-Type: application/json" \
+        -H "Notion-Version: 2022-06-28" \
+        -d @- << PAYLOAD
+{
+  "parent": {"type": "page_id", "page_id": "$PAGE_ID"},
+  "properties": {
+    "title": {
+      "title": [{"type": "text", "text": {"content": "🗺️ System Canvas"}}]
+    }
+  },
+  "children": [
+    {"object": "block", "type": "callout", "callout": {"rich_text": [{"type": "text", "text": {"content": "Visual companion to Design Doc - diagrams, flows, spatial thinking. Less text, more pictures."}}], "icon": {"type": "emoji", "emoji": "🎨"}}},
+    {"object": "block", "type": "heading_1", "heading_1": {"rich_text": [{"type": "text", "text": {"content": "🎬 THE SCENARIO"}}]}},
+    {"object": "block", "type": "paragraph", "paragraph": {"rich_text": [{"type": "text", "text": {"content": "Walk through using this: Who does what → System responds → Result"}}]}},
+    {"object": "block", "type": "divider", "divider": {}},
+    {"object": "block", "type": "heading_1", "heading_1": {"rich_text": [{"type": "text", "text": {"content": "🗺️ SYSTEM MAP"}}]}},
+    {"object": "block", "type": "paragraph", "paragraph": {"rich_text": [{"type": "text", "text": {"content": "[Add Mermaid diagram: graph TD showing major components]"}}]}},
+    {"object": "block", "type": "divider", "divider": {}},
+    {"object": "block", "type": "heading_1", "heading_1": {"rich_text": [{"type": "text", "text": {"content": "🔄 DATA FLOW"}}]}},
+    {"object": "block", "type": "paragraph", "paragraph": {"rich_text": [{"type": "text", "text": {"content": "[Add Mermaid diagram: flowchart LR showing data movement]"}}]}},
+    {"object": "block", "type": "divider", "divider": {}},
+    {"object": "block", "type": "heading_1", "heading_1": {"rich_text": [{"type": "text", "text": {"content": "🎭 KEY INTERACTIONS"}}]}},
+    {"object": "block", "type": "paragraph", "paragraph": {"rich_text": [{"type": "text", "text": {"content": "[Add Mermaid diagram: sequenceDiagram showing user ↔ system]"}}]}}
+  ]
+}
+PAYLOAD
+    )
+
+    CANVAS_PAGE_ID=$(echo "$CANVAS_RESPONSE" | jq -r '.id // empty')
+    if [ -n "$CANVAS_PAGE_ID" ] && [ "$CANVAS_PAGE_ID" != "null" ]; then
+        CANVAS_PAGE_ID_CLEAN=$(echo "$CANVAS_PAGE_ID" | tr -d '-')
+        CANVAS_PAGE_URL="https://www.notion.so/${CANVAS_PAGE_ID_CLEAN}"
+        echo -e "   ${GREEN}✓${NC} Created: System Canvas"
+    else
+        echo -e "   ${YELLOW}⚠️${NC} Could not create System Canvas page"
+    fi
+fi
 echo ""
 
 # ============================================
@@ -413,6 +463,10 @@ cat > status.json << EOF
     "claudeScratch": {
       "id": "${SCRATCH_PAGE_ID_CLEAN:-}",
       "url": "${SCRATCH_PAGE_URL:-}"
+    },
+    "systemCanvas": {
+      "id": "${CANVAS_PAGE_ID_CLEAN:-}",
+      "url": "${CANVAS_PAGE_URL:-}"
     }
   },
   "framework": "project-incubator",
@@ -691,6 +745,9 @@ if [ -n "$CAPTURE_DB_URL" ]; then
 fi
 if [ -n "$SCRATCH_PAGE_URL" ]; then
     echo "  - Claude Scratch: $SCRATCH_PAGE_URL"
+fi
+if [ -n "$CANVAS_PAGE_URL" ]; then
+    echo "  - System Canvas: $CANVAS_PAGE_URL"
 fi
 echo ""
 echo -e "${BLUE}Next steps:${NC}"
