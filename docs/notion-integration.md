@@ -2,6 +2,25 @@
 
 Technical details of the MCP integration with Notion for Project Incubator.
 
+## MCP Server Setup
+
+Add the Notion MCP server to your Claude Code configuration (`~/.claude/settings.json` or project `.mcp.json`):
+
+```json
+{
+  "mcpServers": {
+    "notion": {
+      "type": "http",
+      "url": "https://mcp.notion.com/mcp"
+    }
+  }
+}
+```
+
+This uses Notion's official hosted MCP server. When you first use it, you'll be prompted to authenticate with your Notion account.
+
+---
+
 ## MCP Tool Reference
 
 ### Working Tools (mcp__notion__)

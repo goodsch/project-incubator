@@ -147,7 +147,21 @@ Run `/status` to instantly see where you are and what's next.
 
 - [Claude Code CLI](https://docs.anthropic.com/claude-code)
 - Notion account (free tier works)
-- Notion MCP server configured in Claude Code
+- Notion MCP server configured in Claude Code:
+
+```json
+// Add to ~/.claude/settings.json or project .mcp.json
+{
+  "mcpServers": {
+    "notion": {
+      "type": "http",
+      "url": "https://mcp.notion.com/mcp"
+    }
+  }
+}
+```
+
+First use will prompt Notion authentication.
 
 ## Files
 
