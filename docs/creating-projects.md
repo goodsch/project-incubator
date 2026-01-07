@@ -1,202 +1,198 @@
-# Creating New Project Skills
+# Creating New Projects
 
-How to add a new project to the Project Incubator system.
+How to use the Project Incubator template to start a new project.
 
 ## Quick Start
 
-1. Create Notion page with Design Doc template
-2. Create skill folder with SKILL.md
-3. Test the integration
+1. Use this GitHub template to create a new repo
+2. Clone locally and run setup.sh
+3. Start planning with `/status` and `/whats-next`
 
-## Step 1: Create Notion Page
+## Step 1: Create Repository from Template
 
-### Option A: Via Claude Code (MCP)
-```python
-mcp__notion__notion-create-pages(
-    parent={"type": "page_id", "page_id": "HUB_PAGE_ID"},
-    pages=[{
-        "properties": {"title": "[Project Name] - Design Doc"},
-        "content": "[Design Doc template content]"
-    }]
-)
-```
+### On GitHub
 
-### Option B: Manual
-1. Open Project Incubator hub in Notion
-2. Create new page: "[Project Name] - Design Doc"
-3. Paste template from `~/.claude/skills/incubator-signalgarden/notion-template.md`
-4. Get the page ID from the URL
+1. Go to the Project Incubator template repository
+2. Click **"Use this template"** → **"Create a new repository"**
+3. Name your repository (e.g., `my-awesome-project-planning`)
+4. Choose public or private
+5. Click **"Create repository"**
 
-## Step 2: Create Skill Folder
+### Clone Locally
 
 ```bash
-mkdir -p ~/.claude/skills/incubator-[projectname]
+git clone https://github.com/YOUR_USERNAME/my-awesome-project-planning.git
+cd my-awesome-project-planning
 ```
 
-### Required Files
+## Step 2: Run Setup
 
-**SKILL.md** - Copy and modify from existing skill:
 ```bash
-cp ~/.claude/skills/incubator-signalgarden/SKILL.md \
-   ~/.claude/skills/incubator-[projectname]/SKILL.md
+./setup.sh
 ```
 
-Update these fields:
-```yaml
-name: incubator-[projectname]
-description: Voice-based project planning for [Project Name]. Use when user says "let's work on [Project Name]"...
+The setup script will:
 
-project_name: "[Project Name]"
-project_page_id: "[new page id]"
-project_page_url: "[new page url]"
-```
+### 1. Detect Project Name
+- Automatically extracts from git remote URL
+- Or prompts you to enter manually
 
-**voice-patterns.md** - Copy and update triggers:
+### 2. Create Notion Design Doc
+- Prompts you to create a new page in Notion
+- Provides the template content to paste
+- Asks for the page ID (from URL)
+
+### 3. Generate Skill ZIP
+- Creates `[project-name]-skill.zip`
+- For use with Claude web/mobile app
+- Upload to Claude's skill library for voice planning
+
+### 4. Create Local State
+- Generates `status.json` with project configuration
+- Tracks current phase and Notion page ID
+- Used by slash commands for state management
+
+### 5. Install Slash Commands
+- Commands already in `.claude/commands/`
+- Ready to use in Claude Code
+
+## Step 3: Verify Setup
+
 ```bash
-cp ~/.claude/skills/incubator-signalgarden/voice-patterns.md \
-   ~/.claude/skills/incubator-[projectname]/voice-patterns.md
+./verify-setup.sh
 ```
 
-Update trigger phrases:
-```markdown
-| "Let's work on [Project Name]" | Fetch page, present state |
-| "Continue [Project Name]" | Same as above |
+Or manually check:
+- [ ] `status.json` exists with correct page ID
+- [ ] `CLAUDE.md` exists (copied from template)
+- [ ] Notion page is accessible
+- [ ] Skill ZIP created (if using mobile)
+
+## Step 4: Start Planning
+
+Open Claude Code:
+
+```bash
+claude
 ```
 
-## Step 3: Test Integration
+### First Commands
 
-### Test 1: Search
 ```
-"Search for [Project Name] in Notion"
-```
-Should find the new page.
-
-### Test 2: Fetch
-```
-"Fetch the [Project Name] Design Doc"
-```
-Should return full page structure.
-
-### Test 3: Skill Trigger
-```
-"Let's work on [Project Name]"
-```
-Should:
-- Find and fetch the page
-- Present PROJECT SNAPSHOT
-- Offer guided or conversational mode
-
-### Test 4: Update
-Try a simple update:
-```
-"Add 'Test Component' to the components"
-```
-Should:
-- Propose the update
-- Wait for confirmation
-- Apply to Notion
-
-## Template Reference
-
-### Design Doc Template
-
-```markdown
-## 🎯 PROJECT SNAPSHOT
-
-| Field | Value |
-|-------|-------|
-| **Status** | Ideating |
-| **Phase** | Capture |
-| **Last touched** | [date] |
-| **Next action** | Define the core idea |
-| **Blockers** | None |
-
----
-
-## 💡 THE IDEA
-
-**One-liner:** [Not yet defined]
-
-**The spark:** [What triggered this?]
-
-**Core insight:** [The non-obvious thing]
-
----
-
-## 🏗️ SYSTEM OVERVIEW
-
-**Purpose:** [What problem does this solve?]
-
-**Scope:**
-- ✅ IN: [What's included]
-- ❌ OUT: [What's excluded]
-
-**Key actors:** [Who/what interacts?]
-
----
-
-## 🧩 COMPONENTS
-
-| Component | Role | Inputs | Outputs | Status |
-|-----------|------|--------|---------|--------|
-| *None yet* | | | | |
-
----
-
-## 🔗 RELATIONSHIPS
-
-*How do components connect?*
-
----
-
-## 🚶 USER JOURNEYS
-
-### Primary Flow
-1. [Step 1]
-2. [Step 2]
-
-### Entry Points
-- [How users get in]
-
----
-
-## ✅ DECISIONS LOG
-
-| Decision | Options | Chosen | Rationale | Date |
-|----------|---------|--------|-----------|------|
-| *None yet* | | | | |
-
----
-
-## ❓ OPEN QUESTIONS
-
-- [ ] [Question 1]
-- [ ] [Question 2]
-
----
-
-## 📋 NEXT ACTIONS
-
-- [ ] [Action 1]
-- [ ] [Action 2]
-
----
-
-## 📜 SESSION LOG
-
-| Date | Duration | What Changed |
-|------|----------|--------------|
-| [date] | - | Page created |
+/status        # See current state
+/whats-next    # Get directive next action
 ```
 
-## Checklist
+### Phase Progression
 
-- [ ] Notion page created with Design Doc template
-- [ ] Page ID captured
-- [ ] Skill folder created at `~/.claude/skills/incubator-[name]/`
-- [ ] SKILL.md created with correct project config
-- [ ] voice-patterns.md created with project-specific triggers
-- [ ] Search test passed
-- [ ] Fetch test passed
-- [ ] Skill trigger test passed
-- [ ] Update test passed
+```
+/capture       # Phase 1: Capture the idea
+/expand        # Phase 2: Answer 6 macro questions
+/specify       # Phase 3: Generate PRD
+/architect     # Phase 4: Tech decisions
+/configure     # Phase 5: Claude Code setup
+/seed          # Phase 6: Generate project
+```
+
+### Advancing Phases
+
+```
+/advance       # Check gates and advance if ready
+```
+
+Each phase has gate criteria that must be met before advancing.
+
+## The 7-Phase Workflow
+
+| Phase | Name | What Happens | Gate Criteria |
+|-------|------|--------------|---------------|
+| 0 | BRAINDUMP | Process accumulated materials | `extracted-insights.md` exists |
+| 1 | CAPTURE | Get core idea out | THE IDEA has one-liner + insight |
+| 2 | EXPAND | 6 macro questions | `expansion.md` complete |
+| 3 | SPECIFY | PRD generation | PRD approved by user |
+| 4 | ARCHITECT | Tech decisions | Architecture approved |
+| 5 | CONFIGURE | Claude Code setup | Configuration approved |
+| 6 | SEED | Generate scaffold | All files generated |
+
+## Directory Structure After Setup
+
+```
+my-project-planning/
+├── CLAUDE.md                 # Project instructions (from template)
+├── status.json               # Local state tracking
+├── [project-name]-skill.zip  # Voice skill for mobile
+├── .claude/
+│   └── commands/             # 10 slash commands
+├── braindump/
+│   ├── README.md
+│   └── source-materials/     # Put Phase 0 materials here
+├── spec/                     # PRD and architecture docs go here
+├── docs/                     # Reference documentation
+├── notion-template/
+│   └── design-doc.md         # Notion template reference
+└── skill-template/           # Skill templates (used by setup)
+```
+
+## Mobile/Voice Workflow
+
+If you're using Claude on mobile or web (without MCP):
+
+1. **Upload the skill ZIP** to Claude's skill library
+2. **Say**: "Let's work on [Project Name]"
+3. **Claude outputs** paste-ready markdown
+4. **Copy and paste** into your Notion page
+
+The skill maintains the same phase structure and directive UX.
+
+## Multiple Projects
+
+Each project gets its own repository from the template. This keeps:
+- State isolated per project
+- Git history clean
+- Easy archiving when complete
+
+To start another project, simply create a new repository from the template.
+
+## Troubleshooting
+
+### "Page not found" in Claude Code
+
+1. Verify the page ID in `status.json`
+2. Check Notion MCP server is configured
+3. Run: `mcp__notion__notion-fetch(id="YOUR_PAGE_ID")`
+
+### Slash commands not working
+
+1. Ensure `.claude/commands/` exists
+2. Restart Claude Code
+3. Commands should appear with `/` prefix
+
+### Setup script fails
+
+1. Ensure you have write permissions
+2. Check git remote is configured
+3. Run manually: `cat notion-template/design-doc.md` to get template content
+
+## Resetting a Project
+
+To start over:
+
+```bash
+# Reset status.json to Phase 0/1
+cat > status.json << 'EOF'
+{
+  "projectName": "Your Project",
+  "notionPageId": "YOUR_PAGE_ID",
+  "currentPhase": 1,
+  "phaseName": "CAPTURE",
+  "created": "2026-01-07",
+  "lastSession": null
+}
+EOF
+
+# Clear the Notion page and paste template fresh
+```
+
+## Next Steps
+
+After setup, run `/whats-next` to get your first directive action. The system will guide you through each phase.

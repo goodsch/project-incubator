@@ -6,7 +6,8 @@ Rules and principles for building and extending Project Incubator.
 
 ### 1. Notion is the Source of Truth
 - All project state lives in Notion pages
-- Claude Code reads state at session start, writes state on sync
+- `status.json` is local cache only - Notion is authoritative
+- Claude reads state at session start, writes on sync
 - Never rely on conversation history as persistent state
 
 ### 2. Use Working MCP Tools
@@ -16,29 +17,47 @@ Rules and principles for building and extending Project Incubator.
 ✅ Use: mcp__notion__notion-update-page
 ✅ Use: mcp__notion__notion-create-pages
 
-❌ Avoid: mcp__notionApi__ (broken JSON stringification - issue #3084)
+❌ Avoid: mcp__notionApi__ (broken JSON stringification)
 ```
 
-### 3. Synthesis Over Transcription
+### 3. Directive, Not Interrogative
+- **Wrong**: "What would you like to work on?"
+- **Right**: "The next step is to define your core idea. Start with 'It's a...'"
+
+Every interaction should tell the user what to do, not ask what they want.
+
+### 4. Gate-Checked Progression
+Phases cannot be skipped. Each phase has explicit gate criteria:
+
+| Phase | Gate Criteria |
+|-------|---------------|
+| 0 → 1 | `extracted-insights.md` exists OR "skip braindump" |
+| 1 → 2 | THE IDEA has one-liner + core insight |
+| 2 → 3 | `expansion.md` with 6 questions answered |
+| 3 → 4 | PRD exists and user approved |
+| 4 → 5 | Architecture doc exists and user approved |
+| 5 → 6 | Configuration approved |
+
+### 5. Synthesis Over Transcription
 - **Wrong**: Store Q&A transcripts in Notion
 - **Right**: Synthesize understanding into structured sections
 
 Example:
 ```
 Wrong: "Q: What's the problem? A: Users can't find their notes"
-Right: "The core pain is discoverability - users capture prolifically but can't surface relevant notes when needed."
+Right: "The core pain is discoverability - users capture prolifically but can't surface relevant notes."
 ```
 
-### 4. Always Provide Orientation
+### 6. Always Provide Orientation
 Every session start must show:
-- Current status/phase
-- Summary of what exists
+- Current phase (number and name)
+- Phase progress (what's complete, what's current)
 - Clear next action
 
-### 5. Confirm Before Updating
+### 7. Confirm Before Updating Notion
 Never write to Notion without explicit confirmation:
 ```
-"Based on our discussion, I'd update THE IDEA section:
+"I'd update THE IDEA section:
 
 Current: [existing text]
 Proposed: [new text]
@@ -46,129 +65,118 @@ Proposed: [new text]
 Confirm this update?"
 ```
 
-### 6. Support Both Modes
+### 8. ADHD-Friendly Responses
+- Single clear action (not a list of options)
+- Specific starting point ("Start with...")
+- No cognitive overhead
+- Voice-readable (short sentences)
 
-**GUIDED Mode** (structured phases):
-- Ask one question at a time
-- Wait for answer before next question
-- Synthesize after each phase
+## The 7-Phase Workflow
 
-**CONVERSATIONAL Mode** (free exploration):
-- Follow user's train of thought
-- Track which sections apply
-- Propose synthesis when understanding crystallizes
-
-### 7. Graceful Degradation for Mobile
-When MCP isn't available (Claude web/app), output paste-ready format:
-```markdown
-## Session Capture: [Project]
-📅 [Date]
-
-**NEW COMPONENT:**
-| Component | Role | Status |
-|-----------|------|--------|
-| [name] | [role] | idea |
-
----
-*Paste into [Project] Design Doc in Notion*
-```
+| Phase | Name | Purpose | Output |
+|-------|------|---------|--------|
+| 0 | BRAINDUMP | Process accumulated materials | `extracted-insights.md` |
+| 1 | CAPTURE | Get core idea with zero friction | THE IDEA section |
+| 2 | EXPAND | 6 macro questions via dialogue | `expansion.md` |
+| 3 | SPECIFY | Generate PRD | `spec/prd-v*.md` |
+| 4 | ARCHITECT | Tech decisions + trade-offs | `spec/architecture.md` |
+| 5 | CONFIGURE | Claude Code setup | `config/` folder |
+| 6 | SEED | Generate project scaffold | `output/` folder |
 
 ## Page Structure Rules
 
 ### Required Sections
-Every project Design Doc must have:
+
+Every Design Doc must have:
 
 | Section | Purpose | Update Frequency |
 |---------|---------|------------------|
-| PROJECT SNAPSHOT | Orientation | Every session |
-| THE IDEA | Captured essence | Early, then stable |
-| SYSTEM OVERVIEW | The whole | After scoping |
-| COMPONENTS | The parts | Progressive |
-| RELATIONSHIPS | Connections | After components |
-| DECISIONS LOG | What's locked | When decisions made |
+| PROJECT SNAPSHOT | Status, phase, progress | Every session |
+| THE IDEA | Captured essence | Phase 1, then stable |
+| SYSTEM OVERVIEW | Purpose, scope, boundaries | Phase 2 |
+| COMPONENTS | The parts and roles | Phase 2-3 |
+| CONTEXT | Raw thoughts and notes | Ongoing |
 | OPEN QUESTIONS | Unknowns | Ongoing |
-| NEXT ACTIONS | Momentum | Every session |
-| SESSION LOG | Audit trail | Every session |
+| SPECIFICATION | PRD content | Phase 3 |
+| ARCHITECTURE | Tech decisions | Phase 4 |
+| CONFIGURATION | Claude Code setup | Phase 5 |
+| SEED OUTPUT | Generated scaffold | Phase 6 |
 
-### Table Formats
-Use consistent table structures for AI parseability:
+### Phase Progress Table
 
-**Components:**
 ```markdown
-| Component | Role | Inputs | Outputs | Status |
-|-----------|------|--------|---------|--------|
+| Phase | Name | Status |
+|-------|------|--------|
+| 0 | BRAINDUMP | ⏭️ skipped |
+| 1 | CAPTURE | ✅ complete |
+| 2 | EXPAND | → in_progress |
+| 3 | SPECIFY | ○ pending |
+| 4 | ARCHITECT | ○ pending |
+| 5 | CONFIGURE | ○ pending |
+| 6 | SEED | ○ pending |
 ```
 
-**Decisions:**
-```markdown
-| Decision | Options | Chosen | Rationale | Date |
-|----------|---------|--------|-----------|------|
-```
+Status symbols:
+- ✅ = Complete
+- → = Current (in progress)
+- ○ = Pending
+- ⏭️ = Skipped
+- ⏸️ = Paused
 
-## Skill File Rules
+## Slash Command Rules
 
 ### Location
 ```
-~/.claude/skills/incubator-[projectname]/
-├── SKILL.md           # Main skill definition
-├── voice-patterns.md  # Voice command reference
-└── notion-template.md # Backup template for manual creation
+.claude/commands/
+├── braindump.md      # Phase 0
+├── capture.md        # Phase 1
+├── expand.md         # Phase 2
+├── specify.md        # Phase 3
+├── architect.md      # Phase 4
+├── configure.md      # Phase 5
+├── seed.md           # Phase 6
+├── status.md         # Show status
+├── advance.md        # Gate-checked advance
+└── whats-next.md     # Directive next step
 ```
 
-### SKILL.md Structure
+### Command Structure
 ```yaml
 ---
-name: incubator-[projectname]
-description: Voice-based project planning for [Project]. Use when user says "let's work on [Project]"...
+name: command-name
+description: Brief description shown in help
 ---
 
-# [Project] - Project Design Doc
+# /command-name - Title
 
-## Project Configuration
-project_name: "[Project]"
-hub_page_id: "[parent page id]"
-project_page_id: "[design doc page id]"
+[Instructions for Claude]
 
-## The Project Design Doc Model
-[Explanation of approach]
+## Process
+1. Step one
+2. Step two
 
-## Guided Phases
-[Phase definitions with questions]
+## Output Format
+[Expected output structure]
 
-## Two Modes of Operation
-[GUIDED vs CONVERSATIONAL]
-
-## Notion MCP Tools
-[Tool reference]
-
-## Session Start
-[What to do when skill triggers]
-
-## Synthesis Triggers
-[When to propose updates]
-
-## Quality Standards
-[Push for specificity, systems thinking prompts]
-
-## Mobile Capture Format
-[Paste-ready output template]
+## Gate Criteria (for phase commands)
+[What must be true to complete this phase]
 ```
 
 ## Quality Rules
 
 ### Push for Specificity
+
 | Vague Input | Push Back |
 |-------------|-----------|
 | "It handles data" | "What kind of data? From where to where?" |
 | "Users interact" | "Which users? Doing what specifically?" |
 | "It's connected" | "How? API? Event? Direct call?" |
-| "Sometimes" | "How often? Daily? Weekly?" |
 
 ### Systems Thinking Prompts
+
 Use these to deepen understanding:
 - "If I removed [component], what breaks?"
 - "What's the boundary between [A] and [B]?"
-- "Where does this fit in the bigger picture?"
 - "What does [component] need to work? What does it produce?"
 
 ### Synthesis Quality
@@ -177,16 +185,32 @@ Use these to deepen understanding:
 - Connect points into coherent understanding
 - Preserve specific examples and numbers
 
+## Mobile Workflow Rules
+
+When MCP isn't available, output paste-ready format:
+
+```markdown
+📋 UPDATE FOR NOTION
+
+**Add to [SECTION]:**
+[Content to paste]
+
+---
+Paste into [Project] Design Doc in Notion
+```
+
 ## Testing Rules
 
-### Before Deploying a New Skill
-1. Test search: Can AI find the page?
-2. Test fetch: Can AI read the page structure?
-3. Test update: Can AI modify a section?
-4. Test session start: Does orientation display correctly?
-5. Test synthesis: Does the update confirmation flow work?
+### Before Deploying Changes
+
+1. Test `/status` shows correct phase
+2. Test `/whats-next` gives appropriate directive
+3. Test `/advance` checks gates correctly
+4. Test phase command triggers right workflow
+5. Test Notion updates apply correctly
 
 ### Notion Update Testing
+
 ```python
 # Test replace_content_range
 mcp__notion__notion-update-page(
@@ -201,21 +225,58 @@ mcp__notion__notion-update-page(
 
 ## Anti-Patterns to Avoid
 
-### ❌ Don't Store Conversation History
-The page should reflect current understanding, not how you got there.
+### ❌ Don't Ask Open Questions
+"What would you like?" → Tell them the next step.
+
+### ❌ Don't Skip Gates
+Each phase has criteria for a reason. Enforce them.
 
 ### ❌ Don't Skip Confirmation
 Always show proposed changes and wait for explicit "yes".
 
-### ❌ Don't Overwhelm with Questions
-GUIDED mode: One question at a time.
-CONVERSATIONAL mode: Listen, then synthesize.
+### ❌ Don't Overwhelm
+One action at a time. Single focus.
 
 ### ❌ Don't Forget Mobile Users
 Always have a paste-ready fallback format.
 
 ### ❌ Don't Use Broken MCP Tools
-Stick to `mcp__notion__` namespace, avoid `mcp__notionApi__`.
+Stick to `mcp__notion__` namespace.
 
 ### ❌ Don't Leave State Ambiguous
-PROJECT SNAPSHOT should always be current and actionable.
+PROJECT SNAPSHOT must always be current and actionable.
+
+## File Naming Conventions
+
+### Spec Documents
+```
+spec/prd-v1.md        # First PRD version
+spec/prd-v2.md        # Revised PRD
+spec/architecture.md  # Architecture document
+```
+
+### Braindump Materials
+```
+braindump/source-materials/    # Raw input files
+braindump/extracted-insights.md # Processed output
+braindump/dream-synthesis.md   # Creative synthesis
+```
+
+### Config Files
+```
+config/claude-md-content.md    # CLAUDE.md draft
+config/skills.md               # Skills list
+config/commands.md             # Commands list
+config/agents.md               # Agents list
+```
+
+### Output (Phase 6)
+```
+output/
+├── CLAUDE.md
+├── CONTEXT.md
+├── README.md
+├── .claude/
+├── docs/
+└── src/
+```

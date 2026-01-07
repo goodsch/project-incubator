@@ -1,6 +1,18 @@
 # Voice Patterns Reference
 
-Comprehensive reference for voice commands across all Project Incubator skills.
+Voice commands and patterns for Project Incubator, optimized for mobile/web Claude usage.
+
+## Core Principle: Directive UX
+
+Project Incubator uses **directive** language, not interrogative:
+
+| Instead of... | Say... |
+|---------------|--------|
+| "What would you like to do?" | "Here's what we're doing next" |
+| "How should we proceed?" | "The next step is..." |
+| "What's on your mind?" | "Tell me your idea in one sentence" |
+
+The system tells you what to do - you don't have to decide.
 
 ## Session Triggers
 
@@ -12,44 +24,21 @@ These phrases activate a project skill:
 | "Continue [Project]" | Same |
 | "[Project] planning" | Same |
 | "Work on [Project]" | Same |
-| "Open [Project]" | Same |
+| "What's next for [Project]" | Show next action |
 
-## Mode Selection
+## Phase Commands
 
-### GUIDED Mode
-Structured questions through phases.
+When using Claude Code, these map to slash commands:
 
-| Pattern | Result |
-|---------|--------|
-| "Guide me through it" | Enter GUIDED mode |
-| "Walk me through" | Same |
-| "Start from scratch" | GUIDED from Phase 1 |
-| "Let's do this step by step" | Same |
-
-### CONVERSATIONAL Mode
-Free exploration with synthesis triggers.
-
-| Pattern | Result |
-|---------|--------|
-| "Let's just talk about it" | Enter CONVERSATIONAL |
-| "Let me think out loud" | Same |
-| "I've been thinking about..." | Triggers CONVERSATIONAL |
-| "Actually..." | Same |
-
-## Phase Navigation
-
-| Pattern | Phase |
-|---------|-------|
-| "Let's work on the idea" | 1: CAPTURE |
-| "What's the core idea?" | Same |
-| "Define the scope" | 2: SCOPE |
-| "What's in and out?" | Same |
-| "Break it into pieces" | 3: DECOMPOSE |
-| "What are the components?" | Same |
-| "How do the parts connect?" | 4: CONNECT |
-| "Show me the relationships" | Same |
-| "What's next?" | 5: PLAN |
-| "What should I do now?" | Same |
+| Voice Pattern | Slash Command | Phase |
+|---------------|---------------|-------|
+| "Let's start with braindump" | `/braindump` | 0 |
+| "Capture my idea" | `/capture` | 1 |
+| "Let's expand on this" | `/expand` | 2 |
+| "Time to specify" | `/specify` | 3 |
+| "Design the architecture" | `/architect` | 4 |
+| "Configure the project" | `/configure` | 5 |
+| "Generate the project" | `/seed` | 6 |
 
 ## Status Queries
 
@@ -57,31 +46,69 @@ Free exploration with synthesis triggers.
 |---------|--------|
 | "What's the status?" | Show PROJECT SNAPSHOT |
 | "Where are we?" | Show current phase + progress |
-| "What do we have?" | Summarize all sections |
-| "Read back [section]" | Read specific section |
-| "Show me the components" | Read COMPONENTS |
-| "What's decided?" | Show DECISIONS LOG |
-| "What's still open?" | Show OPEN QUESTIONS |
-| "What's the next action?" | Show NEXT ACTIONS |
+| "What phase are we in?" | Show phase number and name |
+| "What's next?" | Show next directive action |
+| "Can we advance?" | Check gate criteria |
 
-## Sync Commands
+## Phase-Specific Responses
 
-| Pattern | Action |
-|---------|--------|
-| "Sync to Notion" | Force synthesis + update |
-| "Update the doc" | Same |
-| "Save that" | Synthesize recent discussion |
-| "Update [section]" | Synthesize specific section |
+### Phase 0: BRAINDUMP
 
-### Adding Specific Items
+**Directive prompts:**
+- "Add materials to braindump/source-materials/"
+- "Run /braindump to process your materials"
+- "Skip braindump and run /capture to start fresh"
 
-| Pattern | Action |
-|---------|--------|
-| "Add that as a component" | Add to COMPONENTS table |
-| "That's a decision" | Add to DECISIONS LOG |
-| "That's a question" | Add to OPEN QUESTIONS |
-| "Add that to next actions" | Add to NEXT ACTIONS |
-| "Log this session" | Add to SESSION LOG |
+### Phase 1: CAPTURE
+
+**Directive prompts:**
+- "Tell me your idea in 2-3 sentences"
+- "Complete this: 'It's a [thing] that [does what]'"
+- "What triggered this idea?"
+- "What's the non-obvious insight?"
+
+### Phase 2: EXPAND
+
+**The 6 Macro Questions:**
+1. "Who is the primary user?"
+2. "What is the core problem?"
+3. "What does success look like?"
+4. "What are the boundaries?"
+5. "What are the key components?"
+6. "What are the main risks?"
+
+**Directive prompts:**
+- "Answer question 1: Who is the primary user?"
+- "Define 3-5 essential features"
+- "What's explicitly OUT of scope?"
+
+### Phase 3: SPECIFY
+
+**Directive prompts:**
+- "Review the Overview section"
+- "Add acceptance criteria to Feature X"
+- "Approve the PRD or note changes"
+
+### Phase 4: ARCHITECT
+
+**Directive prompts:**
+- "Choose the project type"
+- "Review the trade-off analysis"
+- "Approve the architecture or note concerns"
+
+### Phase 5: CONFIGURE
+
+**Directive prompts:**
+- "Review the CLAUDE.md draft"
+- "Confirm the commands list"
+- "Approve the configuration"
+
+### Phase 6: SEED
+
+**Directive prompts:**
+- "Run /seed to generate the project"
+- "Copy output/ to your projects folder"
+- "Start building!"
 
 ## Confirmation & Rejection
 
@@ -90,10 +117,10 @@ Free exploration with synthesis triggers.
 | Phrase | Meaning |
 |--------|---------|
 | "Yes" / "Yeah" / "Yep" | Confirm |
+| "Approved" | Strong confirm for documents |
 | "That's it" / "Exactly" | Strong confirm |
-| "Perfect" / "Nailed it" | Confirm enthusiastically |
-| "Close enough" | Weak confirm, proceed |
 | "Go ahead" | Confirm action |
+| "Looks good" | Approve proposed change |
 
 ### Rejection
 
@@ -102,12 +129,12 @@ Free exploration with synthesis triggers.
 | "No" / "Nope" | Reject |
 | "Not quite" | Needs refinement |
 | "Let me try again" | Will provide better input |
-| "That's not what I meant" | Misunderstanding |
 | "Wait" / "Hold on" | Pause, reconsider |
+| "Change X to Y" | Specific correction |
 
 ## Refinement Signals
 
-AI should detect these as cues to explore further or revise:
+AI detects these as cues to explore or revise:
 
 | Signal | Meaning |
 |--------|---------|
@@ -116,83 +143,71 @@ AI should detect these as cues to explore further or revise:
 | "The real problem is..." | Core shift |
 | "It's more like..." | Refinement |
 | "I just realized..." | New insight |
-| "No wait..." | Correction coming |
-| "Let me rephrase..." | Better articulation |
 
 ## Session Management
 
 | Pattern | Action |
 |---------|--------|
-| "We're done for now" | Final sync, end session |
-| "That's all for today" | Same |
+| "We're done for now" | Save state, end session |
 | "Pause here" | Save state, can resume |
-| "Let's stop" | End without final sync |
-| "Quick note: [idea]" | Capture to scratchpad |
+| "Sync to Notion" | Force update to Notion |
+| "Save that" | Synthesize and save recent discussion |
 
-## Special Commands
+## Mobile Workflow (No MCP)
 
-| Pattern | Action |
-|---------|--------|
-| "Start a new project" | Create new Design Doc |
-| "Show all projects" | List projects in hub |
-| "Archive this" | Move to archive (manual) |
-| "What can I say?" | Show voice commands |
+When using Claude web/mobile app, the skill outputs paste-ready markdown:
 
-## Response Style Guidelines
+```
+📋 UPDATE FOR NOTION
 
-### Keep It Short (Voice-Optimized)
+Add to PROJECT SNAPSHOT:
+| **Phase** | 2 - EXPAND (in_progress) |
+
+Add to COMPONENTS:
+| Auth Layer | Handle authentication | → |
+
+---
+Paste into your Design Doc in Notion
+```
+
+User then:
+1. Opens Notion on mobile
+2. Navigates to project page
+3. Edits relevant section
+4. Pastes the formatted content
+
+## Response Style (For AI)
+
+### Keep It Short
+- Voice users can't scroll
 - Confirmations: 1 sentence max
-- Synthesis proposals: Key points only
-- Questions: Question + brief context
+- Questions: Question + brief context only
 
-### Always Confirm Changes
-Before any Notion update:
+### Always Give Direction
+- End every response with a clear next action
+- Use imperative mood: "Do X" not "You might want to X"
+- Single action, not a list
+
+### ADHD-Friendly
+- One thing at a time
+- Specific starting point ("Start with...")
+- No cognitive overhead
+- Can be voice-read easily
+
+## When Stuck
+
+If genuinely blocked, present options clearly:
+
 ```
-"I'd update THE IDEA section:
+🚧 BLOCKED
 
-Current: [existing]
-Proposed: [new]
+[Explain the blocker]
 
-Confirm?"
-```
+Options to unblock:
+1. [Option A - specific action]
+2. [Option B - specific action]
 
-### Handle Uncertainty
-- "I want to capture more before updating"
-- "Want to keep exploring, or save what we have?"
-- "I'm not sure I understood - can you clarify?"
-
-## Context-Aware Behavior
-
-### New Session
-```
-"[Project] - picking up where we left off.
-
-Status: [status] | Phase: [phase]
-Last touched: [date]
-
-Current state:
-- THE IDEA: [summary]
-- COMPONENTS: [count] defined
-- OPEN QUESTIONS: [count]
-
-Next action: [from doc]
-
-Continue with [phase], or explore something else?"
+Which unblocks you faster?
 ```
 
-### After Long Exploration
-```
-"We've covered a lot. I'm seeing updates for:
-- THE IDEA: refined core insight
-- COMPONENTS: 2 new components
-- DECISIONS: 1 decision made
-
-Want me to sync these to Notion?"
-```
-
-### Phase Completion
-```
-"THE IDEA section is solid now. Ready to move to SCOPE?
-
-Or we can refine this more - your call."
-```
+Only ask a question when there's a real decision to make.
