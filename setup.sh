@@ -140,6 +140,10 @@ if [ -z "$NOTION_TOKEN" ]; then
     PAGE_ID_CLEAN=$(echo "$PAGE_ID" | tr -d '-')
     PAGE_URL="https://www.notion.so/${PAGE_ID_CLEAN}"
 else
+    # Default hub page - set yours here or override with NOTION_HUB_PAGE_ID env var
+    PARENT_PAGE_ID="${NOTION_HUB_PAGE_ID:-2e1ca94098f2817594b0ecc5e2620966}"
+    PARENT_PAGE_ID_CLEAN=$(echo "$PARENT_PAGE_ID" | tr -d '-')
+
     echo -e "${CYAN}   Creating page via Notion API...${NC}"
 
     # Build the API request with blocks for the template
@@ -149,7 +153,7 @@ else
         -H "Notion-Version: 2022-06-28" \
         -d @- << PAYLOAD
 {
-  "parent": {"type": "workspace", "workspace": true},
+  "parent": {"type": "page_id", "page_id": "$PARENT_PAGE_ID_CLEAN"},
   "properties": {
     "title": {
       "title": [{"type": "text", "text": {"content": "$PROJECT_NAME - Design Doc"}}]
