@@ -5,7 +5,7 @@
 #
 # Features:
 # - Auto-detects project name from git repo
-# - Creates Notion Design Doc (auto via Claude or manual)
+# - Auto-creates Notion Design Doc via Claude CLI
 # - Creates voice skill (+ ZIP for web upload)
 # - Installs slash commands for phase workflow
 # - Sets up braindump folder for materials
@@ -14,17 +14,25 @@
 
 set -e
 
-echo ""
-echo "🌱 Project Incubator Setup"
-echo "=========================="
-echo ""
-
 # Color codes
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
+CYAN='\033[0;36m'
 NC='\033[0m' # No Color
+
+echo ""
+echo "🌱 Project Incubator Setup"
+echo "=========================="
+echo ""
+
+# Check for Claude CLI
+if ! command -v claude &> /dev/null; then
+    echo -e "${RED}❌ Claude CLI not found${NC}"
+    echo "   Install from: https://docs.anthropic.com/claude-code"
+    exit 1
+fi
 
 # Check if already set up
 if [ -f "CLAUDE.md" ] && [ ! -f "CLAUDE.md.template" ]; then
@@ -76,40 +84,98 @@ echo "   Slug: $PROJECT_SLUG"
 echo ""
 
 # ============================================
-# STEP 2: Notion Page Setup
+# STEP 2: Auto-create Notion Page
 # ============================================
-echo -e "${BLUE}Step 2: Notion Setup${NC}"
-echo "--------------------"
-echo ""
-echo "You need a Design Doc page in Notion."
-echo ""
-echo -e "${YELLOW}Option 1: Auto-create with Claude Code${NC}"
-echo "   Open Claude Code in this directory and say:"
-echo "   'Create a Design Doc for $PROJECT_NAME in Notion'"
-echo ""
-echo -e "${YELLOW}Option 2: Manual creation${NC}"
-echo "   1. Create a page titled '$PROJECT_NAME - Design Doc'"
-echo "   2. Copy contents from notion-template/design-doc.md"
-echo "   3. Replace {{PROJECT_NAME}} with '$PROJECT_NAME'"
+echo -e "${BLUE}Step 2: Creating Notion Design Doc${NC}"
+echo "-----------------------------------"
 echo ""
 
-read -p "Press Enter when the Notion page is created..."
-echo ""
+# Prepare the template content
+TEMPLATE_CONTENT=$(cat notion-template/design-doc.md | sed "s/{{PROJECT_NAME}}/$PROJECT_NAME/g")
+TODAY=$(date +%Y-%m-%d)
+TEMPLATE_CONTENT=$(echo "$TEMPLATE_CONTENT" | sed "s/{{DATE}}/$TODAY/g")
 
-# Get page ID
-echo "Enter the Notion page ID."
-echo "(Find it in the URL: notion.so/Page-Title-XXXXXXXX)"
-echo "(It's the 32-character ID at the end)"
-read -p "Page ID: " PAGE_ID
+echo -e "${CYAN}   Creating page in Notion...${NC}"
 
-if [ -z "$PAGE_ID" ]; then
-    echo -e "${RED}❌ Page ID is required${NC}"
-    exit 1
+# Create a temporary file with the prompt
+PROMPT_FILE=$(mktemp)
+cat > "$PROMPT_FILE" << EOF
+Create a new Notion page with the title "$PROJECT_NAME - Design Doc".
+
+Use the mcp__notion__notion-create-pages tool with this content:
+
+$TEMPLATE_CONTENT
+
+After creating the page, respond with ONLY the page ID in this exact format:
+PAGE_ID: <the-page-id>
+
+Do not include any other text, explanation, or formatting. Just the PAGE_ID line.
+EOF
+
+# Run Claude to create the page and capture output
+CLAUDE_OUTPUT=$(claude -p "$(cat "$PROMPT_FILE")" 2>&1) || {
+    echo -e "${RED}❌ Failed to create Notion page${NC}"
+    echo "   Error: $CLAUDE_OUTPUT"
+    echo ""
+    echo -e "${YELLOW}Falling back to manual mode...${NC}"
+    rm -f "$PROMPT_FILE"
+
+    echo ""
+    echo "Option 1: Create page manually"
+    echo "   1. Create a page titled '$PROJECT_NAME - Design Doc'"
+    echo "   2. Copy contents from notion-template/design-doc.md"
+    echo "   3. Replace {{PROJECT_NAME}} with '$PROJECT_NAME'"
+    echo ""
+    read -p "Press Enter when the Notion page is created..."
+    echo ""
+    echo "Enter the Notion page ID."
+    echo "(Find it in the URL: notion.so/Page-Title-XXXXXXXX)"
+    read -p "Page ID: " PAGE_ID
+
+    if [ -z "$PAGE_ID" ]; then
+        echo -e "${RED}❌ Page ID is required${NC}"
+        exit 1
+    fi
+
+    PAGE_ID_CLEAN=$(echo "$PAGE_ID" | tr -d '-')
+    PAGE_URL="https://www.notion.so/${PAGE_ID_CLEAN}"
+}
+
+rm -f "$PROMPT_FILE"
+
+# Parse page ID from Claude output if we got it
+if [ -z "$PAGE_ID_CLEAN" ]; then
+    PAGE_ID=$(echo "$CLAUDE_OUTPUT" | grep -o 'PAGE_ID: [a-f0-9-]*' | sed 's/PAGE_ID: //' | head -1)
+
+    if [ -z "$PAGE_ID" ]; then
+        # Try alternative patterns
+        PAGE_ID=$(echo "$CLAUDE_OUTPUT" | grep -oE '[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}' | head -1)
+    fi
+
+    if [ -z "$PAGE_ID" ]; then
+        # Try without dashes
+        PAGE_ID=$(echo "$CLAUDE_OUTPUT" | grep -oE '[a-f0-9]{32}' | head -1)
+    fi
+
+    if [ -z "$PAGE_ID" ]; then
+        echo -e "${RED}❌ Could not parse page ID from Claude response${NC}"
+        echo "   Response was:"
+        echo "$CLAUDE_OUTPUT" | head -20
+        echo ""
+        echo "Enter the Notion page ID manually:"
+        read -p "Page ID: " PAGE_ID
+
+        if [ -z "$PAGE_ID" ]; then
+            echo -e "${RED}❌ Page ID is required${NC}"
+            exit 1
+        fi
+    fi
+
+    PAGE_ID_CLEAN=$(echo "$PAGE_ID" | tr -d '-')
+    PAGE_URL="https://www.notion.so/${PAGE_ID_CLEAN}"
 fi
 
-# Clean page ID (remove dashes if present)
-PAGE_ID_CLEAN=$(echo "$PAGE_ID" | tr -d '-')
-PAGE_URL="https://www.notion.so/${PAGE_ID_CLEAN}"
+echo -e "   ${GREEN}✓${NC} Created: $PROJECT_NAME - Design Doc"
 echo -e "   ${GREEN}✓${NC} Page ID: ${PAGE_ID_CLEAN:0:8}..."
 echo "   URL: $PAGE_URL"
 echo ""
@@ -175,7 +241,6 @@ touch spec/.gitkeep
 echo -e "   ${GREEN}✓${NC} Created: spec/"
 
 # Create status.json
-TODAY=$(date +%Y-%m-%d)
 TIMESTAMP=$(date -Iseconds)
 
 cat > status.json << EOF
@@ -300,214 +365,9 @@ echo "   2. Upload: $ZIP_FILE"
 echo ""
 
 # ============================================
-# STEP 6: Install Slash Commands
+# STEP 6: Update CLAUDE.md
 # ============================================
-echo -e "${BLUE}Step 6: Installing Slash Commands${NC}"
-echo "----------------------------------"
-
-COMMANDS_DIR=".claude/commands"
-mkdir -p "$COMMANDS_DIR"
-
-# Create /status command
-cat > "$COMMANDS_DIR/status.md" << 'EOF'
----
-name: status
-description: Show current project status from Notion and local state
----
-
-# /status - Project Status
-
-Show the current state of this project.
-
-## Execution
-
-1. Read status.json for local state
-2. Fetch the Notion Design Doc using `mcp__notion__notion-fetch`
-3. Parse PROJECT SNAPSHOT section
-
-## Output Format
-
-```
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-PROJECT: {name}
-
-  Status: {status}
-  Phase: {phase} of 6
-  Last touched: {date}
-
-  ┌────────────────────────────────────────────────┐
-  │ PHASE PROGRESS                                  │
-  ├────────────────────────────────────────────────┤
-  │ 0. BRAINDUMP   {✓ or ○ or ⏭}  (optional)       │
-  │ 1. CAPTURE     {✓ or ○ or →}                   │
-  │ 2. EXPAND      {✓ or ○}                        │
-  │ 3. SPECIFY     {✓ or ○}                        │
-  │ 4. ARCHITECT   {✓ or ○}                        │
-  │ 5. CONFIGURE   {✓ or ○}                        │
-  │ 6. SEED        {✓ or ○}                        │
-  └────────────────────────────────────────────────┘
-
-  ⏭️ NEXT: {next action from Notion or status.json}
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-```
-
-Legend:
-- ✓ = Complete
-- → = Current (in progress)
-- ○ = Pending
-- ⏭ = Skipped
-EOF
-
-# Create /advance command
-cat > "$COMMANDS_DIR/advance.md" << 'EOF'
----
-name: advance
-description: Move to the next phase after completing current phase
----
-
-# /advance - Advance to Next Phase
-
-Gate-checked progression through phases.
-
-## Process
-
-1. Read status.json for current phase
-2. Fetch Notion page and verify gate criteria for current phase
-3. If gates passed: advance, update status.json and Notion
-4. If gates not passed: explain what's missing
-
-## Gate Criteria by Phase
-
-### Phase 0 → 1 (Braindump → Capture)
-- Optional phase - can skip with "skip braindump"
-- If used: extracted-insights.md must exist
-
-### Phase 1 → 2 (Capture → Expand)
-- THE IDEA section must have one-liner and core insight
-- At least one entry in OPEN QUESTIONS
-
-### Phase 2 → 3 (Expand → Specify)
-- SYSTEM OVERVIEW must be populated
-- At least 3 components in COMPONENTS table
-- RELATIONSHIPS section has initial mapping
-
-### Phase 3 → 4 (Specify → Architect)
-- PRD or SPEC document exists in spec/
-- Key decisions logged in DECISIONS LOG
-
-### Phase 4 → 5 (Architect → Configure)
-- Architecture document exists
-- Component responsibilities defined
-
-### Phase 5 → 6 (Configure → Seed)
-- Tech stack decisions made
-- Configuration requirements documented
-
-### Phase 6 (Seed) = Final Phase
-- Generates project scaffold
-- Creates buildable project structure
-
-## Output
-
-If gates pass:
-```
-✅ Phase {N} ({name}) complete!
-
-Moving to Phase {N+1}: {next phase name}
-
-{Brief description of next phase}
-
-⏭️ NEXT: {first action for new phase}
-```
-
-If gates fail:
-```
-⚠️ Phase {N} ({name}) not yet complete.
-
-Missing:
-- {item 1}
-- {item 2}
-
-Complete these items, then run /advance again.
-```
-EOF
-
-# Create /whats-next command (orientation)
-cat > "$COMMANDS_DIR/whats-next.md" << 'EOF'
----
-name: whats-next
-description: Directive next step - what to do right now
----
-
-# /whats-next - What's Next
-
-Project Manager mode: Tell the user exactly what to do next.
-
-## Principles
-
-From the analysis docs:
-- DIRECTIVE not interrogative
-- Don't ask "What would you like?" - TELL them the next step
-- "Here is what we're doing next" not "What do you want to do?"
-
-## Execution
-
-1. Read status.json for current phase
-2. Fetch Notion page for current state
-3. Determine the single most important next action
-4. Present it clearly and directly
-
-## Output Format
-
-```
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-⏭️ NEXT STEP
-
-{Clear, specific instruction}
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-```
-
-## Examples
-
-Good (Directive):
-- "Describe your core idea in one sentence. Start with 'It's a...'"
-- "Add 3 components to the table. Start with the most obvious one."
-- "Answer this: What triggered this idea?"
-
-Bad (Interrogative):
-- "What would you like to work on?"
-- "How should we proceed?"
-- "What's on your mind?"
-
-## When Stuck
-
-If genuinely blocked:
-```
-🚧 BLOCKED
-
-{Explain the blocker}
-
-Options to unblock:
-1. {Option A}
-2. {Option B}
-
-Which unblocks you faster?
-```
-
-Only ask a question when there's a real decision to make.
-EOF
-
-echo -e "   ${GREEN}✓${NC} Created: $COMMANDS_DIR/status.md"
-echo -e "   ${GREEN}✓${NC} Created: $COMMANDS_DIR/advance.md"
-echo -e "   ${GREEN}✓${NC} Created: $COMMANDS_DIR/whats-next.md"
-echo ""
-
-# ============================================
-# STEP 7: Update CLAUDE.md
-# ============================================
-echo -e "${BLUE}Step 7: Configuring Workspace${NC}"
+echo -e "${BLUE}Step 6: Configuring Workspace${NC}"
 echo "------------------------------"
 
 sed -e "s/{{PROJECT_NAME}}/$PROJECT_NAME/g" \
@@ -520,10 +380,10 @@ sed -e "s/{{PROJECT_NAME}}/$PROJECT_NAME/g" \
 echo -e "   ${GREEN}✓${NC} Created: CLAUDE.md"
 
 # ============================================
-# STEP 8: Update README.md
+# STEP 7: Update README.md
 # ============================================
 echo ""
-echo -e "${BLUE}Step 8: Updating README${NC}"
+echo -e "${BLUE}Step 7: Updating README${NC}"
 echo "-----------------------"
 
 cat > README.md << EOF
@@ -585,16 +445,16 @@ Or use slash commands:
 
 ---
 
-*Created with [Project Incubator](https://github.com/YOUR_USERNAME/project-incubator)*
+*Created with [Project Incubator](https://github.com/goodsch/project-incubator)*
 EOF
 
 echo -e "   ${GREEN}✓${NC} Created: README.md"
 
 # ============================================
-# STEP 9: Create .env
+# STEP 8: Create .env
 # ============================================
 echo ""
-echo -e "${BLUE}Step 9: Creating Environment Config${NC}"
+echo -e "${BLUE}Step 8: Creating Environment Config${NC}"
 echo "------------------------------------"
 
 cat > .env << EOF
@@ -611,18 +471,17 @@ EOF
 echo -e "   ${GREEN}✓${NC} Created: .env"
 
 # ============================================
-# STEP 10: Cleanup
+# STEP 9: Cleanup
 # ============================================
 echo ""
-echo -e "${BLUE}Step 10: Cleanup${NC}"
-echo "----------------"
+echo -e "${BLUE}Step 9: Cleanup${NC}"
+echo "---------------"
 read -p "Remove template files? (Y/n): " CLEANUP
 
 if [ "$CLEANUP" != "n" ] && [ "$CLEANUP" != "N" ]; then
     rm -f CLAUDE.md.template
     rm -f .env.example
     echo -e "   ${GREEN}✓${NC} Removed: CLAUDE.md.template"
-    echo -e "   ${GREEN}✓${NC} Removed: .env.example"
 else
     echo "   Kept template files for reference"
 fi
@@ -645,9 +504,11 @@ echo "  - CONTEXT.md (session notes)"
 echo "  - .env (environment config)"
 echo "  - braindump/ (raw materials folder)"
 echo "  - spec/ (specifications folder)"
-echo "  - .claude/commands/ (slash commands)"
 echo "  - ~/.claude/skills/incubator-$PROJECT_SLUG/ (voice skill)"
 echo "  - $ZIP_FILE (skill for web upload)"
+echo ""
+echo -e "${BLUE}Notion:${NC}"
+echo "  - Design Doc: $PAGE_URL"
 echo ""
 echo -e "${BLUE}Next steps:${NC}"
 echo ""
@@ -655,38 +516,6 @@ echo "  1. Open Claude Code:"
 echo "     ${GREEN}claude${NC}"
 echo ""
 echo "  2. Start planning:"
-echo "     ${GREEN}\"Let's work on $PROJECT_NAME\"${NC}"
-echo ""
-echo "  3. Or use slash commands:"
-echo "     ${GREEN}/status${NC}     - See current state"
-echo "     ${GREEN}/whats-next${NC} - Get next action"
+echo "     ${GREEN}/whats-next${NC}"
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo ""
-echo "📋 THE FRAMEWORK"
-echo ""
-echo "┌─────────────────────────────────────────────────┐"
-echo "│  Phase 0: BRAINDUMP (optional)                  │"
-echo "│  Process accumulated materials                  │"
-echo "├─────────────────────────────────────────────────┤"
-echo "│  Phase 1: CAPTURE                               │"
-echo "│  Get the core idea out                          │"
-echo "├─────────────────────────────────────────────────┤"
-echo "│  Phase 2: EXPAND                                │"
-echo "│  Explore scope and possibilities                │"
-echo "├─────────────────────────────────────────────────┤"
-echo "│  Phase 3: SPECIFY                               │"
-echo "│  Create detailed requirements (PRD)             │"
-echo "├─────────────────────────────────────────────────┤"
-echo "│  Phase 4: ARCHITECT                             │"
-echo "│  Design system structure                        │"
-echo "├─────────────────────────────────────────────────┤"
-echo "│  Phase 5: CONFIGURE                             │"
-echo "│  Define tech stack and setup                    │"
-echo "├─────────────────────────────────────────────────┤"
-echo "│  Phase 6: SEED                                  │"
-echo "│  Generate buildable project scaffold            │"
-echo "└─────────────────────────────────────────────────┘"
-echo ""
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo ""
