@@ -471,6 +471,10 @@ if [ "$SKILL_CREATED" -eq 1 ]; then
         -e "s/{{PROJECT_SLUG}}/$PROJECT_SLUG/g" \
         -e "s/{{PAGE_ID}}/$PAGE_ID_CLEAN/g" \
         -e "s|{{PAGE_URL}}|$PAGE_URL|g" \
+        -e "s/{{CAPTURE_PAGE_ID}}/${CAPTURE_PAGE_ID_CLEAN:-}/g" \
+        -e "s|{{CAPTURE_PAGE_URL}}|${CAPTURE_PAGE_URL:-}|g" \
+        -e "s/{{SCRATCH_PAGE_ID}}/${SCRATCH_PAGE_ID_CLEAN:-}/g" \
+        -e "s|{{SCRATCH_PAGE_URL}}|${SCRATCH_PAGE_URL:-}|g" \
         -e "s/{{DATE}}/$TODAY/g" \
         skill-template/SKILL.md.template > "$SKILL_DIR/SKILL.md"
 

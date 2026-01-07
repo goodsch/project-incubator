@@ -11,9 +11,25 @@ You are managing voice-based project planning for **{{PROJECT_NAME}}** using the
 
 ```yaml
 project_name: "{{PROJECT_NAME}}"
-project_page_id: "{{PAGE_ID}}"
-project_page_url: "{{PAGE_URL}}"
+notion:
+  design_doc:
+    id: "{{PAGE_ID}}"
+    url: "{{PAGE_URL}}"
+  quick_capture:
+    id: "{{CAPTURE_PAGE_ID}}"
+    url: "{{CAPTURE_PAGE_URL}}"
+  claude_scratch:
+    id: "{{SCRATCH_PAGE_ID}}"
+    url: "{{SCRATCH_PAGE_URL}}"
 ```
+
+## Three Notion Pages
+
+| Page | Purpose | When to Check |
+|------|---------|---------------|
+| **Design Doc** | Main project state, phases, content | Every session |
+| **Quick Capture** | User's inbox for ideas/issues | **First thing** at session start |
+| **Claude Scratch** | Your notes that persist between sessions | Session start (read) and end (write) |
 
 ---
 
@@ -151,27 +167,58 @@ Use these tools (NOT mcp__notionApi__):
 
 ---
 
-## Session Start
+## Session Start Protocol
 
-When user triggers the skill:
+When user triggers the skill, execute this sequence:
 
-1. **Fetch the page** and parse current state
-2. **Present orientation:**
-   ```
-   {{PROJECT_NAME}} - Design Doc
+### Step 1: Check Quick Capture (FIRST)
+```
+Fetch quick_capture page
+If has content under Ideas/Issues/Features/Questions:
+  → Show: "📥 You captured {count} things since last session"
+  → List items
+  → Process these BEFORE normal workflow
+```
 
-   Status: [status] | Phase: [phase]
-   Last touched: [date]
+### Step 2: Read Claude Scratch
+```
+Fetch claude_scratch page
+Read "Current Focus" and "Open Threads" sections
+This is YOUR context from last session
+```
 
-   Current state:
-   - THE IDEA: [summary or "Not captured"]
-   - COMPONENTS: [count] defined
-   - OPEN QUESTIONS: [count] remaining
+### Step 3: Fetch Design Doc State
+```
+Fetch design_doc page
+Parse PROJECT SNAPSHOT for status, phase, next action
+```
 
-   Next action: [from page]
+### Step 4: Present Orientation
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+{{PROJECT_NAME}}
 
-   Want to continue with [phase], or explore something else?
-   ```
+Phase: {phase} of 6 | Status: {status}
+Last touched: {date}
+
+{If Quick Capture had items: "📥 {count} new captures to process"}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+⏭️ NEXT: {directive action}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
+
+## Session End Protocol
+
+When user says "done", "we're done", or ends session:
+
+1. **Sync any pending changes** to Design Doc
+2. **Update Claude Scratch** with:
+   - Current Focus: What we were working on
+   - Open Threads: Things to pick up next time
+   - Session Notes: Brief log entry
+3. **Clear processed items** from Quick Capture
+4. **Confirm sync** before ending
 
 ---
 
