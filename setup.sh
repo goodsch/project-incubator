@@ -34,6 +34,13 @@ if ! command -v claude &> /dev/null; then
     exit 1
 fi
 
+# Check for jq (needed for JSON escaping)
+if ! command -v jq &> /dev/null; then
+    echo -e "${RED}❌ jq not found${NC}"
+    echo "   Install with: sudo apt install jq (Ubuntu) or brew install jq (Mac)"
+    exit 1
+fi
+
 # Check if already set up
 if [ -f "CLAUDE.md" ] && [ ! -f "CLAUDE.md.template" ]; then
     echo -e "${YELLOW}⚠️  This workspace appears to already be set up.${NC}"
@@ -100,20 +107,27 @@ echo -e "${CYAN}   Creating page in Notion...${NC}"
 # Create a temporary file with the prompt
 PROMPT_FILE=$(mktemp)
 cat > "$PROMPT_FILE" << EOF
-Create a new Notion page with the title "$PROJECT_NAME - Design Doc".
+IMPORTANT: Use ONLY the mcp__notion__notion-create-pages tool. Do NOT search or use any other tools.
 
-Use the mcp__notion__notion-create-pages tool with this content:
+Create a standalone Notion page (no parent - workspace level) with these exact parameters:
 
-$TEMPLATE_CONTENT
+{
+  "pages": [
+    {
+      "properties": {"title": "$PROJECT_NAME - Design Doc"},
+      "content": $(echo "$TEMPLATE_CONTENT" | jq -Rs .)
+    }
+  ]
+}
 
-After creating the page, respond with ONLY the page ID in this exact format:
-PAGE_ID: <the-page-id>
+After the page is created, output ONLY this format:
+PAGE_ID: <the-page-id-from-response>
 
-Do not include any other text, explanation, or formatting. Just the PAGE_ID line.
+No explanation. No other text. Just PAGE_ID: followed by the ID.
 EOF
 
-# Run Claude to create the page and capture output
-CLAUDE_OUTPUT=$(claude -p "$(cat "$PROMPT_FILE")" 2>&1) || {
+# Run Claude to create the page - use allowedTools to prevent searching
+CLAUDE_OUTPUT=$(claude -p "$(cat "$PROMPT_FILE")" --allowedTools "mcp__notion__notion-create-pages" 2>&1) || {
     echo -e "${RED}❌ Failed to create Notion page${NC}"
     echo "   Error: $CLAUDE_OUTPUT"
     echo ""
@@ -121,7 +135,12 @@ CLAUDE_OUTPUT=$(claude -p "$(cat "$PROMPT_FILE")" 2>&1) || {
     rm -f "$PROMPT_FILE"
 
     echo ""
-    echo "Option 1: Create page manually"
+    echo -e "${CYAN}Why did auto-create fail?${NC}"
+    echo "   - Notion MCP tools may need permission approval first"
+    echo "   - Run 'claude' interactively and approve Notion tools once"
+    echo "   - Then re-run this setup script"
+    echo ""
+    echo -e "${CYAN}Or create the page manually:${NC}"
     echo "   1. Create a page titled '$PROJECT_NAME - Design Doc'"
     echo "   2. Copy contents from notion-template/design-doc.md"
     echo "   3. Replace {{PROJECT_NAME}} with '$PROJECT_NAME'"
