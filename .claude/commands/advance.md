@@ -1,200 +1,90 @@
 ---
 name: advance
-description: Attempt to advance to the next phase. Runs validation first - blocks if gate criteria not met.
+description: Move to the next phase after completing current phase (gate-checked)
 ---
 
-# /advance
+# /advance - Advance to Next Phase
 
-Attempt to advance to the next phase.
+Gate-checked progression through phases.
 
 ## Process
 
-1. **Run /validate first**
-   - If validation fails, show failure message and stop
-   - Cannot advance without passing validation
+1. Read status.json for current phase
+2. Fetch Notion page and verify gate criteria for current phase
+3. If gates passed: advance, update status.json and Notion
+4. If gates not passed: explain what's missing
 
-2. **If validation passes:**
-   - Update status.json with gate passed timestamp
-   - Increment currentPhase
-   - Update phaseName
+## Gate Criteria by Phase
 
-3. **Show transition message**
+### Phase 0 → 1 (Braindump → Capture)
+- Optional phase - can skip with "skip braindump"
+- If used: `braindump/extracted-insights.md` must exist
 
-## Transition Messages
+### Phase 1 → 2 (Capture → Expand)
+- THE IDEA section must have one-liner and core insight
+- CONTEXT.md has captured raw thoughts
+- At least one entry in OPEN QUESTIONS
 
-### Phase 1 → 2 (CAPTURE → EXPAND)
+### Phase 2 → 3 (Expand → Specify)
+- SYSTEM OVERVIEW must be populated
+- At least 3 components in COMPONENTS table
+- `expansion.md` exists with all 6 questions answered
 
+### Phase 3 → 4 (Specify → Architect)
+- PRD exists in `spec/` folder
+- At least 3 features with acceptance criteria
+- User approved the PRD
+
+### Phase 4 → 5 (Architect → Configure)
+- Architecture document exists in `spec/`
+- Trade-off analysis documented
+- Pre-mortem analysis completed
+- User approved architecture
+
+### Phase 5 → 6 (Configure → Seed)
+- `config/` folder has configuration files
+- CLAUDE.md content drafted
+- User approved configuration
+
+### Phase 6 (Seed) = Final Phase
+- Generates project scaffold
+- Creates buildable project structure
+
+## Output
+
+If gates pass:
 ```
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-✅ PHASE 1 (CAPTURE) COMPLETE
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✅ Phase {N} ({name}) complete!
 
-Your idea has been captured!
+Moving to Phase {N+1}: {next phase name}
 
-Advancing to Phase 2: EXPAND
+{Brief description of next phase}
 
-In this phase, we'll explore your idea systematically
-by answering 6 macro questions:
-
-1. Who is the primary user?
-2. What is the core problem?
-3. What does success look like?
-4. What are the essential features?
-5. What is out of scope?
-6. What does this replace/complement?
-
-Run /expand to begin the Socratic dialogue.
-
-Clear Thought tools will be used for:
-- decomposition (breaking down the idea)
-- abstraction-laddering (why vs how)
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-```
-
-### Phase 2 → 3 (EXPAND → SPECIFY)
-
-```
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-✅ PHASE 2 (EXPAND) COMPLETE
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Your idea has been fully explored!
-
-Advancing to Phase 3: SPECIFY
-
-In this phase, we'll transform your expanded
-understanding into a formal PRD with:
-
-- Feature specifications
-- User stories
-- Acceptance criteria
-- Scope boundaries
-
-Run /specify to generate the initial PRD.
-
-Specs will be versioned (v1.md, v2.md, etc.)
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+⏭️ NEXT: {first action for new phase}
 ```
 
-### Phase 3 → 4 (SPECIFY → ARCHITECT)
-
+If gates fail:
 ```
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-✅ PHASE 3 (SPECIFY) COMPLETE
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Your specification is complete!
-
-Advancing to Phase 4: ARCHITECT
-
-In this phase, we'll design the technical
-implementation:
-
-- Project type
-- Tech stack
-- Directory structure
-- Data model
-- External dependencies
-- Deployment model
-
-Run /architect to begin technical design.
-
-Clear Thought tools will be used for:
-- trade-off-matrix (comparing options)
-- pre-mortem (identifying risks)
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-```
-
-### Phase 4 → 5 (ARCHITECT → CONFIGURE)
-
-```
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-✅ PHASE 4 (ARCHITECT) COMPLETE
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Your architecture is designed!
-
-Advancing to Phase 5: CONFIGURE
-
-In this phase, we'll determine the Claude Code
-configuration for your output project:
-
-- CLAUDE.md content
-- Skills to include
-- Commands to create
-- Agents to configure
-- MCP server recommendations
-
-Run /configure to begin configuration design.
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-```
-
-### Phase 5 → 6 (CONFIGURE → SEED)
-
-```
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-✅ PHASE 5 (CONFIGURE) COMPLETE
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Your Claude Code configuration is ready!
-
-Advancing to Phase 6: SEED
-
-In this final phase, we'll generate your
-complete project directory with:
-
-- All configuration files
-- Documentation
-- Source scaffolding
-- Ready-to-use workspace
-
-Run /seed to generate your project!
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-```
-
-### Phase 6 Complete
-
-```
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🎉 PROJECT COMPLETE: {project-name}
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Your project has been fully generated!
-
-Output location:
-output/
-
-Contents:
-- CLAUDE.md (project instructions)
-- README.md (human documentation)
-- .claude/ (skills, commands, agents)
-- docs/ (PRD, architecture, workflow)
-- src/ (source structure)
-
-Next steps:
-1. Copy the output/ directory to your desired location
-2. Run 'claude' in that directory
-3. Start building!
-
-The docs/WORKFLOW.md file has your vibe coding guide.
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-```
-
-## Blocked Advancement
-
-If validation fails:
-
-```
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-❌ CANNOT ADVANCE
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Phase {N} ({PHASE_NAME}) gate criteria not met.
+⚠️ Phase {N} ({name}) not yet complete.
 
 Missing:
-{list of failed checks}
+- {item 1}
+- {item 2}
 
-Complete the requirements above before advancing.
-Run /validate to check your progress.
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Complete these items, then run /advance again.
 ```
+
+## Updating State
+
+When advancing:
+1. Update `status.json`:
+   - `currentPhase`: increment
+   - `phaseName`: new phase name
+   - `phases.{current}.status`: "complete"
+   - `phases.{next}.status`: "in_progress"
+   - `lastSession`: timestamp
+
+2. Update Notion PROJECT SNAPSHOT:
+   - Current Phase row
+   - Phase Progress table
+   - Last touched date

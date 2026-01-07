@@ -1,87 +1,131 @@
 ---
 name: braindump
-description: Start Phase 0 braindump processing. Processes accumulated materials in braindump/ folder through meta-analysis and AI dream phase.
+description: Phase 0 - Process accumulated materials through meta-analysis and creative synthesis (optional phase)
 ---
 
-# /braindump
+# /braindump - Phase 0
 
-Start Phase 0 (optional) braindump processing for this project.
-
-## What This Does
-
-Phase 0 is a two-part process for when you have accumulated materials to process before starting formal capture:
-
-1. **Meta-Analysis**: Extract explicit AND implicit ideas from your materials
-2. **Dream Phase**: AI creative synthesis - novel ideas, unexpected connections
+Process accumulated materials before formal capture.
 
 ## When to Use
 
-- You have notes, thoughts, or AI transcripts about this idea
-- You have reference projects or inspirations to analyze
-- You want AI creative input before your own capture
-- You've been collecting "someday" notes about this concept
+- You have materials in `braindump/source-materials/` to process
+- You want AI creative input before formal capture
+- You've been collecting notes, transcripts, or ideas
 
 ## When to Skip
 
-- Fresh idea with no accumulated materials → go straight to `/capture`
-- You prefer to start with your own raw thoughts first
-
-## Process
-
-### 1. Provide Materials
-
-You'll be asked to provide your brain dump materials:
-- Text files, markdown, documents
-- AI conversation exports (Claude, ChatGPT, Gemini)
-- Voice memo transcriptions
-- Reference project links
-- Screenshots or images with ideas
-- Any unstructured notes
-
-### 2. Meta-Analysis
-
-Claude processes all materials to extract:
-
-**Explicit**: Directly stated ideas, features, goals, technologies
-
-**Implicit**: Underlying motivations, unstated needs, patterns, emotional drivers
-
-### 3. Dream Phase
-
-Claude enters creative mode:
-- Novel feature ideas
-- Unexpected connections
-- "What if..." possibilities
-- Creative design directions
-
-### 4. Outputs Created
-
-```
-braindump/
-├── source-materials/         # Your original files
-├── extracted-insights.md     # Meta-analysis results
-└── dream-synthesis.md        # AI creative exploration
-```
+- Fresh idea with no accumulated materials
+- Prefer to start with raw capture first
+- Just say "skip braindump" or "start with capture"
 
 ## Prerequisites
 
-Place your brain dump materials in the `braindump/` folder before running this command.
+- Materials in `braindump/source-materials/`
+- status.json shows Phase 0
 
-## Example
+## Process
 
-User: `/braindump`
+### 1. Gather Materials
 
-Claude:
+Check `braindump/source-materials/` for:
+- AI conversation exports (ChatGPT, Claude, etc.)
+- Voice memo transcriptions
+- Notes and ideas
+- Reference projects
+- Screenshots with ideas
+
+### 2. Meta-Analysis
+
+**Use Clear Thought for analysis:**
 ```
-Starting Phase 0 (BRAINDUMP) processing.
-
-Found materials in braindump/:
-- notes.md (2.3 KB)
-- chat-export.json (15 KB)
-
-Beginning meta-analysis...
+mcp__clear-thought__mental_models with:
+- decomposition - Break down the material themes
+- abstraction-laddering - Find the "why" behind stated "whats"
 ```
 
-## After Braindump
+Extract:
+- **Explicit elements**: Directly stated ideas, features, goals
+- **Implicit elements**: Underlying motivations, unstated needs, patterns
 
-When Phase 0 is complete, run `/advance` to move to Phase 1 (CAPTURE) where you'll add your own raw thoughts on top of the processed materials.
+### 3. Dream Phase
+
+**Use extended thinking:**
+```
+mcp__clear-thought__thoughtbox with high totalThoughts (10+)
+```
+
+Explore:
+- Novel feature ideas inspired by materials
+- Unexpected connections between concepts
+- "What if..." scenarios
+- Creative directions not explicitly mentioned
+
+### 4. Write Outputs
+
+**braindump/extracted-insights.md:**
+```markdown
+# Extracted Insights - {Project Name}
+
+## Explicit Ideas
+- Features & functionality mentioned
+- Goals & objectives expressed
+- Technical considerations noted
+
+## Implicit Discoveries
+- Underlying motivations
+- Unstated needs
+- Recurring themes
+- Emotional drivers
+
+## Key Tensions
+- Contradictions or competing priorities
+
+## Recommended Focus Areas
+- Where Phase 1 should focus
+```
+
+**braindump/dream-synthesis.md:**
+```markdown
+# Dream Synthesis - {Project Name}
+
+## Novel Ideas
+- Unexpected features
+- Surprising connections
+- "What If..." possibilities
+
+## Creative Directions
+- Design possibilities
+- Adjacent opportunities
+- Wild cards
+
+## Seeds for Phase 1
+- Concrete starting points
+```
+
+### 5. Update Notion
+
+Update BRAINDUMP MATERIALS section with summary.
+Update PROJECT SNAPSHOT:
+- Phase: 0 → 1
+- Status: → = Processing braindump
+
+### 6. Transition
+
+```
+Braindump complete!
+
+Key themes: [top 3-5]
+Novel ideas: [count] generated
+Dream seeds: [count] ready
+
+Your materials are processed. Ready for Phase 1 (CAPTURE)?
+Run /advance to proceed.
+```
+
+## ADHD-Friendly Approach
+
+- Break material processing into chunks
+- Celebrate each material processed
+- Keep dream phase playful
+- This phase can be paused and resumed

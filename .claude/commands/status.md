@@ -1,99 +1,54 @@
 ---
 name: status
-description: Show current phase and gate status. Displays progress through the 6-phase workflow.
+description: Show current project status from Notion and local state
 ---
 
-# /status
+# /status - Project Status
 
-Display project status and phase progress.
+Show the current state of this project.
+
+## Execution
+
+1. Read status.json for local state
+2. Fetch the Notion Design Doc using `mcp__notion__notion-fetch`
+3. Parse PROJECT SNAPSHOT section
+
+## Output Format
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PROJECT: {name}
+
+  Status: {status}
+  Phase: {phase} of 6
+  Last touched: {date}
+
+  ┌────────────────────────────────────────────────┐
+  │ PHASE PROGRESS                                  │
+  ├────────────────────────────────────────────────┤
+  │ 0. BRAINDUMP   {✓ or ○ or ⏭}  (optional)       │
+  │ 1. CAPTURE     {✓ or ○ or →}                   │
+  │ 2. EXPAND      {✓ or ○}                        │
+  │ 3. SPECIFY     {✓ or ○}                        │
+  │ 4. ARCHITECT   {✓ or ○}                        │
+  │ 5. CONFIGURE   {✓ or ○}                        │
+  │ 6. SEED        {✓ or ○}                        │
+  └────────────────────────────────────────────────┘
+
+  ⏭️ NEXT: {next action from Notion or status.json}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
+
+Legend:
+- ✓ = Complete
+- → = Current (in progress)
+- ○ = Pending
+- ⏭ = Skipped
 
 ## Process
 
-1. **Identify project**
-   - If project-name provided, use that
-   - If only one project exists, use that
-   - If multiple projects and no name, list projects and ask
-
-2. **Read status.json**
-   - Load current phase information
-   - Load gate validation status
-
-3. **Display status**
-
-   ```
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   📊 PROJECT STATUS: {project-name}
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-   Current Phase: {N} - {PHASE_NAME}
-
-   Phase Progress:
-   ✅ 1. CAPTURE    - {passed/pending}
-   ⬜ 2. EXPAND     - {passed/pending}
-   ⬜ 3. SPECIFY    - {passed/pending}
-   ⬜ 4. ARCHITECT  - {passed/pending}
-   ⬜ 5. CONFIGURE  - {passed/pending}
-   ⬜ 6. SEED       - {passed/pending}
-
-   Gate Status: {Current gate criteria}
-
-   Next Action: {What to do next}
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   ```
-
-4. **Include gate criteria for current phase**
-
-   Phase 1 (CAPTURE):
-   - [ ] CONTEXT.md exists
-   - [ ] Contains >50 words of substantive content
-
-   Phase 2 (EXPAND):
-   - [ ] All 6 macro questions answered
-   - [ ] expansion.md created
-   - [ ] User validated expansion
-
-   Phase 3 (SPECIFY):
-   - [ ] PRD completeness checklist passed
-   - [ ] User approved specification
-
-   Phase 4 (ARCHITECT):
-   - [ ] All 6 architecture decisions documented
-   - [ ] Trade-off analysis completed
-   - [ ] Pre-mortem analysis completed
-
-   Phase 5 (CONFIGURE):
-   - [ ] CLAUDE.md content specified
-   - [ ] Skills, commands, agents determined
-
-   Phase 6 (SEED):
-   - [ ] Output directory generated
-   - [ ] All files validated
-
-## Example Output
-
-```
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-📊 PROJECT STATUS: wellness-tracker
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Current Phase: 2 - EXPAND
-
-Phase Progress:
-✅ 1. CAPTURE    - passed (2024-01-15 10:30)
-🔄 2. EXPAND     - in progress
-⬜ 3. SPECIFY    - pending
-⬜ 4. ARCHITECT  - pending
-⬜ 5. CONFIGURE  - pending
-⬜ 6. SEED       - pending
-
-Gate Criteria (Phase 2):
-- [x] Question 1: Primary user answered
-- [x] Question 2: Core problem answered
-- [ ] Question 3: Success criteria - NOT ANSWERED
-- [ ] Question 4: Essential features - NOT ANSWERED
-- [ ] Question 5: Out of scope - NOT ANSWERED
-- [ ] Question 6: Current state - NOT ANSWERED
-
-Next Action: Continue /expand to answer remaining questions
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-```
+1. Read `status.json` from project root
+2. Fetch Notion page using page ID from status.json
+3. Parse PROJECT SNAPSHOT section for current state
+4. Display combined local + Notion status

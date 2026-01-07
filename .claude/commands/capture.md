@@ -1,66 +1,116 @@
 ---
 name: capture
-description: Guided capture session for Phase 1. Helps user articulate their idea into CONTEXT.md with zero friction.
+description: Phase 1 - Get the core idea out with zero friction. Guided capture session.
 ---
 
-# /capture
+# /capture - Phase 1
 
-Guided capture session for Phase 1.
+Get the idea out of your head with zero friction.
 
 ## Prerequisites
 
-- Project must be initialized (run /init first)
-- Must be in Phase 1 (CAPTURE)
+- Phase 0 complete (or skipped)
+- status.json shows Phase 1
 
 ## Process
 
-1. **Load the phase-capture skill**
-   Use Skill tool with skill: "phase-capture"
+### 1. Set the Stage
 
-2. **Follow the skill instructions**
-   - Be a friendly, non-judgmental listener
-   - Accept rambling, voice-to-text input
-   - Don't structure or critique
+```
+Tell me about your project idea. Don't worry about
+structure or completeness - just get it out of your head.
 
-3. **Prompt for the idea**
-   ```
-   Tell me about your project idea. Don't worry about
-   structure or completeness - just get it out of your head.
+You can talk about:
+- What you want to build
+- Why you want it
+- Who it's for
+- What problem it solves
+- Anything else on your mind
 
-   You can talk about:
-   - What you want to build
-   - Why you want it
-   - Who it's for
-   - What problem it solves
-   - Anything else on your mind
+Just start talking (or typing)...
+```
 
-   Just start talking (or typing)...
-   ```
+### 2. Accept Everything
 
-4. **Capture to CONTEXT.md**
-   - Write everything to CONTEXT.md (at project root)
-   - Preserve the user's voice
-   - Add timestamps
-   - Note any questions that came up
+- Be a friendly, non-judgmental listener
+- Accept rambling, voice-to-text input
+- Don't structure or critique
+- Preserve the user's voice
 
-5. **Follow-up prompts** (if input is brief)
-   - "What made you think of this?"
-   - "Who would benefit most from this?"
-   - "What's frustrating about how you do this now?"
+### 3. Follow-up Prompts (if brief)
 
-6. **Confirm capture**
-   ```
-   I've captured your idea! Here's what I got:
+- "What made you think of this?"
+- "Who would benefit most from this?"
+- "What's frustrating about how you do this now?"
 
-   [Brief summary - 2-3 sentences]
+### 4. Capture to CONTEXT.md
 
-   This is saved in CONTEXT.md. You can add more
-   anytime by editing the file or talking to me.
+Write to CONTEXT.md (project root):
+```markdown
+# {Project Name}
 
-   Run /validate to check if we have enough to proceed.
-   ```
+*Captured: {timestamp}*
 
-## Example Session
+## Raw Idea
+
+{User's words, preserved}
+
+## The Spark
+
+{What triggered this idea}
+
+## Core Insight
+
+{The non-obvious thing that makes this work}
+
+---
+
+*Questions that came up:*
+- {Any questions noted during capture}
+```
+
+### 5. Update Notion
+
+Update THE IDEA section:
+- One-liner (synthesized)
+- The spark
+- Core insight
+
+Update PROJECT SNAPSHOT:
+- Phase: 1 - CAPTURE
+- Status: → = In Progress
+
+### 6. Confirm Capture
+
+```
+I've captured your idea! Here's what I got:
+
+[Brief summary - 2-3 sentences]
+
+One-liner: [synthesized one-liner]
+
+This is saved in CONTEXT.md and synced to Notion.
+
+Run /advance to check if we're ready for Phase 2.
+```
+
+## What NOT to Do
+
+- Don't ask technical questions yet
+- Don't suggest solutions
+- Don't structure into PRD format
+- Don't critique the idea
+- Don't rush to the next phase
+
+## Gate Criteria for Phase 1
+
+To advance to Phase 2:
+- [ ] THE IDEA section has one-liner
+- [ ] THE IDEA section has spark
+- [ ] THE IDEA section has core insight
+- [ ] CONTEXT.md captures raw thoughts
+
+## Example
 
 ```
 User: /capture
@@ -78,6 +128,7 @@ Claude: I hear you want to build a homework tracking tool
         users. Let me capture this.
 
         [Writes to CONTEXT.md]
+        [Updates Notion]
 
         I've captured your idea! Here's what I got:
 
@@ -85,13 +136,8 @@ Claude: I hear you want to build a homework tracking tool
         assignments while giving you visibility into completion.
         Simplicity is key for less tech-savvy users.
 
-        Run /validate to check if we're ready for Phase 2.
+        One-liner: "Simple therapy homework tracking with
+        client and therapist visibility"
+
+        Run /advance to proceed to Phase 2 (EXPAND).
 ```
-
-## What NOT to Do
-
-- Don't ask technical questions yet
-- Don't suggest solutions
-- Don't structure into PRD format
-- Don't critique the idea
-- Don't rush to the next phase

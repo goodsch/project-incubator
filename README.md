@@ -1,211 +1,150 @@
-# Project Incubator (GitHub Template)
+# Project Incubator
 
-A deterministic Claude Code workspace template for transforming project ideas into complete, pre-seeded Claude Code project directories.
+A GitHub template for voice-based project planning with Claude Code and Notion.
 
-## What This Is
+**Purpose:** Transform ideas into structured, actionable plans using natural conversation and AI-assisted synthesis.
 
-**This is a GitHub template repository.** Clone it uniquely for each new project to avoid context bleed between developments.
+## The Problem This Solves
 
-## What This Does
+ADHD minds excel at ideation and creative thinking, but struggle with:
+- Structuring ideas into actionable plans
+- Constraining scope without killing creativity
+- Documenting state for later resumption
+- Avoiding overwhelm from too many possibilities
 
-Project Incubator guides non-coders through a structured workflow:
+Project Incubator provides **executive function as a service** - a structured thinking partner that helps externalize what's in your head without adding friction.
 
-```
-[BRAINDUMP] → CAPTURE → EXPAND → SPECIFY → ARCHITECT → CONFIGURE → SEED
-```
+## How It Works
 
-Each phase has explicit gate criteria. You cannot skip phases. The system ensures completeness before generating output.
+1. **Clone this template** for a new project
+2. **Run setup** to create your Notion page and voice skill
+3. **Start planning** with natural voice commands
+4. **Sync to Notion** as understanding crystallizes
 
-## Output
-
-At the end of the workflow, you get a complete Claude Code workspace with:
-- **CLAUDE.md** - Project instructions optimized for "vibe coding"
-- **Documentation** - PRD, architecture decisions, workflow guide
-- **Skills, commands, agents** - Pre-configured for your tech stack
-- **Source scaffolding** - Directory structure ready to build
+Your Design Doc in Notion becomes the persistent state - always showing where you are, what's decided, and what's next.
 
 ## Quick Start
 
-### 1. Create a new project from this template
+### 1. Use This Template
 
 ```bash
-# Clone template for your project
-gh repo create my-new-project --template goodsch/project-incubator --private --clone
-cd my-new-project
+# From GitHub: Click "Use this template" → Create new repo
+# Then clone your new repo:
+git clone https://github.com/YOUR_USERNAME/my-project-planning.git
+cd my-project-planning
+```
 
-# Run setup (installs plugins, hook deps)
+### 2. Run Setup
+
+```bash
 ./setup.sh
 ```
 
-Or use GitHub's "Use this template" button, then clone and run `./setup.sh`.
+This will:
+- Ask for your project name
+- Guide you to create a Notion page
+- Create a voice skill for Claude Code
+- Configure the workspace
 
-### 2. (Optional) Add brain dump materials
+### 3. Start Planning
 
-If you have accumulated notes, AI transcripts, or reference materials:
-
-```bash
-# Add files to braindump/
-cp ~/notes/my-idea.md braindump/
-cp ~/downloads/claude-chat-export.json braindump/
-```
-
-### 3. Initialize the project
+Open Claude Code in the workspace:
 
 ```bash
 claude
 ```
 
-Then run:
-```
-/init my-project-name
-```
-
-This will:
-- Detect any brain dump materials
-- Create CONTEXT.md and status.json
-- Create Notion Ideation Canvas (if Notion MCP available)
-- Start Phase 0 (braindump processing) or Phase 1 (capture)
-
-### 4. Follow the workflow
+Then just say:
 
 ```
-/status              # See where you are
-/validate            # Check if ready to advance
-/advance             # Move to next phase
+"Let's work on [Project Name]"
 ```
 
-### 5. Phase-specific commands
+## Voice Commands
 
-```
-/braindump           # Phase 0: Process accumulated materials
-/capture             # Phase 1: Guided idea capture
-/expand              # Phase 2: Socratic exploration
-/specify             # Phase 3: PRD generation
-/architect           # Phase 4: Technical design
-/configure           # Phase 5: Claude Code config
-/seed                # Phase 6: Generate project
-```
+| Say This | What Happens |
+|----------|--------------|
+| "Let's work on [Project]" | Start a planning session |
+| "Guide me through it" | Structured phase-by-phase planning |
+| "Let's just talk" | Free-form exploration |
+| "What's the status?" | See current state |
+| "Sync to Notion" | Update the Design Doc |
+| "What's next?" | See next actions |
+| "We're done for now" | End session with final sync |
 
-## The Phases
+## The Design Doc Model
 
-### Phase 0: BRAINDUMP (Optional)
-Process accumulated materials through meta-analysis and AI dream phase. Only runs if you have files in `braindump/`.
+Your project gets a structured Notion page with:
 
-### Phase 1: CAPTURE
-Get your raw idea into CONTEXT.md. Voice-to-text friendly. No structure required.
+| Section | Purpose |
+|---------|---------|
+| **PROJECT SNAPSHOT** | Always know status, phase, next action |
+| **THE IDEA** | Core insight captured simply |
+| **SYSTEM OVERVIEW** | Purpose, scope, boundaries |
+| **COMPONENTS** | The parts and their roles |
+| **RELATIONSHIPS** | How parts connect |
+| **USER JOURNEYS** | How people interact |
+| **DECISIONS LOG** | What's locked in and why |
+| **OPEN QUESTIONS** | What needs answering |
+| **NEXT ACTIONS** | Immediate momentum |
 
-### Phase 2: EXPAND
-Answer 6 macro questions through Socratic dialogue:
-1. Who is the primary user?
-2. What is the core problem?
-3. What does success look like?
-4. What are the essential features?
-5. What is out of scope?
-6. What does this replace/complement?
+## Two Modes
 
-Uses Clear Thought: `decomposition`, `abstraction-laddering`
+### GUIDED Mode
+Structured questions through 5 phases:
+1. **CAPTURE** - Get the idea out
+2. **SCOPE** - Define boundaries
+3. **DECOMPOSE** - Break into components
+4. **CONNECT** - Map relationships
+5. **PLAN** - Define next actions
 
-### Phase 3: SPECIFY
-Transform expansion into formal PRD with:
-- User stories
-- Acceptance criteria
-- Scope boundaries
-
-Versioned specs (v1.md -> v2.md -> v3.md)
-
-### Phase 4: ARCHITECT
-Design technical implementation:
-- Project type
-- Tech stack
-- Directory structure
-- Data model
-- Deployment approach
-
-Uses Clear Thought: `trade-off-matrix`, `pre-mortem`
-
-### Phase 5: CONFIGURE
-Determine Claude Code setup for output project:
-- CLAUDE.md content
-- Skills to include
-- Commands to create
-- Agents to configure
-
-### Phase 6: SEED
-Generate the complete project directory, ready for "vibe coding".
-
-## Features
-
-### Deterministic Workflow
-- Fixed phases with explicit gates
-- Cannot skip or rush
-- Ensures completeness
-
-### Clear Thought Integration
-- Mental models at decision points
-- Structured reasoning for trade-offs
-- Pre-mortem for risk identification
-
-### Brain Dump Processing
-- Process accumulated notes, AI transcripts, reference projects
-- Extract explicit and implicit ideas
-- AI dream phase for creative synthesis
-
-### Notion Integration (Optional)
-- Living Idea Dump List for ongoing capture
-- Ideation Canvas for cross-session persistence
-- Session Dashboard for "Where was I?" context
-
-### ADHD-Optimized
-- Voice-to-text friendly throughout
-- Low friction capture
-- Visual progress tracking
-- External memory via Notion
-
-## Directory Structure
-
-```
-{project-name}/              # Cloned from template
-├── CLAUDE.md                # Workspace instructions
-├── CONTEXT.md               # Raw idea (created by /init)
-├── status.json              # Phase tracking (created by /init)
-├── README.md                # This file
-├── braindump/               # Brain dump materials (before /init)
-├── spec/                    # Versioned PRDs
-├── decisions/               # Architecture decisions
-├── config/                  # Claude Code config
-├── output/                  # Generated project
-├── templates/               # Project type templates
-│   ├── web-app/
-│   ├── cli-tool/
-│   └── automation/
-└── .claude/
-    ├── skills/              # Phase skills + rules
-    ├── commands/            # Workflow commands
-    ├── agents/              # Specialized agents
-    └── hooks/               # Auto-activation
-```
+### CONVERSATIONAL Mode
+Free exploration with synthesis triggers. Think out loud; Claude tracks which sections relate and proposes updates when understanding crystallizes.
 
 ## Requirements
 
-- Claude Code CLI
-- Node.js (for hooks)
-- Clear Thought MCP server (recommended)
-- Notion MCP (optional, for persistence)
+- [Claude Code CLI](https://docs.anthropic.com/claude-code)
+- Notion account (free tier works)
+- Notion MCP server configured in Claude Code
 
-## Setup
+## Files
 
-Dependencies are installed in `.claude/hooks/`:
-```bash
-cd .claude/hooks && npm install
+```
+project-incubator/
+├── README.md                 # This file
+├── CLAUDE.md.template        # → Becomes CLAUDE.md after setup
+├── setup.sh                  # Setup script
+├── docs/                     # Reference documentation
+│   ├── voice-patterns.md     # Complete voice command reference
+│   ├── notion-integration.md # MCP tools guide
+│   ├── creating-projects.md  # How to add more projects
+│   └── development-rules.md  # Design principles
+├── notion-template/          # Paste-ready Notion content
+│   └── design-doc.md
+└── skill-template/           # Skill files (copied during setup)
+    ├── SKILL.md.template
+    └── voice-patterns.md.template
 ```
 
-## Philosophy
+## Mobile Workflow
 
-- **Friction is intentional** - Gates ensure completeness
-- **Non-coder optimized** - Voice-friendly, plain language
-- **Vibe coding ready** - Output projects are Claude-friendly
-- **Clear Thought enhanced** - Structured reasoning built in
-- **Template per project** - No context bleed between projects
+When using Claude on mobile (no MCP), Claude outputs paste-ready markdown that you can copy directly into Notion.
+
+## Design Principles
+
+1. **Capture first, structure later** - Don't let structure kill the idea
+2. **Always know where you are** - PROJECT SNAPSHOT shows current state
+3. **Confirm before updating** - Never update Notion without explicit OK
+4. **Keep responses short** - Voice users can't scroll
+5. **Systems thinking** - Help visualize whole-to-parts relationships
+
+## Documentation
+
+See the `docs/` folder for:
+- Voice command reference
+- Notion MCP tool examples
+- How to create additional project skills
+- Design principles and patterns
 
 ## License
 

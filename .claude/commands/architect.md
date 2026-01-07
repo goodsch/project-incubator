@@ -1,141 +1,177 @@
 ---
 name: architect
-description: Technical architecture session for Phase 4. Uses Clear Thought trade-off-matrix and pre-mortem. Documents all decisions with rationale.
+description: Phase 4 - Design system structure using trade-off analysis and risk assessment
 ---
 
-# /architect
+# /architect - Phase 4
 
-Technical architecture session for Phase 4.
+Design system structure with documented decision rationale.
 
 ## Prerequisites
 
-- Phase 3 (SPECIFY) must be complete
-- PRD must be approved
+- Phase 3 (SPECIFY) complete
+- PRD approved in spec/ folder
 
 ## Process
 
-1. **Load the phase-architect skill**
-   Use Skill tool with skill: "phase-architect"
+### 1. Review Approved PRD
 
-2. **Review approved PRD**
-   Extract technical requirements and constraints
+Extract technical requirements and constraints.
 
-3. **Work through 6 architecture decisions**
+### 2. Work Through 6 Architecture Decisions
 
-   ### Decision 1: Project Type
-   ```
-   Based on your PRD, this could be:
-   - Web application (accessible anywhere)
-   - Mobile app (native experience)
-   - Desktop application
-   - CLI tool
-   - Hybrid approach
+#### Decision 1: Project Type
 
-   Given your users' needs, I recommend: [recommendation]
+```
+Based on your PRD, this could be:
+- Web application (accessible anywhere)
+- Mobile app (native experience)
+- Desktop application
+- CLI tool
+- Hybrid approach
 
-   What are your thoughts?
-   ```
+Given your users' needs, I recommend: [recommendation]
 
-   ### Decision 2: Tech Stack
-   ```
-   Let me use the trade-off matrix to compare options...
-   ```
+What are your thoughts?
+```
 
-   **MANDATORY:** Use Clear Thought trade-off-matrix
-   ```
-   mcp__clear-thought__mental_models
-   - operation: "get_model"
-   - args: { "model": "trade-off-matrix" }
-   ```
+#### Decision 2: Tech Stack
 
-   Apply to:
-   - Framework options
-   - Language choices
-   - Database options (if applicable)
+**MANDATORY: Use trade-off matrix**
+```
+mcp__clear-thought__mental_models
+- operation: "get_model"
+- args: { "model": "trade-off-matrix" }
+```
 
-   Document:
-   - Options considered
-   - Evaluation criteria
-   - Scores
-   - Winner and rationale
+Apply to:
+- Framework options
+- Language choices
+- Database options (if applicable)
 
-   ### Decision 3: Directory Structure
-   ```
-   Based on the tech stack, here's a proposed structure:
+Document:
+- Options considered
+- Evaluation criteria
+- Scores
+- Winner and rationale
 
-   [Show structure]
+#### Decision 3: Directory Structure
 
-   This follows [pattern] because [reason].
-   ```
+```
+Based on the tech stack, here's a proposed structure:
 
-   ### Decision 4: Data Model
-   ```
-   Your features require tracking:
-   - [Entity 1]
-   - [Entity 2]
-   - [Relationships]
+[Show structure]
 
-   Storage approach: [recommendation]
-   ```
+This follows [pattern] because [reason].
+```
 
-   ### Decision 5: External Dependencies
-   ```
-   Based on features, you'll need:
-   - [Dependency 1]: for [purpose]
-   - [Dependency 2]: for [purpose]
+#### Decision 4: Data Model
 
-   Any concerns about these?
-   ```
+```
+Your features require tracking:
+- [Entity 1]
+- [Entity 2]
+- [Relationships]
 
-   ### Decision 6: Deployment Model
-   ```
-   For your use case, deployment options:
-   - [Option 1]: [pros/cons]
-   - [Option 2]: [pros/cons]
+Storage approach: [recommendation]
+```
 
-   Recommendation: [choice] because [reason]
-   ```
+#### Decision 5: External Dependencies
 
-4. **Run pre-mortem analysis**
+```
+Based on features, you'll need:
+- [Dependency 1]: for [purpose]
+- [Dependency 2]: for [purpose]
 
-   **MANDATORY:** Use Clear Thought pre-mortem
-   ```
-   mcp__clear-thought__mental_models
-   - operation: "get_model"
-   - args: { "model": "pre-mortem" }
-   ```
+Any concerns about these?
+```
 
-   ```
-   Let's imagine this project failed. Why might that happen?
+#### Decision 6: Deployment Model
 
-   Potential failure modes:
-   1. [Risk]: [Likelihood] / [Impact]
-      Mitigation: [Strategy]
+```
+For your use case, deployment options:
+- [Option 1]: [pros/cons]
+- [Option 2]: [pros/cons]
 
-   2. [Risk]: [Likelihood] / [Impact]
-      Mitigation: [Strategy]
-   ```
+Recommendation: [choice] because [reason]
+```
 
-5. **Document in decisions/architecture.md**
+### 3. Run Pre-Mortem Analysis
 
-6. **Review with user**
-   ```
-   Architecture Summary:
+**MANDATORY: Use pre-mortem**
+```
+mcp__clear-thought__mental_models
+- operation: "get_model"
+- args: { "model": "pre-mortem" }
+```
 
-   - Type: {choice}
-   - Stack: {choice}
-   - Key risks: {identified risks}
+```
+Let's imagine this project failed. Why might that happen?
 
-   Do you approve this architecture?
-   ```
+Potential failure modes:
+1. [Risk]: [Likelihood] / [Impact]
+   Mitigation: [Strategy]
 
-## Clear Thought Integration
+2. [Risk]: [Likelihood] / [Impact]
+   Mitigation: [Strategy]
+```
 
-**MANDATORY:**
+### 4. Document Architecture
 
-1. **trade-off-matrix** for tech stack decisions
-2. **pre-mortem** for risk identification
-3. **thoughtbox** for complex technical reasoning
+Create `spec/architecture.md`:
+
+```markdown
+# {Project Name} - Architecture
+
+*Date: {timestamp}*
+
+## Project Type
+{Decision 1}
+
+## Tech Stack
+{Decision 2 with trade-off analysis}
+
+## Directory Structure
+{Decision 3}
+
+## Data Model
+{Decision 4}
+
+## Dependencies
+{Decision 5}
+
+## Deployment
+{Decision 6}
+
+## Risk Analysis
+{Pre-mortem results}
+```
+
+### 5. Update Notion
+
+Update ARCHITECTURE section with key decisions.
+Update DECISIONS LOG with all architectural decisions.
+Update PROJECT SNAPSHOT phase status.
+
+### 6. Review with User
+
+```
+Architecture Summary:
+
+- Type: {choice}
+- Stack: {choice}
+- Key risks: {identified risks}
+
+Do you approve this architecture?
+```
+
+## Gate Criteria for Phase 4
+
+To advance to Phase 5:
+- [ ] Architecture document exists in spec/
+- [ ] Trade-off analysis documented for tech stack
+- [ ] Pre-mortem analysis completed
+- [ ] User approved architecture
 
 ## Vibe Coding Consideration
 
@@ -145,54 +181,9 @@ Since user may be non-coder:
 - Prefer simpler stacks unless complexity is justified
 - Document which decisions can be changed later
 
-## Example
+## Clear Thought Integration
 
-```
-User: /architect
-
-Claude: Let me review the approved PRD...
-
-        Based on your requirements:
-        - Simple interface for anxious users
-        - Therapist dashboard
-        - No complex integrations
-
-        Decision 1: Project Type
-
-        I recommend a Progressive Web App (PWA):
-        - Works on any device with a browser
-        - Can be "installed" without app stores
-        - Simpler than native mobile development
-        - Good offline support possible
-
-        Does this approach work for you?
-
-User: Yes, that makes sense.
-
-Claude: Great! Now for the tech stack.
-
-        Let me use the trade-off matrix to compare options...
-
-        [Uses Clear Thought trade-off-matrix]
-
-        Comparing frontend frameworks:
-
-        Criteria: Learning curve, ecosystem, simplicity, docs
-        Options: React, Vue, Svelte
-
-        | Criteria      | React | Vue | Svelte |
-        |--------------|-------|-----|--------|
-        | Learning     | 3     | 4   | 5      |
-        | Ecosystem    | 5     | 4   | 3      |
-        | Simplicity   | 3     | 4   | 5      |
-        | Docs         | 4     | 5   | 4      |
-        | TOTAL        | 15    | 17  | 17     |
-
-        Vue and Svelte tie. Given your goal of "vibe coding"
-        and simplicity, I recommend Vue because:
-        - Excellent documentation
-        - Gentle learning curve
-        - Large ecosystem for when you need it
-
-        What do you think?
-```
+**MANDATORY:**
+1. **trade-off-matrix** for tech stack decisions
+2. **pre-mortem** for risk identification
+3. **thoughtbox** for complex technical reasoning

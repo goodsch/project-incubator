@@ -1,0 +1,110 @@
+# Voice Patterns for {{PROJECT_NAME}}
+
+Natural language patterns Claude should recognize.
+
+## Session Triggers
+
+| Pattern | Action |
+|---------|--------|
+| "Let's work on {{PROJECT_NAME}}" | Fetch page, present state |
+| "Continue {{PROJECT_NAME}}" | Same as above |
+| "{{PROJECT_NAME}} planning" | Same as above |
+| "Work on {{PROJECT_NAME}}" | Same as above |
+
+## Mode Selection
+
+| Pattern | Mode |
+|---------|------|
+| "Guide me through it" | GUIDED - structured phases |
+| "Walk me through" | GUIDED |
+| "Start from scratch" | GUIDED - Phase 1 |
+| "Let's just talk about it" | CONVERSATIONAL |
+| "Let me think out loud" | CONVERSATIONAL |
+| "I've been thinking about..." | CONVERSATIONAL |
+
+## Phase Navigation
+
+| Pattern | Action |
+|---------|--------|
+| "Let's work on the idea" | Phase 1: CAPTURE |
+| "Define the scope" | Phase 2: SCOPE |
+| "Break it into pieces" | Phase 3: DECOMPOSE |
+| "How do the parts connect?" | Phase 4: CONNECT |
+| "What's next?" | Phase 5: PLAN |
+
+## Status Queries
+
+| Pattern | Action |
+|---------|--------|
+| "What's the status?" | Show PROJECT SNAPSHOT |
+| "Where are we?" | Show current phase + progress |
+| "What do we have?" | Summarize all sections |
+| "Show me the components" | Read COMPONENTS section |
+| "What's decided?" | Show DECISIONS LOG |
+| "What's still open?" | Show OPEN QUESTIONS |
+
+## Sync Commands
+
+| Pattern | Action |
+|---------|--------|
+| "Sync to Notion" | Force synthesis + update |
+| "Update the doc" | Same |
+| "Save that" | Synthesize recent discussion |
+| "Add that as a component" | Add to COMPONENTS |
+| "That's a decision" | Add to DECISIONS LOG |
+| "That's a question we need to answer" | Add to OPEN QUESTIONS |
+
+## Confirmation Phrases
+
+| Phrase | Meaning |
+|--------|---------|
+| "Yes" / "Yeah" / "Yep" | Confirm |
+| "That's it" / "Exactly" | Strong confirm |
+| "Perfect" / "Nailed it" | Confirm with enthusiasm |
+| "Close enough" | Weak confirm, move on |
+
+## Rejection Phrases
+
+| Phrase | Meaning |
+|--------|---------|
+| "No" / "Nope" | Reject |
+| "Not quite" | Needs refinement |
+| "Let me try again" | Will provide better input |
+| "That's not what I meant" | Misunderstanding |
+
+## Refinement Signals
+
+Claude should detect these as signals to explore further:
+
+| Signal | Meaning |
+|--------|---------|
+| "Actually..." | Revising previous understanding |
+| "Wait, what about..." | New consideration |
+| "The real problem is..." | Core understanding shift |
+| "It's more like..." | Refinement of previous point |
+| "I just realized..." | New insight |
+
+## Session Management
+
+| Pattern | Action |
+|---------|--------|
+| "We're done for now" | Final sync, end session |
+| "That's all for today" | Same |
+| "Pause here" | Save state, can resume |
+| "Quick note: [idea]" | Add to a scratchpad/notes section |
+
+## Response Guidelines
+
+### Keep It Short (Voice)
+- Confirmations: 1 sentence
+- Synthesis proposals: Key points only
+- Questions: Question + brief context
+
+### Confirm Changes
+- Always show what will be updated
+- Use "Current → Proposed" format for changes
+- Wait for explicit confirmation before updating Notion
+
+### Handle Uncertainty
+- If synthesis feels incomplete: "I want to capture more before updating"
+- If user seems unsure: "Want to keep exploring, or save what we have?"

@@ -1,59 +1,692 @@
 #!/bin/bash
-# Project Incubator Setup Script
-# Run this after cloning the template
+#
+# Project Incubator Setup
+# Transforms this template into a project-specific planning workspace
+#
+# Features:
+# - Auto-detects project name from git repo
+# - Creates Notion Design Doc (auto via Claude or manual)
+# - Creates voice skill (+ ZIP for web upload)
+# - Installs slash commands for phase workflow
+# - Sets up braindump folder for materials
+# - Creates status.json for progress tracking
+#
 
 set -e
 
-echo "🚀 Setting up Project Incubator..."
+echo ""
+echo "🌱 Project Incubator Setup"
+echo "=========================="
 echo ""
 
-# Install Claude Code plugins
-echo "📦 Installing Claude Code plugins..."
+# Color codes
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
 
-if command -v claude &> /dev/null; then
-    claude plugins install claude-mem@thedotmack 2>/dev/null || echo "  ⚠️  claude-mem may already be installed"
-    claude plugins install prompt-improver@severity1-marketplace 2>/dev/null || echo "  ⚠️  prompt-improver may already be installed"
-    echo "  ✅ Plugins configured"
+# Check if already set up
+if [ -f "CLAUDE.md" ] && [ ! -f "CLAUDE.md.template" ]; then
+    echo -e "${YELLOW}⚠️  This workspace appears to already be set up.${NC}"
+    echo "   CLAUDE.md exists and CLAUDE.md.template is gone."
+    read -p "   Continue anyway? (y/N): " CONTINUE
+    if [ "$CONTINUE" != "y" ] && [ "$CONTINUE" != "Y" ]; then
+        echo "Exiting."
+        exit 0
+    fi
+fi
+
+# ============================================
+# STEP 1: Project Name
+# ============================================
+echo -e "${BLUE}Step 1: Project Name${NC}"
+echo "--------------------"
+
+# Try to detect from git remote
+DETECTED_NAME=""
+if git remote get-url origin &>/dev/null; then
+    REPO_URL=$(git remote get-url origin)
+    DETECTED_NAME=$(basename "$REPO_URL" .git | sed 's/-/ /g' | sed 's/_/ /g')
+    # Title case
+    DETECTED_NAME=$(echo "$DETECTED_NAME" | awk '{for(i=1;i<=NF;i++) $i=toupper(substr($i,1,1)) substr($i,2)}1')
+fi
+
+if [ -n "$DETECTED_NAME" ]; then
+    echo "   Detected from git: $DETECTED_NAME"
+    read -p "   Use this name? (Y/n): " USE_DETECTED
+    if [ "$USE_DETECTED" != "n" ] && [ "$USE_DETECTED" != "N" ]; then
+        PROJECT_NAME="$DETECTED_NAME"
+    fi
+fi
+
+if [ -z "$PROJECT_NAME" ]; then
+    read -p "Enter your project name (e.g., 'Signal Garden'): " PROJECT_NAME
+fi
+
+if [ -z "$PROJECT_NAME" ]; then
+    echo -e "${RED}❌ Project name is required${NC}"
+    exit 1
+fi
+
+# Generate slug (lowercase, spaces to dashes)
+PROJECT_SLUG=$(echo "$PROJECT_NAME" | tr '[:upper:]' '[:lower:]' | tr ' ' '-' | tr -cd '[:alnum:]-')
+echo -e "   ${GREEN}✓${NC} Project: $PROJECT_NAME"
+echo "   Slug: $PROJECT_SLUG"
+echo ""
+
+# ============================================
+# STEP 2: Notion Page Setup
+# ============================================
+echo -e "${BLUE}Step 2: Notion Setup${NC}"
+echo "--------------------"
+echo ""
+echo "You need a Design Doc page in Notion."
+echo ""
+echo -e "${YELLOW}Option 1: Auto-create with Claude Code${NC}"
+echo "   Open Claude Code in this directory and say:"
+echo "   'Create a Design Doc for $PROJECT_NAME in Notion'"
+echo ""
+echo -e "${YELLOW}Option 2: Manual creation${NC}"
+echo "   1. Create a page titled '$PROJECT_NAME - Design Doc'"
+echo "   2. Copy contents from notion-template/design-doc.md"
+echo "   3. Replace {{PROJECT_NAME}} with '$PROJECT_NAME'"
+echo ""
+
+read -p "Press Enter when the Notion page is created..."
+echo ""
+
+# Get page ID
+echo "Enter the Notion page ID."
+echo "(Find it in the URL: notion.so/Page-Title-XXXXXXXX)"
+echo "(It's the 32-character ID at the end)"
+read -p "Page ID: " PAGE_ID
+
+if [ -z "$PAGE_ID" ]; then
+    echo -e "${RED}❌ Page ID is required${NC}"
+    exit 1
+fi
+
+# Clean page ID (remove dashes if present)
+PAGE_ID_CLEAN=$(echo "$PAGE_ID" | tr -d '-')
+PAGE_URL="https://www.notion.so/${PAGE_ID_CLEAN}"
+echo -e "   ${GREEN}✓${NC} Page ID: ${PAGE_ID_CLEAN:0:8}..."
+echo "   URL: $PAGE_URL"
+echo ""
+
+# ============================================
+# STEP 3: Create Local Structure
+# ============================================
+echo -e "${BLUE}Step 3: Creating Local Structure${NC}"
+echo "---------------------------------"
+
+# Create braindump directory
+mkdir -p braindump/source-materials
+touch braindump/.gitkeep
+touch braindump/source-materials/.gitkeep
+
+cat > braindump/README.md << 'EOF'
+# Braindump
+
+This folder is for raw materials BEFORE Phase 0 processing.
+
+## What Goes Here
+
+Add any accumulated materials you want processed:
+
+- **AI conversation exports** - ChatGPT, Claude, etc.
+- **Voice memo transcriptions**
+- **Notes and ideas** - text files, markdown
+- **Reference projects** - links, descriptions
+- **Screenshots with ideas**
+- **"Someday" notes** - things you've been saving
+
+## Structure
+
+```
+braindump/
+├── source-materials/    # Put your files here
+├── extracted-insights.md    # (Generated by Phase 0)
+└── dream-synthesis.md       # (Generated by Phase 0)
+```
+
+## Processing
+
+When ready, tell Claude: "Process my braindump materials"
+
+This triggers Phase 0:
+1. **Meta-Analysis** - Extract explicit and implicit ideas
+2. **Dream Phase** - AI creative synthesis
+
+After processing, you'll have structured insights ready for Phase 1 (CAPTURE).
+
+## Skip If
+
+- Fresh idea with no accumulated materials
+- Prefer to start with raw capture first
+- Just say "skip braindump" or "start with capture"
+EOF
+
+echo -e "   ${GREEN}✓${NC} Created: braindump/"
+
+# Create spec directory
+mkdir -p spec
+touch spec/.gitkeep
+echo -e "   ${GREEN}✓${NC} Created: spec/"
+
+# Create status.json
+TODAY=$(date +%Y-%m-%d)
+TIMESTAMP=$(date -Iseconds)
+
+cat > status.json << EOF
+{
+  "project": "$PROJECT_NAME",
+  "slug": "$PROJECT_SLUG",
+  "notionPageId": "$PAGE_ID_CLEAN",
+  "notionPageUrl": "$PAGE_URL",
+  "framework": "project-incubator",
+  "currentPhase": 0,
+  "phaseName": "braindump",
+  "status": "initialized",
+  "phases": {
+    "0-braindump": { "status": "pending", "optional": true },
+    "1-capture": { "status": "pending" },
+    "2-expand": { "status": "pending" },
+    "3-specify": { "status": "pending" },
+    "4-architect": { "status": "pending" },
+    "5-configure": { "status": "pending" },
+    "6-seed": { "status": "pending" }
+  },
+  "created": "$TIMESTAMP",
+  "lastSession": "$TIMESTAMP"
+}
+EOF
+echo -e "   ${GREEN}✓${NC} Created: status.json"
+
+# Create CONTEXT.md
+cat > CONTEXT.md << EOF
+# $PROJECT_NAME
+
+*Created: $TODAY*
+
+## Raw Idea
+
+[Add your initial thoughts here - or process braindump materials first]
+
+## Notes
+
+[Additional context as you work through phases]
+
+---
+
+## Session Notes
+
+### $TODAY - Initialized
+- Project workspace created
+- Notion Design Doc: $PAGE_URL
+- Ready to begin Phase 0 (BRAINDUMP) or Phase 1 (CAPTURE)
+EOF
+echo -e "   ${GREEN}✓${NC} Created: CONTEXT.md"
+
+echo ""
+
+# ============================================
+# STEP 4: Create Skill
+# ============================================
+echo -e "${BLUE}Step 4: Creating Claude Code Skill${NC}"
+echo "-----------------------------------"
+
+SKILL_DIR="$HOME/.claude/skills/incubator-$PROJECT_SLUG"
+
+if [ -d "$SKILL_DIR" ]; then
+    echo -e "${YELLOW}⚠️  Skill directory already exists: $SKILL_DIR${NC}"
+    read -p "   Overwrite? (y/N): " OVERWRITE
+    if [ "$OVERWRITE" != "y" ] && [ "$OVERWRITE" != "Y" ]; then
+        echo "   Skipping skill creation."
+        SKILL_CREATED=0
+    else
+        rm -rf "$SKILL_DIR"
+        SKILL_CREATED=1
+    fi
 else
-    echo "  ⚠️  Claude CLI not found - install plugins manually:"
-    echo "     claude plugins install claude-mem@thedotmack"
-    echo "     claude plugins install prompt-improver@severity1-marketplace"
+    SKILL_CREATED=1
 fi
 
-# Install hook dependencies
-if [ -f ".claude/hooks/package.json" ]; then
-    echo "📦 Installing hook dependencies..."
-    cd .claude/hooks && npm install && cd ../..
-    echo "  ✅ Hook dependencies installed"
-fi
+if [ "$SKILL_CREATED" -eq 1 ]; then
+    mkdir -p "$SKILL_DIR"
 
-# Create .env from example if it doesn't exist
-if [ ! -f ".env" ] && [ -f ".env.example" ]; then
-    cp .env.example .env
-fi
+    # Copy and process SKILL.md
+    sed -e "s/{{PROJECT_NAME}}/$PROJECT_NAME/g" \
+        -e "s/{{PROJECT_SLUG}}/$PROJECT_SLUG/g" \
+        -e "s/{{PAGE_ID}}/$PAGE_ID_CLEAN/g" \
+        -e "s|{{PAGE_URL}}|$PAGE_URL|g" \
+        -e "s/{{DATE}}/$TODAY/g" \
+        skill-template/SKILL.md.template > "$SKILL_DIR/SKILL.md"
 
+    # Copy and process voice-patterns.md
+    sed -e "s/{{PROJECT_NAME}}/$PROJECT_NAME/g" \
+        -e "s/{{PROJECT_SLUG}}/$PROJECT_SLUG/g" \
+        skill-template/voice-patterns.md.template > "$SKILL_DIR/voice-patterns.md"
+
+    echo -e "   ${GREEN}✓${NC} Created: $SKILL_DIR"
+fi
 echo ""
-echo "🔑 Configure API keys (optional - press Enter to skip)"
+
+# ============================================
+# STEP 5: Create Skill ZIP for Web Upload
+# ============================================
+echo -e "${BLUE}Step 5: Creating Skill ZIP for Web${NC}"
+echo "-----------------------------------"
+
+ZIP_DIR="skill-export"
+mkdir -p "$ZIP_DIR"
+
+# Copy skill files to export directory
+cp "$SKILL_DIR/SKILL.md" "$ZIP_DIR/" 2>/dev/null || true
+cp "$SKILL_DIR/voice-patterns.md" "$ZIP_DIR/" 2>/dev/null || true
+
+# Create the ZIP
+ZIP_FILE="incubator-$PROJECT_SLUG-skill.zip"
+cd "$ZIP_DIR"
+zip -q "../$ZIP_FILE" ./*
+cd ..
+rm -rf "$ZIP_DIR"
+
+echo -e "   ${GREEN}✓${NC} Created: $ZIP_FILE"
+echo ""
+echo "   To use with Claude App (web/mobile):"
+echo "   1. Go to claude.ai → Settings → Skills"
+echo "   2. Upload: $ZIP_FILE"
 echo ""
 
-# Prompt for Notion API key
-read -p "Notion API Key (https://notion.so/my-integrations): " notion_key
-if [ -n "$notion_key" ]; then
-    sed -i "s|^NOTION_API_KEY=.*|NOTION_API_KEY=${notion_key}|" .env
-    echo "  ✅ Notion API key configured"
+# ============================================
+# STEP 6: Install Slash Commands
+# ============================================
+echo -e "${BLUE}Step 6: Installing Slash Commands${NC}"
+echo "----------------------------------"
+
+COMMANDS_DIR=".claude/commands"
+mkdir -p "$COMMANDS_DIR"
+
+# Create /status command
+cat > "$COMMANDS_DIR/status.md" << 'EOF'
+---
+name: status
+description: Show current project status from Notion and local state
+---
+
+# /status - Project Status
+
+Show the current state of this project.
+
+## Execution
+
+1. Read status.json for local state
+2. Fetch the Notion Design Doc using `mcp__notion__notion-fetch`
+3. Parse PROJECT SNAPSHOT section
+
+## Output Format
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PROJECT: {name}
+
+  Status: {status}
+  Phase: {phase} of 6
+  Last touched: {date}
+
+  ┌────────────────────────────────────────────────┐
+  │ PHASE PROGRESS                                  │
+  ├────────────────────────────────────────────────┤
+  │ 0. BRAINDUMP   {✓ or ○ or ⏭}  (optional)       │
+  │ 1. CAPTURE     {✓ or ○ or →}                   │
+  │ 2. EXPAND      {✓ or ○}                        │
+  │ 3. SPECIFY     {✓ or ○}                        │
+  │ 4. ARCHITECT   {✓ or ○}                        │
+  │ 5. CONFIGURE   {✓ or ○}                        │
+  │ 6. SEED        {✓ or ○}                        │
+  └────────────────────────────────────────────────┘
+
+  ⏭️ NEXT: {next action from Notion or status.json}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
+
+Legend:
+- ✓ = Complete
+- → = Current (in progress)
+- ○ = Pending
+- ⏭ = Skipped
+EOF
+
+# Create /advance command
+cat > "$COMMANDS_DIR/advance.md" << 'EOF'
+---
+name: advance
+description: Move to the next phase after completing current phase
+---
+
+# /advance - Advance to Next Phase
+
+Gate-checked progression through phases.
+
+## Process
+
+1. Read status.json for current phase
+2. Fetch Notion page and verify gate criteria for current phase
+3. If gates passed: advance, update status.json and Notion
+4. If gates not passed: explain what's missing
+
+## Gate Criteria by Phase
+
+### Phase 0 → 1 (Braindump → Capture)
+- Optional phase - can skip with "skip braindump"
+- If used: extracted-insights.md must exist
+
+### Phase 1 → 2 (Capture → Expand)
+- THE IDEA section must have one-liner and core insight
+- At least one entry in OPEN QUESTIONS
+
+### Phase 2 → 3 (Expand → Specify)
+- SYSTEM OVERVIEW must be populated
+- At least 3 components in COMPONENTS table
+- RELATIONSHIPS section has initial mapping
+
+### Phase 3 → 4 (Specify → Architect)
+- PRD or SPEC document exists in spec/
+- Key decisions logged in DECISIONS LOG
+
+### Phase 4 → 5 (Architect → Configure)
+- Architecture document exists
+- Component responsibilities defined
+
+### Phase 5 → 6 (Configure → Seed)
+- Tech stack decisions made
+- Configuration requirements documented
+
+### Phase 6 (Seed) = Final Phase
+- Generates project scaffold
+- Creates buildable project structure
+
+## Output
+
+If gates pass:
+```
+✅ Phase {N} ({name}) complete!
+
+Moving to Phase {N+1}: {next phase name}
+
+{Brief description of next phase}
+
+⏭️ NEXT: {first action for new phase}
+```
+
+If gates fail:
+```
+⚠️ Phase {N} ({name}) not yet complete.
+
+Missing:
+- {item 1}
+- {item 2}
+
+Complete these items, then run /advance again.
+```
+EOF
+
+# Create /whats-next command (orientation)
+cat > "$COMMANDS_DIR/whats-next.md" << 'EOF'
+---
+name: whats-next
+description: Directive next step - what to do right now
+---
+
+# /whats-next - What's Next
+
+Project Manager mode: Tell the user exactly what to do next.
+
+## Principles
+
+From the analysis docs:
+- DIRECTIVE not interrogative
+- Don't ask "What would you like?" - TELL them the next step
+- "Here is what we're doing next" not "What do you want to do?"
+
+## Execution
+
+1. Read status.json for current phase
+2. Fetch Notion page for current state
+3. Determine the single most important next action
+4. Present it clearly and directly
+
+## Output Format
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+⏭️ NEXT STEP
+
+{Clear, specific instruction}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
+
+## Examples
+
+Good (Directive):
+- "Describe your core idea in one sentence. Start with 'It's a...'"
+- "Add 3 components to the table. Start with the most obvious one."
+- "Answer this: What triggered this idea?"
+
+Bad (Interrogative):
+- "What would you like to work on?"
+- "How should we proceed?"
+- "What's on your mind?"
+
+## When Stuck
+
+If genuinely blocked:
+```
+🚧 BLOCKED
+
+{Explain the blocker}
+
+Options to unblock:
+1. {Option A}
+2. {Option B}
+
+Which unblocks you faster?
+```
+
+Only ask a question when there's a real decision to make.
+EOF
+
+echo -e "   ${GREEN}✓${NC} Created: $COMMANDS_DIR/status.md"
+echo -e "   ${GREEN}✓${NC} Created: $COMMANDS_DIR/advance.md"
+echo -e "   ${GREEN}✓${NC} Created: $COMMANDS_DIR/whats-next.md"
+echo ""
+
+# ============================================
+# STEP 7: Update CLAUDE.md
+# ============================================
+echo -e "${BLUE}Step 7: Configuring Workspace${NC}"
+echo "------------------------------"
+
+sed -e "s/{{PROJECT_NAME}}/$PROJECT_NAME/g" \
+    -e "s/{{PROJECT_SLUG}}/$PROJECT_SLUG/g" \
+    -e "s/{{PAGE_ID}}/$PAGE_ID_CLEAN/g" \
+    -e "s|{{PAGE_URL}}|$PAGE_URL|g" \
+    -e "s/{{DATE}}/$TODAY/g" \
+    CLAUDE.md.template > CLAUDE.md
+
+echo -e "   ${GREEN}✓${NC} Created: CLAUDE.md"
+
+# ============================================
+# STEP 8: Update README.md
+# ============================================
+echo ""
+echo -e "${BLUE}Step 8: Updating README${NC}"
+echo "-----------------------"
+
+cat > README.md << EOF
+# $PROJECT_NAME - Planning Workspace
+
+This is a **Project Incubator** workspace for planning **$PROJECT_NAME**.
+
+## Quick Start
+
+Open Claude Code in this directory:
+
+\`\`\`bash
+claude
+\`\`\`
+
+Then say:
+
+\`\`\`
+"Let's work on $PROJECT_NAME"
+\`\`\`
+
+Or use slash commands:
+- \`/status\` - See current state
+- \`/whats-next\` - Get next action (directive)
+- \`/advance\` - Move to next phase
+
+## Links
+
+- **Notion Design Doc:** [$PROJECT_NAME - Design Doc]($PAGE_URL)
+- **Voice Skill:** \`~/.claude/skills/incubator-$PROJECT_SLUG/\`
+- **Skill ZIP:** \`$ZIP_FILE\` (for Claude web/mobile)
+
+## Project Phases
+
+| Phase | Name | Purpose |
+|-------|------|---------|
+| 0 | BRAINDUMP | Process accumulated materials (optional) |
+| 1 | CAPTURE | Get the core idea out |
+| 2 | EXPAND | Explore scope and possibilities |
+| 3 | SPECIFY | Create detailed requirements |
+| 4 | ARCHITECT | Design system structure |
+| 5 | CONFIGURE | Define tech stack and setup |
+| 6 | SEED | Generate project scaffold |
+
+## Files
+
+- \`CLAUDE.md\` - Workspace configuration
+- \`status.json\` - Progress tracking (machine-readable)
+- \`CONTEXT.md\` - Session notes and raw ideas
+- \`braindump/\` - Raw materials for Phase 0
+- \`spec/\` - Specifications and PRDs
+- \`docs/\` - Reference documentation
+
+## Documentation
+
+- \`docs/voice-patterns.md\` - Voice command reference
+- \`docs/notion-integration.md\` - Notion MCP tools guide
+- \`docs/development-rules.md\` - Design principles
+
+---
+
+*Created with [Project Incubator](https://github.com/YOUR_USERNAME/project-incubator)*
+EOF
+
+echo -e "   ${GREEN}✓${NC} Created: README.md"
+
+# ============================================
+# STEP 9: Create .env
+# ============================================
+echo ""
+echo -e "${BLUE}Step 9: Creating Environment Config${NC}"
+echo "------------------------------------"
+
+cat > .env << EOF
+# Project Incubator Configuration
+# Generated: $TODAY
+
+PROJECT_NAME="$PROJECT_NAME"
+PROJECT_SLUG="$PROJECT_SLUG"
+NOTION_PAGE_ID="$PAGE_ID_CLEAN"
+NOTION_PAGE_URL="$PAGE_URL"
+SKILL_NAME="incubator-$PROJECT_SLUG"
+EOF
+
+echo -e "   ${GREEN}✓${NC} Created: .env"
+
+# ============================================
+# STEP 10: Cleanup
+# ============================================
+echo ""
+echo -e "${BLUE}Step 10: Cleanup${NC}"
+echo "----------------"
+read -p "Remove template files? (Y/n): " CLEANUP
+
+if [ "$CLEANUP" != "n" ] && [ "$CLEANUP" != "N" ]; then
+    rm -f CLAUDE.md.template
+    rm -f .env.example
+    echo -e "   ${GREEN}✓${NC} Removed: CLAUDE.md.template"
+    echo -e "   ${GREEN}✓${NC} Removed: .env.example"
+else
+    echo "   Kept template files for reference"
 fi
 
-# Prompt for Firecrawl API URL
-read -p "Firecrawl API URL (https://firecrawl.dev): " firecrawl_url
-if [ -n "$firecrawl_url" ]; then
-    sed -i "s|^FIRECRAWL_API_URL=.*|FIRECRAWL_API_URL=${firecrawl_url}|" .env
-    echo "  ✅ Firecrawl API URL configured"
-fi
-
+# ============================================
+# DONE
+# ============================================
 echo ""
-echo "✅ Setup complete!"
+echo "========================================"
+echo -e "${GREEN}✅ Setup Complete!${NC}"
+echo "========================================"
 echo ""
-echo "Next steps:"
-echo "  1. Run 'claude' to start"
-echo "  2. Run '/init your-project-name' to initialize"
+echo "Your workspace is ready for: $PROJECT_NAME"
+echo ""
+echo -e "${BLUE}Files created:${NC}"
+echo "  - CLAUDE.md (workspace configuration)"
+echo "  - README.md (project readme)"
+echo "  - status.json (progress tracking)"
+echo "  - CONTEXT.md (session notes)"
+echo "  - .env (environment config)"
+echo "  - braindump/ (raw materials folder)"
+echo "  - spec/ (specifications folder)"
+echo "  - .claude/commands/ (slash commands)"
+echo "  - ~/.claude/skills/incubator-$PROJECT_SLUG/ (voice skill)"
+echo "  - $ZIP_FILE (skill for web upload)"
+echo ""
+echo -e "${BLUE}Next steps:${NC}"
+echo ""
+echo "  1. Open Claude Code:"
+echo "     ${GREEN}claude${NC}"
+echo ""
+echo "  2. Start planning:"
+echo "     ${GREEN}\"Let's work on $PROJECT_NAME\"${NC}"
+echo ""
+echo "  3. Or use slash commands:"
+echo "     ${GREEN}/status${NC}     - See current state"
+echo "     ${GREEN}/whats-next${NC} - Get next action"
+echo ""
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo ""
+echo "📋 THE FRAMEWORK"
+echo ""
+echo "┌─────────────────────────────────────────────────┐"
+echo "│  Phase 0: BRAINDUMP (optional)                  │"
+echo "│  Process accumulated materials                  │"
+echo "├─────────────────────────────────────────────────┤"
+echo "│  Phase 1: CAPTURE                               │"
+echo "│  Get the core idea out                          │"
+echo "├─────────────────────────────────────────────────┤"
+echo "│  Phase 2: EXPAND                                │"
+echo "│  Explore scope and possibilities                │"
+echo "├─────────────────────────────────────────────────┤"
+echo "│  Phase 3: SPECIFY                               │"
+echo "│  Create detailed requirements (PRD)             │"
+echo "├─────────────────────────────────────────────────┤"
+echo "│  Phase 4: ARCHITECT                             │"
+echo "│  Design system structure                        │"
+echo "├─────────────────────────────────────────────────┤"
+echo "│  Phase 5: CONFIGURE                             │"
+echo "│  Define tech stack and setup                    │"
+echo "├─────────────────────────────────────────────────┤"
+echo "│  Phase 6: SEED                                  │"
+echo "│  Generate buildable project scaffold            │"
+echo "└─────────────────────────────────────────────────┘"
+echo ""
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
