@@ -1,100 +1,118 @@
-# Project Incubator MCP Server Template
+# Hatchery MCP Server
 
-MCP server template for project ideation workflow. Exposes tools for status checking, idea capture, and phase management - optimized for both voice (Claude mobile) and CLI (Claude Code) interfaces.
+Centralized MCP server for multi-project ideation workflows. Manages multiple incubation projects, each with their own phase progression and state.
 
 ## Quick Start
 
-1. **Copy template to your project:**
-```bash
-cp -r mcp-server-template your-project-mcp
-cd your-project-mcp
-```
-
-2. **Configure:**
-```bash
-# Edit pyproject.toml - change name and description
-# Copy .env.example to .env and fill in values
-cp .env.example .env
-```
-
-3. **Install and run:**
 ```bash
 # Install dependencies
+cd mcp-server-template
 pip install -e .
 
 # Run server
-fastmcp run src/server.py
+python -m src.server
 
-# Or with specific transport for remote access
+# Or with FastMCP for remote access
 fastmcp run src/server.py --transport sse --port 3847
 ```
 
 ## Tools
 
-### Core Tools
+### Project Management
 
 | Tool | Purpose |
 |------|---------|
-| `incubator_status` | Get current phase, project, and next action directive |
-| `incubator_capture` | Quick capture ideas (queued for Notion sync) |
-| `incubator_advance` | Move to next phase (with validation) |
-| `incubator_set_project` | Set active project name |
-| `incubator_sync` | Sync captures to Notion |
-| `incubator_notion_status` | Check Notion integration status |
+| `hatchery_list_projects` | List all projects with phase status |
+| `hatchery_create` | Create a new incubation project |
+| `hatchery_select` | Switch to a different project |
 
-### Voice-Optimized Tools
+### Workflow
 
 | Tool | Purpose |
 |------|---------|
-| `incubator_recap` | 2-3 sentence spoken summary |
-| `incubator_next` | Single next-action directive |
-| `incubator_gaps` | What's missing for phase completion |
+| `hatchery_status` | Current project phase and next action |
+| `hatchery_capture` | Quick capture ideas to active project |
+| `hatchery_advance` | Move to next phase (gate-checked) |
+| `hatchery_sync` | Sync captures to Notion |
+| `hatchery_notion_status` | Check Notion connection |
 
-## Workflow Phases
+### Voice-Optimized
 
-0. **BRAINDUMP** - Marination of raw materials
-1. **CAPTURE** - Visualization-first walkthrough
-2. **EXPAND** - Socratic expansion (six macro questions)
-3. **SPECIFY** - PRD generation
-4. **ARCHITECT** - Technical design and risk analysis
-5. **CONFIGURE** - Environment setup
-6. **SEED** - Project scaffold generation
+| Tool | Purpose |
+|------|---------|
+| `hatchery_recap` | 2-3 sentence spoken summary |
+| `hatchery_next` | Single imperative directive |
+| `hatchery_gaps` | What's blocking phase completion |
+
+## The 7-Phase Workflow
+
+| # | Phase | Purpose |
+|---|-------|---------|
+| 0 | BRAINDUMP | Marination of raw materials |
+| 1 | CAPTURE | Visualization-first walkthrough |
+| 2 | EXPAND | Socratic expansion (six macro questions) |
+| 3 | SPECIFY | PRD generation |
+| 4 | ARCHITECT | Technical design and risk analysis |
+| 5 | CONFIGURE | Environment setup |
+| 6 | SEED | Project scaffold generation |
+
+Phases are gate-checked - complete requirements before advancing.
+
+## State Management
+
+All state persists in `state/projects.json`:
+
+```json
+{
+  "active_project": "smart-garden",
+  "projects": {
+    "smart-garden": {
+      "name": "Smart Garden",
+      "slug": "smart-garden",
+      "current_phase": "EXPAND",
+      "phase_progress": {"BRAINDUMP": "complete", "CAPTURE": "complete"},
+      "pending_captures": [],
+      "notion_page_id": null
+    },
+    "voice-journal": {
+      "name": "Voice Journal",
+      "current_phase": "SPECIFY",
+      ...
+    }
+  }
+}
+```
 
 ## Configuration
 
-### Environment Variables
+### Notion Integration (Optional)
 
 ```bash
-# Required for Notion sync
+cp .env.example .env
+# Edit .env:
 NOTION_API_KEY=secret_xxx
-
-# Quick Capture database ID (create in Notion with: Capture, Type, Created, Processed properties)
 NOTION_IDEAS_DB_ID=xxx-xxx-xxx
-
-# Optional
-NOTION_PROJECTS_DB_ID=xxx
-NOTION_SESSIONS_DB_ID=xxx
 ```
 
-### Notion Database Schema
-
-Create a "Quick Capture" database in Notion with:
-- `Capture` (title) - The idea text
-- `Type` (select) - Options: 💡 Idea, 🐛 Issue, ✨ Feature, ❓ Question, 📝 Note
-- `Created` (created_time) - Auto-generated
-- `Processed` (checkbox) - For workflow tracking
+Create a Quick Capture database with:
+- `Capture` (title)
+- `Type` (select): Idea, Issue, Feature, Question, Note
+- `Created` (created_time)
+- `Processed` (checkbox)
 
 ## Deployment
 
 ### Local (Claude Code)
 
-Add to `.mcp.json`:
+Add to `~/.claude/settings.json` or project `.mcp.json`:
+
 ```json
 {
   "mcpServers": {
-    "incubator": {
-      "command": "fastmcp",
-      "args": ["run", "/path/to/your-project-mcp/src/server.py"]
+    "hatchery": {
+      "command": "python",
+      "args": ["-m", "src.server"],
+      "cwd": "/path/to/mcp-server-template"
     }
   }
 }
@@ -102,63 +120,75 @@ Add to `.mcp.json`:
 
 ### Remote via Cloudflare Tunnel
 
-1. Run as systemd service:
+1. **Run as systemd service:**
 ```ini
 [Unit]
-Description=Project Incubator MCP Server
+Description=Hatchery MCP Server
 After=network.target
 
 [Service]
 Type=simple
-WorkingDirectory=/path/to/your-project-mcp
-ExecStart=/path/to/python -m fastmcp run src/server.py --transport sse --port 3847
-EnvironmentFile=%h/.config/incubator-mcp.env
+WorkingDirectory=/path/to/mcp-server-template
+ExecStart=/usr/bin/python -m fastmcp run src/server.py --transport sse --port 3847
+EnvironmentFile=%h/.config/hatchery.env
 Restart=on-failure
 
 [Install]
 WantedBy=default.target
 ```
 
-2. Add to cloudflared config:
+2. **Add to cloudflared config:**
 ```yaml
 ingress:
-  - hostname: incubator-mcp.yourdomain.com
+  - hostname: hatchery.yourdomain.com
     service: http://localhost:3847
 ```
 
-3. Configure Claude mobile:
+3. **Configure Claude mobile:**
 ```json
 {
   "mcpServers": {
-    "incubator": {
+    "hatchery": {
       "type": "sse",
-      "url": "https://incubator-mcp.yourdomain.com/sse"
+      "url": "https://hatchery.yourdomain.com/sse"
     }
   }
 }
 ```
 
-## State Management
+## Skill Installation
 
-State is persisted to `state/workflow.json`:
-- Active project name
-- Current phase
-- Phase completion status
-- Pending captures (for Notion sync)
-- Session count
+Copy the skill to Claude Code:
 
-State survives server restarts and enables session continuity across interfaces.
+```bash
+cp -r ../skill-template/hatchery ~/.claude/skills/hatchery
+```
 
-## Customization
+The skill provides voice-optimized interaction patterns and usage instructions.
 
-### Renaming Tools
+## Usage Examples
 
-Search and replace `incubator_` with your project prefix in `src/server.py`.
+```
+"List projects"           → Shows all projects
+"Create project Garden"   → Creates new project, switches to it
+"Work on Garden"          → Switches active project
+"Status"                  → Shows phase and next action
+"Capture: auto watering"  → Captures idea to active project
+"What's next"             → Single directive response
+"Advance to CAPTURE"      → Gate-checked phase advancement
+"Sync"                    → Pushes captures to Notion
+```
 
-### Adding Phases
+## Files
 
-Edit the `PHASES`, `PHASE_DIRECTIVES`, and `PHASE_REQUIREMENTS` constants in `src/server.py`.
-
-### Custom Notion Schema
-
-Modify `src/notion_sync.py` to match your Notion database schema.
+```
+mcp-server-template/
+├── src/
+│   ├── server.py        # FastMCP server (12 tools)
+│   └── notion_sync.py   # Notion API integration
+├── state/
+│   └── projects.json    # Multi-project state (created at runtime)
+├── .env.example         # Notion config template
+├── pyproject.toml       # Package config
+└── README.md            # This file
+```

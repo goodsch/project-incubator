@@ -1,7 +1,7 @@
 [project]
-name = "incubator-mcp"
-version = "0.1.0"
-description = "MCP server for project ideation workflow"
+name = "hatchery-mcp"
+version = "0.2.0"
+description = "Multi-project ideation workflow MCP server"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
@@ -18,7 +18,7 @@ dev = [
 ]
 
 [project.scripts]
-incubator-mcp = "src.server:mcp.run"
+hatchery-mcp = "src.server:mcp.run"
 
 [build-system]
 requires = ["hatchling"]
