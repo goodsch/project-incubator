@@ -508,6 +508,59 @@ cat > CONTEXT.md << EOF
 EOF
 echo -e "   ${GREEN}✓${NC} Created: CONTEXT.md"
 
+# Register with central portfolio (for cross-project awareness)
+PORTFOLIO_DIR="$HOME/.hatchery"
+PORTFOLIO_FILE="$PORTFOLIO_DIR/portfolio.json"
+PROJECT_PATH="$(pwd)"
+
+mkdir -p "$PORTFOLIO_DIR"
+
+# Create portfolio.json if it doesn't exist
+if [ ! -f "$PORTFOLIO_FILE" ]; then
+    echo '{"active_project": null, "projects": {}}' > "$PORTFOLIO_FILE"
+fi
+
+# Add this project to portfolio using Python (more reliable than jq for nested JSON)
+python3 << PYEOF
+import json
+import os
+from datetime import datetime
+
+portfolio_file = "$PORTFOLIO_FILE"
+project_slug = "$PROJECT_SLUG"
+project_name = "$PROJECT_NAME"
+project_path = "$PROJECT_PATH"
+notion_page_id = "$DESIGN_DOC_ID"
+timestamp = datetime.now().isoformat()
+
+# Load existing portfolio
+with open(portfolio_file, 'r') as f:
+    portfolio = json.load(f)
+
+# Add/update this project
+portfolio['projects'][project_slug] = {
+    'name': project_name,
+    'slug': project_slug,
+    'path': project_path,
+    'notion_page_id': notion_page_id,
+    'created_at': timestamp,
+    'last_active': timestamp,
+    'summary': '',
+    'key_features': [],
+    'tech_stack': [],
+    'outcome': 'active',
+    'learnings': []
+}
+
+# Save
+with open(portfolio_file, 'w') as f:
+    json.dump(portfolio, f, indent=2)
+
+print(f"Registered {project_name} in portfolio")
+PYEOF
+
+echo -e "   ${GREEN}✓${NC} Registered in ~/.hatchery/portfolio.json"
+
 echo ""
 
 # ============================================
