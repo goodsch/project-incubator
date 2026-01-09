@@ -26,6 +26,10 @@ Activate when user says:
 | Advance phase | "advance" | `hatchery_advance(phase)` |
 | Voice summary | "recap" | `hatchery_recap` |
 | Sync to Notion | "sync" | `hatchery_sync` |
+| View AI suggestions | "what do you think" | `hatchery_dream` |
+| Agree to suggestion | "yes to [feature]" | `hatchery_agree(item)` |
+| View past projects | "portfolio" | `hatchery_portfolio` |
+| Annotate project | "this uses [tech]" | `hatchery_annotate(...)` |
 
 ## The 7-Phase Workflow
 
@@ -33,7 +37,7 @@ Every project progresses through these phases:
 
 | # | Phase | What Happens |
 |---|-------|--------------|
-| 0 | BRAINDUMP | Marinate on raw materials. No requirements yet. |
+| 0 | BRAINDUMP | Dream synthesis + marination. AI suggests, you confirm. |
 | 1 | CAPTURE | Visualization-first walkthrough. Describe it as if it exists. |
 | 2 | EXPAND | Socratic dialogue. Answer the six macro questions. |
 | 3 | SPECIFY | Generate PRD with acceptance criteria. |
@@ -43,21 +47,69 @@ Every project progresses through these phases:
 
 Phases are gate-checked - you must complete one before advancing to the next.
 
+## Cognitive Layer (BRAINDUMP Phase)
+
+When you create a project, Hatchery automatically generates a **dream synthesis**:
+
+1. **Scans portfolio** - Finds related past projects by name, features, tech stack
+2. **Suggests features** - Proposes features from similar projects that might apply
+3. **Surfaces learnings** - Shows what worked/didn't in related projects
+4. **Opens questions** - Prompts to clarify the project vision
+
+**Important:** These are SUGGESTIONS, not directives. Nothing from the dream is included in the project plan until you explicitly agree.
+
+### Dream Workflow
+
+```
+User: "Create project Voice Journal"
+→ Creates project
+→ Auto-generates dream: "I see connections to Voice Notes. Consider features like:
+   voice-to-text, daily prompts. These are suggestions - what's your core idea?"
+
+User: "Yes to voice-to-text, but not daily prompts"
+→ hatchery_agree("voice-to-text")
+→ Voice-to-text moves to agreed items
+
+User: "It's actually for dream journaling with emotional tagging"
+→ hatchery_capture("dream journaling with emotional tagging")
+→ Dream refined with new context
+```
+
+### Building Portfolio Knowledge
+
+As you complete projects, annotate them to build knowledge for future dreams:
+
+```
+User: "This project uses FastAPI and React"
+→ hatchery_annotate(tech="FastAPI, React")
+
+User: "Key feature is offline sync"
+→ hatchery_annotate(features="offline sync, PWA support")
+
+User: "Learned that voice latency matters"
+→ hatchery_annotate(learnings="voice latency under 200ms critical")
+```
+
 ## Usage Examples
 
-### Starting Fresh
+### Starting Fresh (with Dream Synthesis)
 ```
 User: "Create project called Smart Garden"
 → hatchery_create("Smart Garden")
-→ "Created Smart Garden. Starting in braindump phase. What ideas do you have?"
+→ "Created Smart Garden. I see connections to Home Automation. What's the core idea?"
 
-User: "I want automatic watering based on soil moisture"
-→ hatchery_capture("automatic watering based on soil moisture")
-→ "Got it. Captured as random."
+User: "What do you think it could be?"
+→ hatchery_dream()
+→ "Based on 'Smart Garden', this might relate to Home Automation. Consider features
+   like: sensor integration, scheduling. These are suggestions - clarify your vision."
 
-User: "And plant identification from photos"
-→ hatchery_capture("plant identification from photos")
-→ "Got it. Two ideas captured."
+User: "Yes to sensor integration"
+→ hatchery_agree("sensor integration")
+→ "Agreed to: sensor integration"
+
+User: "It's automatic watering based on soil moisture"
+→ hatchery_capture("automatic watering based on soil moisture", "Follow-up")
+→ "Got it. Captured as follow-up."
 ```
 
 ### Resuming Work

@@ -79,6 +79,15 @@ class ProjectState(BaseModel):
     session_count: int = 0
     created_at: str = ""
     last_active: str = ""
+    # Cognitive layer - meta understanding (for completed/mature projects)
+    summary: str = ""  # One-line description of the project
+    key_features: list = []  # Notable features/patterns ["voice-first UI", "offline sync"]
+    tech_stack: list = []  # Technologies used ["FastAPI", "React", "SQLite"]
+    outcome: str = ""  # "completed", "paused", "archived", "active"
+    learnings: list = []  # What was learned ["voice latency matters", "start simpler"]
+    borrowed_from: list = []  # Projects this borrowed features from
+    # Dream synthesis - auto-generated on creation, suggestions until agreed
+    dream: dict = {}  # {synthesis, related_projects, suggested_features, open_questions, agreed_items}
 
 
 class HatcheryState(BaseModel):
@@ -246,12 +255,28 @@ def hatchery_create(name: str, skip_notion: bool = False) -> dict:
         notion_page_id=notion_page_id,
         created_at=now,
         last_active=now,
-        session_count=1
+        session_count=1,
+        outcome="active"
     )
+
+    # Auto-generate dream synthesis from portfolio
+    project.dream = generate_dream_synthesis(name, state.projects)
 
     state.projects[slug] = project
     state.active_project = slug
     save_state(state)
+
+    # Sync dream to Notion if page was created
+    if notion_page_id:
+        sync_dream_to_notion(project)
+
+    # Build voice summary with dream
+    dream_hint = ""
+    if project.dream.get("related_projects"):
+        top = project.dream["related_projects"][0]["project"]
+        dream_hint = f" I see connections to {top}."
+    elif project.dream.get("synthesis"):
+        dream_hint = " No similar projects found - fresh territory."
 
     return {
         "created": name,
@@ -259,7 +284,8 @@ def hatchery_create(name: str, skip_notion: bool = False) -> dict:
         "phase": "BRAINDUMP",
         "notion_page_id": notion_page_id,
         "notion_url": notion_url,
-        "voice_confirm": f"Created {name}. Starting in braindump phase. What ideas do you have?"
+        "dream": project.dream,
+        "voice_confirm": f"Created {name}.{dream_hint} What's the core idea?"
     }
 
 
@@ -509,7 +535,365 @@ def hatchery_gaps() -> dict:
     }
 
 
+# --- Cognitive Layer Tools ---
+
+@mcp.tool
+def hatchery_dream(refresh: bool = False) -> dict:
+    """
+    View the dream synthesis for the active project.
+
+    The dream is AI's interpretation of what this project might be,
+    based on portfolio analysis. These are SUGGESTIONS until agreed.
+
+    Args:
+        refresh: If True, regenerate the dream synthesis
+    """
+    state = load_state()
+    proj = get_active_project(state)
+
+    if not proj:
+        return {
+            "error": "No active project",
+            "voice_error": "No project selected."
+        }
+
+    if refresh or not proj.dream:
+        proj.dream = generate_dream_synthesis(proj.name, state.projects)
+        proj.last_active = datetime.now().isoformat()
+        save_state(state)
+
+        # Sync to Notion if configured
+        if proj.notion_page_id:
+            sync_dream_to_notion(proj)
+
+    dream = proj.dream
+
+    return {
+        "project": proj.name,
+        "synthesis": dream.get("synthesis", "No synthesis yet"),
+        "related_projects": dream.get("related_projects", []),
+        "suggested_features": dream.get("suggested_features", []),
+        "open_questions": dream.get("open_questions", []),
+        "agreed_items": dream.get("agreed_items", []),
+        "is_suggestion": True,  # Always flag as suggestion
+        "voice_summary": dream.get("synthesis", "No dream yet. Say 'refresh dream' to generate.")
+    }
+
+
+@mcp.tool
+def hatchery_agree(item: str) -> dict:
+    """
+    Agree to a suggested feature or idea from the dream synthesis.
+
+    Moves an item from suggestions to agreed, making it part of the
+    project direction.
+
+    Args:
+        item: The feature or idea to agree to (from suggested_features)
+    """
+    state = load_state()
+    proj = get_active_project(state)
+
+    if not proj:
+        return {"error": "No active project"}
+
+    if not proj.dream:
+        return {"error": "No dream synthesis yet. Run hatchery_dream first."}
+
+    suggested = proj.dream.get("suggested_features", [])
+    agreed = proj.dream.get("agreed_items", [])
+
+    # Find matching suggestion (partial match ok)
+    matched = None
+    for s in suggested:
+        if item.lower() in s.lower() or s.lower() in item.lower():
+            matched = s
+            break
+
+    if not matched:
+        return {
+            "error": f"'{item}' not found in suggestions",
+            "available": suggested,
+            "voice_error": f"Couldn't find {item} in suggestions."
+        }
+
+    # Move from suggested to agreed
+    if matched not in agreed:
+        agreed.append(matched)
+        proj.dream["agreed_items"] = agreed
+
+    if matched in suggested:
+        suggested.remove(matched)
+        proj.dream["suggested_features"] = suggested
+
+    save_state(state)
+
+    return {
+        "agreed": matched,
+        "project": proj.name,
+        "total_agreed": len(agreed),
+        "remaining_suggestions": len(suggested),
+        "voice_confirm": f"Agreed to: {matched}"
+    }
+
+
+@mcp.tool
+def hatchery_portfolio(include_learnings: bool = False) -> dict:
+    """
+    View the project portfolio for cross-project context.
+
+    Shows past projects with their features, outcomes, and optionally
+    learnings. Use this to identify patterns and borrowing opportunities.
+
+    Args:
+        include_learnings: Include detailed learnings from each project
+    """
+    state = load_state()
+
+    if not state.projects:
+        return {
+            "projects": [],
+            "voice_summary": "No projects in portfolio yet."
+        }
+
+    portfolio = []
+    for slug, proj in state.projects.items():
+        entry = {
+            "name": proj.name,
+            "slug": slug,
+            "summary": proj.summary or "(no summary)",
+            "outcome": proj.outcome or "active",
+            "phase": proj.current_phase,
+            "key_features": proj.key_features,
+            "tech_stack": proj.tech_stack,
+        }
+        if include_learnings:
+            entry["learnings"] = proj.learnings
+        portfolio.append(entry)
+
+    # Separate by outcome
+    completed = [p for p in portfolio if p["outcome"] == "completed"]
+    active = [p for p in portfolio if p["outcome"] in ("active", "")]
+    other = [p for p in portfolio if p["outcome"] not in ("completed", "active", "")]
+
+    return {
+        "total_projects": len(portfolio),
+        "completed": completed,
+        "active": active,
+        "paused_or_archived": other,
+        "all_features": list(set(f for p in portfolio for f in p["key_features"])),
+        "all_tech": list(set(t for p in portfolio for t in p["tech_stack"])),
+        "voice_summary": f"{len(portfolio)} projects. {len(completed)} completed, {len(active)} active."
+    }
+
+
+@mcp.tool
+def hatchery_annotate(
+    summary: str = "",
+    features: str = "",
+    tech: str = "",
+    outcome: str = "",
+    learnings: str = ""
+) -> dict:
+    """
+    Annotate the active project with meta information.
+
+    Add summary, features, tech stack, outcome, and learnings.
+    This builds the portfolio knowledge for future projects.
+
+    Args:
+        summary: One-line project description
+        features: Comma-separated key features (e.g., "voice-first, offline sync")
+        tech: Comma-separated tech stack (e.g., "FastAPI, React, SQLite")
+        outcome: Status - one of: active, completed, paused, archived
+        learnings: Comma-separated learnings (e.g., "start simpler, voice latency matters")
+    """
+    state = load_state()
+    proj = get_active_project(state)
+
+    if not proj:
+        return {"error": "No active project"}
+
+    updated = []
+
+    if summary:
+        proj.summary = summary
+        updated.append("summary")
+
+    if features:
+        proj.key_features = [f.strip() for f in features.split(",")]
+        updated.append("features")
+
+    if tech:
+        proj.tech_stack = [t.strip() for t in tech.split(",")]
+        updated.append("tech_stack")
+
+    if outcome:
+        valid_outcomes = ["active", "completed", "paused", "archived"]
+        if outcome.lower() in valid_outcomes:
+            proj.outcome = outcome.lower()
+            updated.append("outcome")
+
+    if learnings:
+        proj.learnings = [l.strip() for l in learnings.split(",")]
+        updated.append("learnings")
+
+    if updated:
+        proj.last_active = datetime.now().isoformat()
+        save_state(state)
+
+    return {
+        "project": proj.name,
+        "updated_fields": updated,
+        "current_state": {
+            "summary": proj.summary,
+            "key_features": proj.key_features,
+            "tech_stack": proj.tech_stack,
+            "outcome": proj.outcome,
+            "learnings": proj.learnings,
+        },
+        "voice_confirm": f"Updated {', '.join(updated)}." if updated else "Nothing to update."
+    }
+
+
 # --- Helper Functions ---
+
+def generate_dream_synthesis(project_name: str, all_projects: dict) -> dict:
+    """
+    Generate dream synthesis based on project name and portfolio.
+
+    Analyzes the project name for keywords and finds related projects
+    in the portfolio. Returns suggestions, not directives.
+    """
+    # Extract keywords from project name
+    name_lower = project_name.lower()
+    keywords = [w for w in name_lower.replace("-", " ").replace("_", " ").split()
+                if len(w) > 2 and w not in ("the", "and", "for", "with")]
+
+    related = []
+    suggested_features = []
+    all_learnings = []
+
+    # Find related projects
+    for slug, proj in all_projects.items():
+        if slug == slugify(project_name):
+            continue  # Skip self
+
+        relevance_score = 0
+        relevance_reasons = []
+
+        # Check name similarity
+        proj_name_lower = proj.name.lower()
+        for kw in keywords:
+            if kw in proj_name_lower:
+                relevance_score += 2
+                relevance_reasons.append(f"name contains '{kw}'")
+
+        # Check feature overlap potential
+        for feature in proj.key_features:
+            feature_lower = feature.lower()
+            for kw in keywords:
+                if kw in feature_lower:
+                    relevance_score += 1
+                    if feature not in suggested_features:
+                        suggested_features.append(feature)
+                    relevance_reasons.append(f"has feature '{feature}'")
+
+        # Check tech stack
+        for tech in proj.tech_stack:
+            tech_lower = tech.lower()
+            for kw in keywords:
+                if kw in tech_lower:
+                    relevance_score += 1
+                    relevance_reasons.append(f"uses '{tech}'")
+
+        # Collect learnings from mature projects
+        if proj.learnings and proj.outcome in ("completed", "paused"):
+            all_learnings.extend(proj.learnings)
+
+        if relevance_score > 0:
+            related.append({
+                "project": proj.name,
+                "slug": slug,
+                "score": relevance_score,
+                "reasons": relevance_reasons[:3],
+                "outcome": proj.outcome or "active",
+                "features": proj.key_features[:3],
+            })
+
+    # Sort by relevance
+    related.sort(key=lambda x: x["score"], reverse=True)
+    related = related[:5]  # Top 5 related
+
+    # Generate synthesis
+    if related:
+        top_related = related[0]["project"]
+        synthesis = f"Based on the name '{project_name}', this might relate to {top_related}. "
+        if suggested_features:
+            synthesis += f"Consider features like: {', '.join(suggested_features[:3])}. "
+        synthesis += "These are suggestions - clarify your vision to refine."
+    else:
+        synthesis = f"'{project_name}' appears to be a new direction. No strong matches in portfolio. What's the core idea?"
+
+    # Generate open questions
+    open_questions = [
+        "What problem does this solve?",
+        "Who is the primary user?",
+        "What's the simplest version that would be useful?",
+    ]
+    if related:
+        open_questions.append(f"How is this different from {related[0]['project']}?")
+
+    return {
+        "synthesis": synthesis,
+        "related_projects": related,
+        "suggested_features": suggested_features[:5],
+        "open_questions": open_questions,
+        "agreed_items": [],
+        "portfolio_learnings": list(set(all_learnings))[:5],
+        "generated_at": datetime.now().isoformat(),
+    }
+
+
+def sync_dream_to_notion(proj: ProjectState) -> bool:
+    """Sync dream synthesis to Notion's Braindump section"""
+    if not proj.notion_page_id or not notion.client:
+        return False
+
+    try:
+        dream = proj.dream
+        if not dream:
+            return False
+
+        # Build content block for dream
+        content_parts = [f"**AI Dream Synthesis** (suggestions, not directive)\n\n{dream.get('synthesis', '')}"]
+
+        if dream.get("related_projects"):
+            related_names = [r["project"] for r in dream["related_projects"][:3]]
+            content_parts.append(f"\n\n**Related projects:** {', '.join(related_names)}")
+
+        if dream.get("suggested_features"):
+            content_parts.append(f"\n\n**Suggested features:** {', '.join(dream['suggested_features'])}")
+
+        if dream.get("agreed_items"):
+            content_parts.append(f"\n\n**Agreed:** {', '.join(dream['agreed_items'])}")
+
+        # Append to page (in Braindump section ideally, but append to end for now)
+        notion.client.blocks.children.append(
+            block_id=proj.notion_page_id,
+            children=[{
+                "type": "callout",
+                "callout": {
+                    "icon": {"emoji": "💭"},
+                    "color": "purple_background",
+                    "rich_text": [{"text": {"content": "".join(content_parts)[:2000]}}]
+                }
+            }]
+        )
+        return True
+    except Exception:
+        return False
+
 
 def get_phase_gaps(proj: ProjectState) -> list:
     """Check what's missing for phase completion"""
