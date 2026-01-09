@@ -530,7 +530,7 @@ portfolio_file = "$PORTFOLIO_FILE"
 project_slug = "$PROJECT_SLUG"
 project_name = "$PROJECT_NAME"
 project_path = "$PROJECT_PATH"
-notion_page_id = "$DESIGN_DOC_ID"
+notion_page_id = "$PAGE_ID_CLEAN"
 timestamp = datetime.now().isoformat()
 
 # Load existing portfolio
