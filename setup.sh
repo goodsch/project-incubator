@@ -121,7 +121,12 @@ TODAY=$(date +%Y-%m-%d)
 # Check for Notion API token
 NOTION_TOKEN="${NOTION_API_KEY:-}"
 
-# Try to load from .env if not set
+# Try to load from ~/.hatchery/config.json if not set
+if [ -z "$NOTION_TOKEN" ] && [ -f "$HOME/.hatchery/config.json" ]; then
+    NOTION_TOKEN=$(grep -o '"notion_api_key"[[:space:]]*:[[:space:]]*"[^"]*"' "$HOME/.hatchery/config.json" | cut -d'"' -f4)
+fi
+
+# Try to load from .notion-token if not set
 if [ -z "$NOTION_TOKEN" ] && [ -f "$HOME/.notion-token" ]; then
     NOTION_TOKEN=$(cat "$HOME/.notion-token")
 fi
@@ -142,6 +147,12 @@ if [ -z "$NOTION_TOKEN" ]; then
     manual_notion_setup
 else
     PARENT_PAGE_ID="${NOTION_HUB_PAGE_ID:-}"
+
+    # Try to load from ~/.hatchery/config.json if not set
+    if [ -z "$PARENT_PAGE_ID" ] && [ -f "$HOME/.hatchery/config.json" ]; then
+        PARENT_PAGE_ID=$(grep -o '"notion_hub_page_id"[[:space:]]*:[[:space:]]*"[^"]*"' "$HOME/.hatchery/config.json" | cut -d'"' -f4)
+    fi
+
     if [ -z "$PARENT_PAGE_ID" ]; then
         echo -e "${YELLOW}No NOTION_HUB_PAGE_ID set.${NC}"
         echo "Set NOTION_HUB_PAGE_ID to auto-create the Design Doc under a parent page."
