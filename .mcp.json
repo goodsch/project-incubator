@@ -1,23 +1,24 @@
 {
-	"mcpServers": {
-		"notionApi": {
-			"notion": {
-				"type": "http",
-				"url": "https://mcp.notion.com/mcp"
-			},
-			"clear-thought": {
-				"type": "stdio",
-				"command": "npx",
-				"args": ["-y", "@kastalien-research/thoughtbox"]
-			},
-			"sequential-thinking": {
-				"command": "npx",
-				"args": ["-y", "@anthropic/sequential-thinking-mcp"]
-			},
-			"firecrawl": {
-				"command": "npx",
-				"args": ["-y", "firecrawl-mcp"],
-				"envFile": ".env"
-			}
-		}
-	}
+  "mcpServers": {
+    "notion": {
+      "type": "http",
+      "url": "https://mcp.notion.com/mcp"
+    },
+    "clear-thought": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@kastalien-research/thoughtbox"]
+    },
+    "sequential-thinking": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@anthropic/sequential-thinking-mcp"]
+    },
+    "firecrawl": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "firecrawl-mcp"],
+      "envFile": ".env"
+    }
+  }
+}

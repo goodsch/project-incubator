@@ -22,6 +22,25 @@ BLUE='\033[0;34m'
 CYAN='\033[0;36m'
 NC='\033[0m' # No Color
 
+manual_notion_setup() {
+    echo -e "${CYAN}Manual setup:${NC}"
+    echo "   1. Create a page titled '$PROJECT_NAME - Design Doc'"
+    echo "   2. Copy contents from notion-template/design-doc.md"
+    echo "   3. Replace {{PROJECT_NAME}} with '$PROJECT_NAME'"
+    echo "   4. Replace {{DATE}} with '$TODAY'"
+    echo ""
+    read -p "Press Enter when the Notion page is created..."
+    echo ""
+    echo "Enter the Notion page ID."
+    echo "(Find it in the URL: notion.so/Page-Title-XXXXXXXX)"
+    read -p "Page ID: " PAGE_ID
+
+    if [ -z "$PAGE_ID" ]; then
+        echo -e "${RED}❌ Page ID is required${NC}"
+        exit 1
+    fi
+}
+
 echo ""
 echo "🌱 Project Incubator Setup"
 echo "=========================="
@@ -120,38 +139,26 @@ if [ -z "$NOTION_TOKEN" ]; then
     echo ""
 
     # Fall back to manual
-    echo -e "${CYAN}Manual setup:${NC}"
-    echo "   1. Create a page titled '$PROJECT_NAME - Design Doc'"
-    echo "   2. Copy contents from notion-template/design-doc.md"
-    echo "   3. Replace {{PROJECT_NAME}} with '$PROJECT_NAME'"
-    echo "   4. Replace {{DATE}} with '$TODAY'"
-    echo ""
-    read -p "Press Enter when the Notion page is created..."
-    echo ""
-    echo "Enter the Notion page ID."
-    echo "(Find it in the URL: notion.so/Page-Title-XXXXXXXX)"
-    read -p "Page ID: " PAGE_ID
-
-    if [ -z "$PAGE_ID" ]; then
-        echo -e "${RED}❌ Page ID is required${NC}"
-        exit 1
-    fi
-
-    PAGE_ID_CLEAN=$(echo "$PAGE_ID" | tr -d '-')
-    PAGE_URL="https://www.notion.so/${PAGE_ID_CLEAN}"
+    manual_notion_setup
 else
-    # Default hub page - set yours here or override with NOTION_HUB_PAGE_ID env var
-    PARENT_PAGE_ID="${NOTION_HUB_PAGE_ID:-2e1ca94098f2817594b0ecc5e2620966}"
-    PARENT_PAGE_ID_CLEAN=$(echo "$PARENT_PAGE_ID" | tr -d '-')
+    PARENT_PAGE_ID="${NOTION_HUB_PAGE_ID:-}"
+    if [ -z "$PARENT_PAGE_ID" ]; then
+        echo -e "${YELLOW}No NOTION_HUB_PAGE_ID set.${NC}"
+        echo "Set NOTION_HUB_PAGE_ID to auto-create the Design Doc under a parent page."
+        echo ""
+        manual_notion_setup
+    else
+        # Default hub page - set yours here or override with NOTION_HUB_PAGE_ID env var
+        PARENT_PAGE_ID_CLEAN=$(echo "$PARENT_PAGE_ID" | tr -d '-')
 
-    echo -e "${CYAN}   Creating page via Notion API...${NC}"
+        echo -e "${CYAN}   Creating page via Notion API...${NC}"
 
-    # Build the API request with blocks for the template
-    API_RESPONSE=$(curl -s -X POST "https://api.notion.com/v1/pages" \
-        -H "Authorization: Bearer $NOTION_TOKEN" \
-        -H "Content-Type: application/json" \
-        -H "Notion-Version: 2022-06-28" \
-        -d @- << PAYLOAD
+        # Build the API request with blocks for the template
+        API_RESPONSE=$(curl -s -X POST "https://api.notion.com/v1/pages" \
+            -H "Authorization: Bearer $NOTION_TOKEN" \
+            -H "Content-Type: application/json" \
+            -H "Notion-Version: 2022-06-28" \
+            -d @- << PAYLOAD
 {
   "parent": {"type": "page_id", "page_id": "$PARENT_PAGE_ID_CLEAN"},
   "properties": {
@@ -188,35 +195,23 @@ else
 PAYLOAD
     )
 
-    # Parse the response
-    PAGE_ID=$(echo "$API_RESPONSE" | jq -r '.id // empty')
+        # Parse the response
+        PAGE_ID=$(echo "$API_RESPONSE" | jq -r '.id // empty')
 
-    if [ -z "$PAGE_ID" ] || [ "$PAGE_ID" = "null" ]; then
-        ERROR_MSG=$(echo "$API_RESPONSE" | jq -r '.message // .code // "Unknown error"')
-        echo -e "${RED}❌ Failed to create Notion page${NC}"
-        echo "   Error: $ERROR_MSG"
-        echo ""
+        if [ -z "$PAGE_ID" ] || [ "$PAGE_ID" = "null" ]; then
+            ERROR_MSG=$(echo "$API_RESPONSE" | jq -r '.message // .code // "Unknown error"')
+            echo -e "${RED}❌ Failed to create Notion page${NC}"
+            echo "   Error: $ERROR_MSG"
+            echo ""
 
-        # Fall back to manual
-        echo -e "${CYAN}Manual setup:${NC}"
-        echo "   1. Create a page titled '$PROJECT_NAME - Design Doc'"
-        echo "   2. Copy contents from notion-template/design-doc.md"
-        echo "   3. Replace {{PROJECT_NAME}} with '$PROJECT_NAME'"
-        echo ""
-        read -p "Press Enter when the Notion page is created..."
-        echo ""
-        echo "Enter the Notion page ID."
-        read -p "Page ID: " PAGE_ID
-
-        if [ -z "$PAGE_ID" ]; then
-            echo -e "${RED}❌ Page ID is required${NC}"
-            exit 1
+            # Fall back to manual
+            manual_notion_setup
         fi
     fi
-
-    PAGE_ID_CLEAN=$(echo "$PAGE_ID" | tr -d '-')
-    PAGE_URL="https://www.notion.so/${PAGE_ID_CLEAN}"
 fi
+
+PAGE_ID_CLEAN=$(echo "$PAGE_ID" | tr -d '-')
+PAGE_URL="https://www.notion.so/${PAGE_ID_CLEAN}"
 
 echo -e "   ${GREEN}✓${NC} Created: $PROJECT_NAME - Design Doc"
 echo -e "   ${GREEN}✓${NC} Page ID: ${PAGE_ID_CLEAN:0:8}..."

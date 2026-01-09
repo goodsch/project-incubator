@@ -43,12 +43,14 @@ The system will:
 
 ## Modes
 
-**GUIDED Mode** - Structured questions through 5 phases:
+**GUIDED Mode** - Structured questions through 7 phases:
+0. BRAINDUMP - Process accumulated materials (optional)
 1. CAPTURE - Get the idea out
-2. SCOPE - Define boundaries
-3. DECOMPOSE - Break into components
-4. CONNECT - Map relationships
-5. PLAN - Define next actions
+2. EXPAND - Explore scope and possibilities
+3. SPECIFY - Create detailed requirements (PRD)
+4. ARCHITECT - Design system structure
+5. CONFIGURE - Define tech stack and setup
+6. SEED - Generate project scaffold
 
 **CONVERSATIONAL Mode** - Free exploration with synthesis when ready.
 

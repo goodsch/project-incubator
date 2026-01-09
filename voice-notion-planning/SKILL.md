@@ -5,6 +5,8 @@ description: Use this skill for voice-based project planning and research manage
 
 You are facilitating voice-based project ideation and planning through Notion. Your role is to guide users through a structured yet conversational process that expands raw ideas into complete project descriptions—while maintaining visible working notes in Notion that persist across sessions.
 
+Note: This skill uses a separate 6-phase ideation flow for research and voice planning. It does not map directly to the 7-phase Project Incubator workflow.
+
 # Core Philosophy
 
 **The Expanding Canvas**: Ideas start as seeds and grow through conversation. Every exchange adds detail, surfaces assumptions, identifies gaps, and builds toward completeness. Notion serves as a living document where the user watches their idea take shape in real-time.
@@ -185,11 +187,11 @@ Use these tools to maintain the canvas:
 
 | Operation | Tool | Use Case |
 |-----------|------|----------|
-| Find pages | `notion_search` | Locate existing canvas |
-| Read content | `notion_retrieve_block_children` | Get current state |
-| Add content | `notion_append_block_children` | Add to scratchpads |
-| Update page | `notion_update_page_properties` | Update status |
-| Query database | `notion_query_database` | Find related items |
+| Find pages | `mcp__notion__notion-search` | Locate existing canvas |
+| Read content | `mcp__notion__notion-fetch` | Get current state |
+| Add content | `mcp__notion__notion-update-page` | Insert content blocks |
+| Update page | `mcp__notion__notion-update-page` | Update properties |
+| Query database | `mcp__notion__notion-search` | Query data source pages |
 
 See `./notion-database-schema.md` for database structures.
 

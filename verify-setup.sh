@@ -69,7 +69,17 @@ else
             fi
 
             # Extract project config
-            PAGE_ID=$(grep -A1 "project_page_id:" "$skill_dir/SKILL.md" 2>/dev/null | tail -1 | tr -d ' "' | cut -d':' -f2)
+            PAGE_ID=$(awk '
+                $1 == "design_doc:" { in_doc = 1; next }
+                in_doc && $1 == "id:" {
+                    gsub(/"/, "", $2);
+                    print $2;
+                    exit
+                }
+            ' "$skill_dir/SKILL.md" 2>/dev/null)
+            if [ -z "$PAGE_ID" ]; then
+                PAGE_ID=$(grep -A1 "project_page_id:" "$skill_dir/SKILL.md" 2>/dev/null | tail -1 | tr -d ' "' | cut -d':' -f2)
+            fi
             if [ -n "$PAGE_ID" ] && [ "$PAGE_ID" != "" ]; then
                 pass "Page ID configured: ${PAGE_ID:0:8}..."
             else
@@ -126,7 +136,8 @@ echo "3. Checking Template Files"
 echo "--------------------------"
 
 # Check template structure
-TEMPLATE_DIR="/home/chris/claude-workspaces/Project-Incubator"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+TEMPLATE_DIR="$SCRIPT_DIR"
 
 if [ -d "$TEMPLATE_DIR" ]; then
     pass "Template directory exists"

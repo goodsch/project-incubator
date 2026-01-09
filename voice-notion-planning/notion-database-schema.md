@@ -2,6 +2,8 @@
 
 This document defines the complete database schema for the Project Incubator Notion workspace.
 
+Note: The JSON snippets below are raw Notion API payloads for reference. When using MCP tools, translate these to `mcp__notion__notion-create-pages`, `mcp__notion__notion-update-page`, and `mcp__notion__notion-search` as described in `docs/notion-integration.md`.
+
 ## Database: Projects
 
 **Purpose:** Track active research projects/think tanks
@@ -133,7 +135,7 @@ This document defines the complete database schema for the Project Incubator Not
 ### Creating a Database Item
 
 ```javascript
-// Tool: notion_create_database_item
+// Notion API payload (reference only)
 {
   "database_id": "abc123...",
   "properties": {
@@ -159,7 +161,7 @@ This document defines the complete database schema for the Project Incubator Not
 ### Querying a Database
 
 ```javascript
-// Tool: notion_query_database
+// Notion API payload (reference only)
 {
   "database_id": "abc123...",
   "filter": {
@@ -175,7 +177,7 @@ This document defines the complete database schema for the Project Incubator Not
 ### Adding Content Blocks
 
 ```javascript
-// Tool: notion_append_block_children
+// Notion API payload (reference only)
 {
   "block_id": "page_id_here",
   "children": [
@@ -207,7 +209,7 @@ This document defines the complete database schema for the Project Incubator Not
 ### Updating Page Properties
 
 ```javascript
-// Tool: notion_update_page_properties
+// Notion API payload (reference only)
 {
   "page_id": "page_id_here",
   "properties": {
@@ -224,7 +226,7 @@ This document defines the complete database schema for the Project Incubator Not
 ### Searching for Pages
 
 ```javascript
-// Tool: notion_search
+// Notion API payload (reference only)
 {
   "query": "climate policy",
   "filter": {

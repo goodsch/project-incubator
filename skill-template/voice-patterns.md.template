@@ -26,11 +26,13 @@ Natural language patterns Claude should recognize.
 
 | Pattern | Action |
 |---------|--------|
+| "Process my braindump" | Phase 0: BRAINDUMP |
 | "Let's work on the idea" | Phase 1: CAPTURE |
-| "Define the scope" | Phase 2: SCOPE |
-| "Break it into pieces" | Phase 3: DECOMPOSE |
-| "How do the parts connect?" | Phase 4: CONNECT |
-| "What's next?" | Phase 5: PLAN |
+| "Let's expand on this" | Phase 2: EXPAND |
+| "Write the PRD" | Phase 3: SPECIFY |
+| "Design the architecture" | Phase 4: ARCHITECT |
+| "Configure the project" | Phase 5: CONFIGURE |
+| "Generate the project" | Phase 6: SEED |
 
 ## Status Queries
 

@@ -100,6 +100,13 @@ Project Incubator guides you through 7 deterministic phases:
 | `/whats-next` | Get the next directive action |
 | `/advance` | Attempt to advance to next phase (gate-checked) |
 
+### Creative & Session Commands
+| Command | Purpose |
+|---------|---------|
+| `/dream` | Deep creative ideation cycle - AI reflects, researches, offers ideas |
+| `/resume` | Fast re-entry (< 60 sec orientation) |
+| `/snapshot` | Save working context for session continuity |
+
 ## Directive UX
 
 Project Incubator acts as a **project manager**, not an assistant:
@@ -115,6 +122,30 @@ Project Incubator acts as a **project manager**, not an assistant:
 - "What's on your mind?"
 
 The system tells you what to do next - you don't have to decide.
+
+## AI Creative Contribution
+
+The AI isn't just a facilitator - it's a **creative collaborator**. Use `/dream` to unlock:
+
+- **Divergent exploration** - possibilities, prior art, risks, alignment
+- **Research** - similar tools, terminology, patterns
+- **Mental models** - pre-mortem, first principles, abstraction laddering
+
+Everything offered is **conceptual** - nothing becomes a requirement unless you confirm it in the Design Doc.
+
+See [AI Creative Contribution](docs/ai-creative-contribution.md) for full details.
+
+## Anti-Lock-In Guarantees
+
+Project Incubator explicitly prevents premature commitment:
+
+1. **Marination is conceptual** - Phase 0 output is context, not specification
+2. **Dream output is offered** - framed as possibilities, not requirements
+3. **Design Doc is truth** - only confirmed items are real
+4. **User picks** - AI proposes, user disposes
+5. **Journal is reference** - past ideas don't constrain future decisions
+
+This reduces decision paralysis by making stakes explicit: exploring an idea doesn't commit you to building it.
 
 ## The Design Doc Model
 
@@ -169,6 +200,7 @@ First use will prompt Notion authentication.
 project-incubator/
 ├── README.md                 # This file
 ├── CLAUDE.md.template        # → Becomes CLAUDE.md after setup
+├── CONTEXT.md.template       # → Becomes CONTEXT.md (session state)
 ├── setup.sh                  # Setup script
 ├── verify-setup.sh           # Verify installation
 ├── status.json               # Local state (created by setup)
@@ -183,7 +215,10 @@ project-incubator/
 │       ├── seed.md           # Phase 6
 │       ├── status.md         # Show status
 │       ├── advance.md        # Gate-checked advance
-│       └── whats-next.md     # Directive next step
+│       ├── whats-next.md     # Directive next step
+│       ├── dream.md          # Creative ideation cycle
+│       ├── resume.md         # Fast re-entry
+│       └── snapshot.md       # Context capture
 ├── braindump/                # Phase 0 materials
 │   ├── README.md
 │   └── source-materials/
@@ -192,12 +227,21 @@ project-incubator/
 │   ├── voice-patterns.md
 │   ├── notion-integration.md
 │   ├── creating-projects.md
-│   └── development-rules.md
+│   ├── development-rules.md
+│   └── ai-creative-contribution.md
 ├── notion-template/
 │   └── design-doc.md         # Paste-ready Notion template
+├── mcp-server-template/      # MCP server for voice/remote access
+│   ├── README.md             # Deployment guide
+│   ├── pyproject.toml        # Dependencies
+│   ├── .env.example          # Notion config
+│   └── src/
+│       ├── server.py         # FastMCP server with 9 tools
+│       └── notion_sync.py    # Notion API integration
 └── skill-template/           # Voice skill templates
-    ├── SKILL.md.template
-    └── voice-patterns.md.template
+    └── voice-companion/
+        ├── README.md         # Installation guide
+        └── SKILL.md.template # Customizable skill template
 ```
 
 ## Mobile Workflow
@@ -208,6 +252,39 @@ For Claude web/mobile (no MCP):
 3. Say "Let's work on [Project Name]"
 4. Claude outputs paste-ready markdown for Notion
 
+## Voice & MCP Infrastructure
+
+For voice-first workflows (Claude mobile app, remote access):
+
+### MCP Server Template
+
+The `mcp-server-template/` provides a FastMCP server exposing incubator tools:
+
+| Tool | Purpose |
+|------|---------|
+| `incubator_status` | Get phase, progress, and next action |
+| `incubator_capture` | Quick capture ideas (queues for Notion sync) |
+| `incubator_advance` | Gate-checked phase advancement |
+| `incubator_set_project` | Set active project name |
+| `incubator_recap` | Voice-friendly 2-3 sentence summary |
+| `incubator_next` | Single imperative directive |
+| `incubator_gaps` | What's blocking phase advancement |
+| `incubator_sync` | Push captures to Notion |
+| `incubator_notion_status` | Check Notion connection |
+
+Deploy locally, via systemd, or expose remotely with Cloudflare Tunnel. See [MCP Server README](mcp-server-template/README.md).
+
+### Voice Companion Skill
+
+The `skill-template/voice-companion/` provides a Claude Code skill for voice-optimized responses:
+
+- **10-second rule**: All responses speakable in under 10 seconds
+- **Capture flow**: Maintains momentum during idea capture
+- **Intent mapping**: Natural language to MCP tool calls
+- **Session continuity**: Auto-recaps on resume
+
+Copy and customize the template for your project instance. See [Voice Companion README](skill-template/voice-companion/README.md)
+
 ## Documentation
 
 See the `docs/` folder for:
@@ -216,6 +293,7 @@ See the `docs/` folder for:
 - [Notion Integration](docs/notion-integration.md) - MCP tools guide
 - [Creating Projects](docs/creating-projects.md) - How to use this template
 - [Development Rules](docs/development-rules.md) - Design principles
+- [AI Creative Contribution](docs/ai-creative-contribution.md) - Dream cycles and creative collaboration
 
 ## License
 

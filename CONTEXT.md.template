@@ -1,0 +1,32 @@
+# {{PROJECT_NAME}}
+
+*Created: {{DATE}}*
+
+## Raw Idea
+
+[Add your initial thoughts here - or process braindump materials first]
+
+## Notes
+
+[Additional context as you work through phases]
+
+---
+
+## Session Notes
+
+### {{DATE}} - Initialized
+- Project workspace created
+- Notion Design Doc: {{NOTION_URL}}
+- Ready to begin Phase 0 (BRAINDUMP) or Phase 1 (CAPTURE)
+
+<!--
+USAGE:
+- Use /snapshot to update this file with current working context
+- Use /resume to quickly re-orient from this file
+- Session notes accumulate as you work
+
+TEMPLATE VARIABLES (replaced by setup.sh):
+- {{PROJECT_NAME}} - Your project name
+- {{DATE}} - Creation date
+- {{NOTION_URL}} - Link to your Notion Design Doc
+-->

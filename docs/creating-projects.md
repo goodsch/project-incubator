@@ -181,11 +181,41 @@ To start over:
 # Reset status.json to Phase 0/1
 cat > status.json << 'EOF'
 {
-  "projectName": "Your Project",
-  "notionPageId": "YOUR_PAGE_ID",
+  "project": "Your Project",
+  "slug": "your-project",
+  "notion": {
+    "designDoc": {
+      "id": "YOUR_PAGE_ID",
+      "url": "https://www.notion.so/YOUR_PAGE_ID"
+    },
+    "quickCapture": {
+      "id": "",
+      "url": "",
+      "type": "database"
+    },
+    "claudeScratch": {
+      "id": "",
+      "url": ""
+    },
+    "systemCanvas": {
+      "id": "",
+      "url": ""
+    }
+  },
+  "framework": "project-incubator",
   "currentPhase": 1,
-  "phaseName": "CAPTURE",
-  "created": "2026-01-07",
+  "phaseName": "capture",
+  "status": "initialized",
+  "phases": {
+    "0-braindump": { "status": "pending", "optional": true },
+    "1-capture": { "status": "in_progress" },
+    "2-expand": { "status": "pending" },
+    "3-specify": { "status": "pending" },
+    "4-architect": { "status": "pending" },
+    "5-configure": { "status": "pending" },
+    "6-seed": { "status": "pending" }
+  },
+  "created": "YYYY-MM-DDTHH:MM:SSZ",
   "lastSession": null
 }
 EOF

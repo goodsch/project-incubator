@@ -3,7 +3,7 @@
 This document catalogs valuable content that was archived during the template cleanup. Reference this when you need patterns or ideas from the original development process.
 
 ## Archive Location
-`/home/chris/claude-workspaces/Project-Incubator-Archive/`
+`../Project-Incubator-Archive/` (not included in this repo)
 
 ---
 
@@ -106,8 +106,8 @@ Codex testing instructions including:
 ## How to Access Archived Content
 
 ```bash
-# Navigate to archive
-cd /home/chris/claude-workspaces/Project-Incubator-Archive
+# Navigate to archive (if available)
+cd ../Project-Incubator-Archive
 
 # Find specific content
 grep -r "keyword" archive/

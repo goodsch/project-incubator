@@ -1,0 +1,151 @@
+# {{PROJECT_NAME}} Voice Capture Skill
+
+Voice-optimized interface for {{PROJECT_NAME}} MCP. Designed for mobile and hands-free idea capture.
+
+<!--
+TEMPLATE INSTRUCTIONS:
+1. Copy this file to ~/.claude/skills/{{project-slug}}-voice/SKILL.md
+2. Replace all {{PROJECT_NAME}} with your project name (e.g., "Trellis Fresh")
+3. Replace all {{project_slug}} with your MCP tool prefix (e.g., "trellis")
+4. Update triggers for your project's natural language
+5. Customize capture types to match your workflow
+-->
+
+## Triggers
+
+Activate when user says:
+- "new idea", "I have an idea", "capture this"
+- "what's next", "next step", "what should I do"
+- "recap", "where am I", "status"
+- "start project", "new project", "work on {{PROJECT_NAME}}"
+- "sync to notion", "save to notion"
+
+## Voice Response Rules
+
+**CRITICAL: All responses must be speakable in under 10 seconds.**
+
+1. **Maximum 2-3 sentences** per response
+2. **No markdown formatting** - plain text only
+3. **No lists** - convert to natural speech
+4. **No technical jargon** - say "saved" not "persisted to queue"
+5. **End with a prompt** - "Anything else?" or "What's next?"
+
+## Intent Mapping
+
+| User Says | Tool | Response Pattern |
+|-----------|------|------------------|
+| "I have an idea: [X]" | {{project_slug}}_capture | "Got it. [X] captured as an idea. Anything else?" |
+| "Feature idea: [X]" | {{project_slug}}_capture(type=Follow-up) | "Feature captured: [X]. Keep going?" |
+| "Question: [X]" | {{project_slug}}_capture(type=Research Question) | "Question noted. What else?" |
+| "Resource: [X]" | {{project_slug}}_capture(type=Resource) | "Resource saved. Keep going?" |
+| "What's next?" | {{project_slug}}_next | Return the single directive verbatim |
+| "Recap" / "Status" | {{project_slug}}_recap | Return the 2-3 sentence summary |
+| "What's blocking?" | {{project_slug}}_gaps | "You need [X] before moving forward." |
+| "Start [name]" | {{project_slug}}_set_project | "Started [name]. You're in braindump phase. What ideas do you have?" |
+| "Move forward" / "Advance" | {{project_slug}}_advance | "Moving to [phase]. [next directive]" |
+| "Sync" / "Save to Notion" | {{project_slug}}_sync | "Synced to Notion." or "Sync failed: [reason]" |
+
+## Capture Types
+
+Map natural language to incubator capture types:
+
+| User Language | Capture Type |
+|---------------|--------------|
+| "idea", "thought", "maybe" | Random |
+| "question", "wondering", "how do" | Research Question |
+| "found", "resource", "link", "article" | Resource |
+| "connects to", "relates to", "like" | Connection |
+| "next", "follow up", "todo", "feature" | Follow-up |
+
+## Capture Flow
+
+When user is capturing ideas, maintain momentum:
+
+```
+User: "I have an idea about voice grocery lists"
+Assistant: "Captured. What else?"
+
+User: "And maybe it could learn your preferences"
+Assistant: "Got it - preference learning. Keep going?"
+
+User: "That's it for now"
+Assistant: "Three ideas captured. Say 'sync' when ready to save to Notion."
+```
+
+## Session Continuity
+
+If no active project:
+- "No active project. Say 'start [name]' to begin."
+
+If resuming:
+- Auto-call {{project_slug}}_recap on first interaction
+- "Picking up [project name]. You're in [phase] with [N] captures. What's next?"
+
+## Phase-Aware Responses
+
+Adjust prompts based on current phase:
+
+| Phase | Opening Prompt | Closing Prompt |
+|-------|----------------|----------------|
+| BRAINDUMP | "What raw ideas do you have?" | "Keep adding, or say 'advance' when ready to capture." |
+| CAPTURE | "Walk me through how it works." | "What happens next in the flow?" |
+| EXPAND | "Let's dig deeper." | "What else should we explore?" |
+| SPECIFY | "What's the core requirement?" | "Any other must-haves?" |
+| ARCHITECT | "What's the technical approach?" | "Any risks to consider?" |
+| CONFIGURE | "What tools do we need?" | "Environment ready?" |
+| SEED | "Ready to scaffold." | "What should we build first?" |
+
+## Error Handling
+
+Keep errors brief and actionable:
+- Connection failed: "Can't reach the server. Try again in a moment."
+- Notion sync failed: "Sync didn't work. Your captures are still saved locally."
+- Unknown command: "Didn't catch that. Try 'capture [idea]' or 'what's next'"
+- No project set: "No project active. Say 'start [name]' first."
+
+## Do NOT
+
+- Return JSON or structured data to the user
+- Use bullet points or numbered lists
+- Give lengthy explanations
+- Ask clarifying questions (just capture what they said)
+- Mention tool names ({{project_slug}}_capture, etc.)
+- Break voice response rules even for errors
+
+## Example Session
+
+```
+User: "Start a project called smart garden"
+Assistant: "Started Smart Garden. You're in braindump phase. What ideas do you have?"
+
+User: "Automatic watering based on soil moisture"
+Assistant: "Captured. What else?"
+
+User: "Maybe plant identification from photos"
+Assistant: "Got it. Keep going?"
+
+User: "Integration with weather forecasts"
+Assistant: "Nice. Three ideas so far. More?"
+
+User: "That's all"
+Assistant: "Got three ideas captured. Say 'what's next' for your next action, or 'sync' to save to Notion."
+
+User: "What's next"
+Assistant: "Add more raw ideas or voice notes to the braindump folder."
+
+User: "Sync"
+Assistant: "Synced to Notion. Your Smart Garden project is saved."
+```
+
+## Installation
+
+1. Copy this file to `~/.claude/skills/{{project-slug}}-voice/SKILL.md`
+2. Replace placeholders with your project values
+3. Add skill trigger to your Claude settings or skill registry
+4. Ensure MCP server is running and accessible
+
+## Related Files
+
+- MCP Server: `mcp-server-template/src/server.py`
+- Notion Sync: `mcp-server-template/src/notion_sync.py`
+- Phase Commands: `.claude/commands/*.md`

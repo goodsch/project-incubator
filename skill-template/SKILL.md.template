@@ -123,7 +123,7 @@ Missing pieces detected during conversation:
 
 ### 🎯 PROJECT SNAPSHOT (always visible orientation)
 - Status: [Ideating | Designing | Planning | Building | Paused]
-- Phase: [Capture | Scope | Decompose | Connect | Plan]
+- Phase: [Braindump | Capture | Expand | Specify | Architect | Configure | Seed]
 - Last touched, Next action, Blockers
 
 ### 💡 THE IDEA (captured essence)
@@ -155,6 +155,17 @@ Missing pieces detected during conversation:
 
 ## Guided Phases
 
+### Phase 0: BRAINDUMP (optional)
+**Goal:** Process accumulated materials before capture
+
+**Directive prompts:**
+- "Add materials to braindump/source-materials/ or say 'skip braindump'."
+- "If you've added materials, say 'process my braindump materials'."
+
+→ Extract explicit and implicit insights
+→ Produce creative synthesis from materials
+→ Update BRAINDUMP MATERIALS section in Notion
+
 ### Phase 1: CAPTURE (scenario-first)
 **Goal:** Get the idea out by walking through how it would be used
 
@@ -176,45 +187,58 @@ Let them narrate the experience. As they describe it, you're extracting:
 → Synthesize scenario into THE IDEA section
 → Sketch initial flow in System Canvas (if visual helps)
 
-### Phase 2: SCOPE (define boundaries)
-**Goal:** Clarify what this is and isn't
+### Phase 2: EXPAND (6 macro questions)
+**Goal:** Explore scope, users, success criteria, and boundaries
 
 Questions:
-- "What does this system DO? What's its purpose?"
-- "What's explicitly NOT part of this?"
-- "Who or what interacts with it?"
+- "Who is the primary user?"
+- "What is the core problem?"
+- "What does success look like?"
+- "What are the essential features?"
+- "What is out of scope?"
+- "What does this replace or complement?"
 
-→ Synthesize into SYSTEM OVERVIEW
+→ Update SYSTEM OVERVIEW, IN SCOPE, OUT OF SCOPE
+→ Seed COMPONENTS and OPEN QUESTIONS
+→ Create expansion.md when using Claude Code
 
-### Phase 3: DECOMPOSE (break into parts)
-**Goal:** Identify the components
-
-Questions:
-- "What are the main pieces? Don't overthink - what comes to mind?"
-- "For [component], what does it actually do?"
-- "What does [component] need to work? What does it produce?"
-
-→ Build COMPONENTS table iteratively
-
-### Phase 4: CONNECT (show relationships)
-**Goal:** Map how parts work together
+### Phase 3: SPECIFY (PRD)
+**Goal:** Translate the expanded idea into requirements
 
 Questions:
-- "How does [A] talk to [B]?"
-- "What needs to happen before [X] can work?"
-- "Walk me through the data flow..."
+- "What are the core user stories?"
+- "What are acceptance criteria for each feature?"
+- "What is explicitly deferred to later?"
 
-→ Synthesize into RELATIONSHIPS (generate Mermaid if helpful)
+→ Create spec/prd-v1.md and update SPECIFICATION section
 
-### Phase 5: PLAN (define next actions)
-**Goal:** Create momentum
+### Phase 4: ARCHITECT (trade-offs + risks)
+**Goal:** Make technical decisions with explicit rationale
 
 Questions:
-- "What's the very next thing to do?"
-- "What decisions need to be made first?"
-- "What's blocking progress?"
+- "What project type fits the users and constraints?"
+- "Which stack options are we choosing and why?"
+- "What are the main risks and mitigations?"
 
-→ Update NEXT ACTIONS and OPEN QUESTIONS
+→ Create spec/architecture.md with trade-offs and pre-mortem
+
+### Phase 5: CONFIGURE (Claude Code setup)
+**Goal:** Define the workspace needed to build the project
+
+Questions:
+- "What commands, skills, and agents are required?"
+- "What should the output CLAUDE.md include?"
+
+→ Draft config/ files and update CONFIGURATION section
+
+### Phase 6: SEED (generate scaffold)
+**Goal:** Generate the buildable project scaffold
+
+Questions:
+- "What output structure should be created?"
+- "Which templates or boilerplate should be included?"
+
+→ Generate output/ scaffold and update SEED OUTPUT section
 
 ---
 
@@ -302,7 +326,7 @@ Parse PROJECT SNAPSHOT for status, phase, next action
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 {{PROJECT_NAME}}
 
-Phase: {phase} of 6 | Status: {status}
+Phase: {phase} of 7 | Status: {status}
 Last touched: {date}
 
 {If Quick Capture had unprocessed items: "📥 {count} new captures to process"}
