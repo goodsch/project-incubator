@@ -209,13 +209,15 @@ def hatchery_select(project: str) -> dict:
 
 
 @mcp.tool
-def hatchery_create(name: str, notion_page_id: Optional[str] = None) -> dict:
+def hatchery_create(name: str, skip_notion: bool = False) -> dict:
     """
     Create a new incubation project.
 
+    Automatically creates a Design Doc page in Notion if configured.
+
     Args:
         name: Human-readable project name
-        notion_page_id: Optional Notion page ID for this project's Design Doc
+        skip_notion: If True, don't create Notion page (local-only mode)
     """
     state = load_state()
     slug = slugify(name)
@@ -228,6 +230,16 @@ def hatchery_create(name: str, notion_page_id: Optional[str] = None) -> dict:
         }
 
     now = datetime.now().isoformat()
+    notion_page_id = None
+    notion_url = None
+
+    # Auto-create Notion page if configured
+    if not skip_notion and notion.hub_page_id:
+        result = notion.create_project_page(name, slug)
+        if result.get("created"):
+            notion_page_id = result["page_id"]
+            notion_url = result.get("url")
+
     project = ProjectState(
         name=name,
         slug=slug,
@@ -245,7 +257,8 @@ def hatchery_create(name: str, notion_page_id: Optional[str] = None) -> dict:
         "created": name,
         "slug": slug,
         "phase": "BRAINDUMP",
-        "notion_linked": notion_page_id is not None,
+        "notion_page_id": notion_page_id,
+        "notion_url": notion_url,
         "voice_confirm": f"Created {name}. Starting in braindump phase. What ideas do you have?"
     }
 
@@ -387,11 +400,18 @@ def hatchery_advance(target_phase: str) -> dict:
     proj.last_active = datetime.now().isoformat()
     save_state(state)
 
+    # Sync status to Notion if page exists
+    notion_synced = False
+    if proj.notion_page_id:
+        result = notion.update_project_status(proj.notion_page_id, target_phase, proj.phase_progress)
+        notion_synced = result.get("updated", False)
+
     return {
         "project": proj.name,
         "advanced_to": target_phase,
         "phase_index": target_idx,
         "next_action": PHASE_DIRECTIVES.get(target_phase),
+        "notion_synced": notion_synced,
         "voice_confirm": f"Advanced to {target_phase}. {PHASE_DIRECTIVES.get(target_phase, '')}"
     }
 
