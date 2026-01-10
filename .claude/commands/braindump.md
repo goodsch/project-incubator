@@ -1,131 +1,47 @@
 ---
 name: braindump
-description: Phase 0 - Process accumulated materials through meta-analysis and creative synthesis (optional phase)
+description: Phase 0 - Alias for /incubate (cognitive incubation)
 ---
 
-# /braindump - Phase 0
+# /braindump → /incubate
 
-Process accumulated materials before formal capture.
+**This command is now an alias for `/incubate`.**
 
-## When to Use
+The Phase 0 process has evolved from mechanical extraction to **cognitive incubation**—where the AI develops genuine understanding through your materials, related projects, and personal context.
 
-- You have materials in `braindump/source-materials/` to process
-- You want AI creative input before formal capture
-- You've been collecting notes, transcripts, or ideas
+## Quick Reference
 
-## When to Skip
+| Old Approach | New Approach |
+|--------------|--------------|
+| Extract explicit/implicit ideas | Build cognitive understanding |
+| Write structured outputs | Develop soft contextual layer |
+| Produce `extracted-insights.md` | Persist to memory + Notion |
+| Mechanical processing | Creative synthesis |
 
-- Fresh idea with no accumulated materials
-- Prefer to start with raw capture first
-- Just say "skip braindump" or "start with capture"
+## Use /incubate Instead
 
-## Prerequisites
+Run `/incubate` for the full Phase 0 experience:
 
-- Materials in `braindump/source-materials/`
-- status.json shows Phase 0
+1. **Material Absorption** - Read braindump/source-materials/
+2. **Personal Context** - Query patterns and motivations
+3. **Related Projects** - Discover and deep-read connected projects
+4. **Dream Synthesis** - Extended thoughtbox exploration
+5. **Persistence** - Store insights for cross-session continuity
 
-## Process
+## Legacy Files
 
-### 1. Gather Materials
+If you have existing files from the old approach:
+- `braindump/extracted-insights.md` - Can be referenced during incubation
+- `braindump/dream-synthesis.md` - Can inform the dream phase
 
-Check `braindump/source-materials/` for:
-- AI conversation exports (ChatGPT, Claude, etc.)
-- Voice memo transcriptions
-- Notes and ideas
-- Reference projects
-- Screenshots with ideas
+The new system uses:
+- `braindump/dream-journal.md` - Human-readable incubation record
+- Serena memory - Project-local persistence
+- Notion INCUBATION INSIGHTS - Canonical record
 
-### 2. Meta-Analysis
+## Skip Option
 
-**Use Clear Thought for analysis:**
-```
-mcp__clear-thought__mental_models with:
-- decomposition - Break down the material themes
-- abstraction-laddering - Find the "why" behind stated "whats"
-```
-
-Extract:
-- **Explicit elements**: Directly stated ideas, features, goals
-- **Implicit elements**: Underlying motivations, unstated needs, patterns
-
-### 3. Dream Phase
-
-**Use extended thinking:**
-```
-mcp__clear-thought__thoughtbox with high totalThoughts (10+)
-```
-
-Explore:
-- Novel feature ideas inspired by materials
-- Unexpected connections between concepts
-- "What if..." scenarios
-- Creative directions not explicitly mentioned
-
-### 4. Write Outputs
-
-**braindump/extracted-insights.md:**
-```markdown
-# Extracted Insights - {Project Name}
-
-## Explicit Ideas
-- Features & functionality mentioned
-- Goals & objectives expressed
-- Technical considerations noted
-
-## Implicit Discoveries
-- Underlying motivations
-- Unstated needs
-- Recurring themes
-- Emotional drivers
-
-## Key Tensions
-- Contradictions or competing priorities
-
-## Recommended Focus Areas
-- Where Phase 1 should focus
-```
-
-**braindump/dream-synthesis.md:**
-```markdown
-# Dream Synthesis - {Project Name}
-
-## Novel Ideas
-- Unexpected features
-- Surprising connections
-- "What If..." possibilities
-
-## Creative Directions
-- Design possibilities
-- Adjacent opportunities
-- Wild cards
-
-## Seeds for Phase 1
-- Concrete starting points
-```
-
-### 5. Update Notion
-
-Update BRAINDUMP MATERIALS section with summary.
-Update PROJECT SNAPSHOT:
-- Phase: 0 → 1
-- Status: → = Processing braindump
-
-### 6. Transition
-
-```
-Braindump complete!
-
-Key themes: [top 3-5]
-Novel ideas: [count] generated
-Dream seeds: [count] ready
-
-Your materials are processed. Ready for Phase 1 (CAPTURE)?
-Run /advance to proceed.
-```
-
-## ADHD-Friendly Approach
-
-- Break material processing into chunks
-- Celebrate each material processed
-- Keep dream phase playful
-- This phase can be paused and resumed
+To skip Phase 0 entirely:
+- "skip incubation"
+- "start with capture"
+- `/capture` directly

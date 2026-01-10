@@ -11,9 +11,10 @@ After pasting, replace `{{PROJECT_NAME}}` with your actual project name and `{{D
 | Field | Value |
 |-------|-------|
 | **Status** | Ideating |
-| **Current Phase** | 0 - BRAINDUMP |
+| **Current Phase** | 0 - INCUBATE |
 | **Last touched** | {{DATE}} |
-| **Next action** | Add materials to braindump/ or skip to Phase 1 |
+| **Next action** | Run /incubate with materials, or skip to Phase 1 |
+| **Related Projects** | *None yet - discovered during incubation* |
 
 ### 🚧 Current Blockers
 *None - ready to proceed*
@@ -25,7 +26,7 @@ After pasting, replace `{{PROJECT_NAME}}` with your actual project name and `{{D
 
 | # | Phase | Status | Description |
 |---|-------|--------|-------------|
-| 0 | BRAINDUMP | ⏸️ Pending | Process accumulated materials (optional) |
+| 0 | INCUBATE | ⏸️ Pending | Cognitive incubation - AI builds deep understanding (optional) |
 | 1 | CAPTURE | ○ Pending | Get the core idea out |
 | 2 | EXPAND | ○ Pending | Explore scope and possibilities |
 | 3 | SPECIFY | ○ Pending | Create detailed requirements (PRD) |
@@ -202,18 +203,41 @@ graph TD
 
 ---
 
-## 📥 BRAINDUMP MATERIALS
+## 🧠 INCUBATION INSIGHTS
 
-*Summary of processed braindump materials (Phase 0)*
+> *Conceptual context from Phase 0 - informs but doesn't constrain*
+> *This is the AI's cognitive understanding, not specification*
+
+### Essence
+*What this project is really about at its core*
+
+### Personal Resonance
+*Why this matters specifically - based on patterns and motivations*
+
+### Related Projects
+*Cross-project connections discovered during incubation*
+
+| Project | Connection | Transferable Pattern |
+|---------|------------|---------------------|
+| *None yet* | | |
+
+### Creative Seeds
+*Novel ideas, "what if" possibilities, unexpected angles*
+-
+
+### Unresolved Tensions
+*Questions and competing priorities to explore in capture*
+-
 
 ### Source Materials Processed
-- [ ] [List materials as they're added]
+- [ ] [List materials as they're added to braindump/source-materials/]
 
-### Extracted Insights
-*Key themes from meta-analysis (see braindump/extracted-insights.md)*
+---
 
-### Dream Synthesis Highlights
-*Notable ideas from creative synthesis (see braindump/dream-synthesis.md)*
+## 📥 BRAINDUMP MATERIALS
+
+*Raw materials directory: `braindump/source-materials/`*
+*Dream journal: `braindump/dream-journal.md`*
 
 ---
 

@@ -9,30 +9,75 @@ The AI is a **creative collaborator**, not just a facilitator. It brings:
 - Research on prior art and patterns
 - Technical and design considerations
 - Alignment checks with your goals
+- **Deep understanding of you as a person** (patterns, motivations, style)
 
 But everything it offers is **conceptual**. Nothing becomes a requirement unless you confirm it through the Design Doc.
 
+---
+
+## The Cognitive Incubation Model
+
+Phase 0 isn't about extracting structured data from materials—it's about the AI developing **genuine understanding** before formal capture begins.
+
+### Three Sources of Understanding
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    Cognitive Incubation                         │
+└─────────────────────────────────────────────────────────────────┘
+                              │
+        ┌─────────────────────┼─────────────────────┐
+        ▼                     ▼                     ▼
+   Braindump             Previous              Personal
+   Materials             Projects              Analysis
+   │                     │                     │
+   │ Voice memos         │ Notion Design Docs  │ Patterns
+   │ Transcripts         │ Past decisions      │ Motivations
+   │ AI conversations    │ Lessons learned     │ Values
+   │ Screenshots         │ Transferable ideas  │ Style
+   └─────────────────────┼─────────────────────┘
+                         ▼
+              ┌─────────────────────┐
+              │  Soft Contextual    │
+              │  Layer (informs     │
+              │  but doesn't lock)  │
+              └─────────────────────┘
+```
+
+### What This Enables
+
+- **Personalized questions** during capture—based on who you are, not generic prompts
+- **Cross-project awareness**—patterns that worked before, lessons to avoid repeating
+- **Deeper excavation**—getting to the essence, not just surface features
+- **Tension surfacing**—noticing contradictions before they become problems
+
+---
+
 ## Types of Dream Cycles
 
-### 1. Marination (Phase 0)
+### 1. Cognitive Incubation (`/incubate`)
 
-**When:** Before formal capture, if you have accumulated materials.
+**When:** Phase 0, when you have materials to process.
 
 **What it does:**
-- Absorbs raw materials (notes, transcripts, etc.)
-- Builds intuition and feel
-- Develops questions and vocabulary
-- Notices patterns and tensions
+- Absorbs all braindump materials
+- Queries personal analysis for relevant patterns
+- Searches for and deep-reads related projects (with user confirmation)
+- Extended thoughtbox synthesis (15-20+ steps)
+- Persists insights to memory, local file, and Notion
 
-**Output:** `braindump/marination-log.md` - explicitly marked CONCEPTUAL
+**Output:** AI enters enriched cognitive state. Insights stored in:
+- Serena memory (project-local)
+- `braindump/dream-journal.md` (human reference)
+- Notion INCUBATION INSIGHTS section (canonical record)
 
-**Key:** Context for exploration, not specification.
+**Key:** This is the AI building intuition, not producing documents.
 
 ---
 
 ### 2. Full Dream (`/dream`)
 
-**When:** On request, when you want AI's creative input.
+**When:** On request, when you want AI's creative input at any point.
 
 **What it does:**
 - 15-20+ thoughtbox iterations
@@ -83,7 +128,7 @@ But everything it offers is **conceptual**. Nothing becomes a requirement unless
 
 | Point | Dream Type | Purpose |
 |-------|------------|---------|
-| Phase 0 (if used) | Marination | Build context from materials |
+| Phase 0 | Incubation | Build cognitive context from materials + related projects + personal analysis |
 | After Phase 1 | Transition | Ensure capture is solid |
 | After Phase 2 | Transition | Check scope before specifying |
 | During Phase 3 | Quick (if stuck) | Help with PRD decisions |
@@ -97,6 +142,7 @@ But everything it offers is **conceptual**. Nothing becomes a requirement unless
 ## How to Trigger
 
 **Explicit:**
+- `/incubate` - Full cognitive incubation (Phase 0)
 - `/dream` - Full dream cycle
 - "Think about this"
 - "What do you think?"
@@ -110,6 +156,7 @@ But everything it offers is **conceptual**. Nothing becomes a requirement unless
 
 **Skip:**
 - "Just advance" - skip transition dream
+- "Skip incubation" - go directly to capture
 - "No, keep going" - decline offered dream
 
 ---
@@ -138,37 +185,60 @@ The user picks what resonates. Everything else is just context.
 
 ---
 
-## Dream Journal
+## Persistence & Cross-Session Continuity
 
-Significant insights can be logged to `braindump/dream-journal.md`:
+### Storage Locations
 
-```markdown
-## Dream Cycle - {date}
+| Location | Purpose | When Used |
+|----------|---------|-----------|
+| **Serena memory** | Project-local, detailed | Incubation synthesis, per-project |
+| **claude-mem** | Global, queryable | Cross-project patterns |
+| **Notion** | Canonical record | INCUBATION INSIGHTS section |
+| **Local file** | Human reference | `braindump/dream-journal.md` |
 
-**Phase:** {current phase}
-**Trigger:** {why dream happened}
+### Session Resumption
 
-**Key Insights:**
-- ...
+When starting a new session on an existing project:
+1. Load Serena memory for the project
+2. Load INCUBATION INSIGHTS from Notion
+3. AI recovers cognitive context automatically
 
-**Ideas Offered:**
-- ...
+---
 
-**User Picked:**
-- ...
-```
+## Related Projects Integration
 
-This creates a record of AI creative contributions without making them requirements. You can reference it later if ideas become relevant.
+### Discovery
+
+During `/incubate`, the AI:
+1. Identifies themes from braindump materials
+2. Searches Notion Design Docs for matching projects
+3. Presents candidates to user for confirmation
+4. Only deep-reads confirmed related projects
+
+### What Gets Pulled
+
+From related projects:
+- THE IDEA section (essence of the project)
+- Key decisions from DECISIONS LOG
+- Lessons learned (what worked, what didn't)
+- Transferable patterns and features
+
+### Notion Integration
+
+Design Doc template includes:
+- **Related Projects** - Relation field to link projects
+- **INCUBATION INSIGHTS** - Section for storing cognitive context
 
 ---
 
 ## Anti-Lock-In Guarantees
 
-1. **Marination log is CONCEPTUAL** - explicitly marked, not validated
+1. **Incubation is CONCEPTUAL** - explicitly marked, not specification
 2. **Dream output is OFFERED** - framed as possibilities, not requirements
 3. **Design Doc is truth** - only what appears there (and user confirms) is real
 4. **User picks** - AI proposes, user disposes
 5. **Journal is reference** - past ideas don't become future constraints
+6. **Related projects inform, not constrain** - patterns are suggestions, not mandates
 
 ---
 
@@ -176,6 +246,8 @@ This creates a record of AI creative contributions without making them requireme
 
 **AI commits to:**
 - Bringing genuine creative and technical perspective
+- Understanding the person, not just the project
+- Connecting to past work and personal patterns
 - Researching when useful
 - Checking alignment with your goals
 - Framing everything as offerings
@@ -185,6 +257,7 @@ This creates a record of AI creative contributions without making them requireme
 - What becomes part of the Design Doc
 - What ideas to explore
 - What to ignore
+- Which related projects are actually relevant
 - When to dream and when to just move forward
 
 ---
@@ -198,5 +271,12 @@ This creates a record of AI creative contributions without making them requireme
 - First principles (essence)
 - Abstraction laddering (level check)
 - Adversarial thinking (critique)
+
+**Memory Systems:**
+- Serena memory (project-local)
+- claude-mem (global search)
+- Personal analysis data
+
+**Notion MCP:** Design Doc access, related project discovery.
 
 **Research:** Web search, prior art discovery (when useful).

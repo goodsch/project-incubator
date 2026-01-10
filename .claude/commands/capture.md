@@ -12,6 +12,22 @@ Get the idea out of your head with zero friction.
 - Phase 0 complete (or skipped)
 - status.json shows Phase 1
 
+## Before Starting: Load Incubation Context
+
+**If Phase 0 was completed**, load the cognitive context before capture:
+
+```
+1. Check Serena memory: mcp__serena__read_memory("incubation-{project-name}.md")
+2. Read local file: braindump/dream-journal.md (if exists)
+3. Load Notion INCUBATION INSIGHTS section
+```
+
+This context informs your questions but **doesn't constrain** what gets captured. The goal is smarter, more personalized probing—not leading the user.
+
+**If Phase 0 was skipped**, proceed directly to capture.
+
+---
+
 ## Process
 
 ### 1. Set the Stage
@@ -37,11 +53,23 @@ Just start talking (or typing)...
 - Don't structure or critique
 - Preserve the user's voice
 
-### 3. Follow-up Prompts (if brief)
+### 3. Follow-up Prompts
 
+**Generic prompts (always valid):**
 - "What made you think of this?"
 - "Who would benefit most from this?"
 - "What's frustrating about how you do this now?"
+
+**Incubation-informed prompts (when Phase 0 completed):**
+
+Use your loaded cognitive context to ask smarter questions:
+
+- Reference related projects: *"In Signal Garden you explored voice-to-structure patterns. Is this building on that or going a different direction?"*
+- Surface personal patterns: *"I notice you gravitate toward tools that reduce cognitive load—how central is that here?"*
+- Probe creative seeds: *"One thread from incubation was X—does that resonate or is it a tangent?"*
+- Test tensions: *"There seemed to be a tension between simplicity and power—how do you think about that balance?"*
+
+**Key:** These are informed probes, not leading questions. You're excavating the user's idea more deeply, not steering them toward incubation outputs.
 
 ### 4. Capture to CONTEXT.md
 
