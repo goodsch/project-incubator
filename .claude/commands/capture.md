@@ -12,23 +12,68 @@ Get the idea out of your head with zero friction.
 - Phase 0 complete (or skipped)
 - status.json shows Phase 1
 
-## Before Starting: Load Incubation Context
+## Before Starting: Load Incubation Context (MANDATORY)
 
-**If Phase 0 was completed**, load the cognitive context before capture:
+**Step 1: Check status.json for incubation state**
 
+```python
+# Read status.json
+status = read_file("status.json")
+incubation_phase = status["phases"]["0-incubate"]
 ```
-1. Check Serena memory: mcp__serena__read_memory("incubation-{project-name}.md")
-2. Read local file: braindump/dream-journal.md (if exists)
-3. Load Notion INCUBATION INSIGHTS section
+
+**Step 2: If incubation was completed, load the structured context**
+
+```python
+if incubation_phase["status"] == "complete":
+    # Load the structured incubation context
+    context_file = incubation_phase.get("contextFile", "braindump/incubation-context.md")
+    incubation_context = read_file(context_file)
+
+    # Parse key sections:
+    # - "## Essence" → Core understanding
+    # - "## Personal Resonance" → Why this matters
+    # - "## Informed Questions for Capture" → MUST ASK these
+    # - "## Tensions to Explore" → Probe points
+
+    HAS_INCUBATION = True
+else:
+    HAS_INCUBATION = False
 ```
 
-This context informs your questions but **doesn't constrain** what gets captured. The goal is smarter, more personalized probing—not leading the user.
+**Step 3: If incubation context exists, use the prepared questions**
 
-**If Phase 0 was skipped**, proceed directly to capture.
+The incubation phase prepared specific questions in `## Informed Questions for Capture`.
+You MUST incorporate these into your capture flow—they were derived from:
+- Prior art analysis (what patterns apply)
+- Identified tensions (what needs resolving)
+- Personal resonance (what motivates this user)
+
+**Step 4: If incubation was skipped, proceed directly to capture**
 
 ---
 
 ## Process
+
+### 0. Acknowledge Context Load (if applicable)
+
+If incubation context was loaded, acknowledge it visibly:
+
+```
+📦 Loaded incubation context from Phase 0
+
+Essence: {essence from incubation-context.md}
+Key prior art: {list sources from Prior Art DNA table}
+Prepared questions: {count} informed questions ready
+
+This context will inform my questions without constraining your idea.
+```
+
+If no incubation (skipped or pending):
+
+```
+Starting fresh capture (no incubation context).
+```
 
 ### 1. Set the Stage
 
@@ -60,14 +105,25 @@ Just start talking (or typing)...
 - "Who would benefit most from this?"
 - "What's frustrating about how you do this now?"
 
-**Incubation-informed prompts (when Phase 0 completed):**
+**Incubation-informed prompts (when HAS_INCUBATION == True):**
 
-Use your loaded cognitive context to ask smarter questions:
+First, use the **prepared questions** from the incubation context:
 
-- Reference related projects: *"In Signal Garden you explored voice-to-structure patterns. Is this building on that or going a different direction?"*
-- Surface personal patterns: *"I notice you gravitate toward tools that reduce cognitive load—how central is that here?"*
-- Probe creative seeds: *"One thread from incubation was X—does that resonate or is it a tangent?"*
-- Test tensions: *"There seemed to be a tension between simplicity and power—how do you think about that balance?"*
+```python
+# Extract the "Informed Questions for Capture" section
+# These are pre-written based on prior art analysis
+for question in incubation_context["Informed Questions for Capture"]:
+    ask(question)
+```
+
+Then probe deeper using other incubation insights:
+
+- Reference prior art: *"In {source from Prior Art DNA} you used {pattern}—is this building on that or going a different direction?"*
+- Surface personal resonance: *"Based on your pattern of {resonance}, how central is that here?"*
+- Probe creative seeds: *"One thread from incubation was '{seed}'—does that resonate or is it a tangent?"*
+- Test tensions: *"There seemed to be a tension between {tension}—how do you think about that balance?"*
+
+**Critical:** You MUST actually read `braindump/incubation-context.md` and reference SPECIFIC content from it. Don't make up generic probes—use the actual patterns, seeds, and tensions discovered.
 
 **Key:** These are informed probes, not leading questions. You're excavating the user's idea more deeply, not steering them toward incubation outputs.
 
