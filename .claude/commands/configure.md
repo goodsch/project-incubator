@@ -93,6 +93,8 @@ MCP servers that would enhance this project:
 Note: These are recommendations - install as needed.
 ```
 
+> **⚡ PARALLEL EXECUTION:** Step 7 creates multiple independent config files. Generate all five config files (claude-md-content.md, skills.md, commands.md, agents.md, mcp.md) simultaneously. Step 8 (Notion update) can also run in parallel once files are ready.
+
 ### 7. Document Configuration
 
 Create files in `config/`:

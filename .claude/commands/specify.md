@@ -114,6 +114,8 @@ Any adjustments needed?
 - Document what changed between versions
 - Never overwrite - always create new version
 
+> **⚡ PARALLEL EXECUTION:** Step 8 (Notion updates) can run in parallel with step 7 (completeness check) since they write to different targets.
+
 ### 7. Run Completeness Check
 
 ```

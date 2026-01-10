@@ -43,6 +43,8 @@ The output is a **mutually-agreed concept** ready for detailed capture.
 
 ## Sub-Phase 0a: ABSORB
 
+> **⚡ PARALLEL EXECUTION:** Steps 1-3 are independent. Launch all three simultaneously using multiple Task agents or parallel tool calls. Only Step 4 requires waiting for Step 3's user response.
+
 ### Step 1: Material Absorption
 
 Read all files in `braindump/source-materials/`:
@@ -128,6 +130,8 @@ Develop:
 ---
 
 ## Sub-Phase 0b: VISUALIZE
+
+> **⚡ PARALLEL EXECUTION:** Create the Notion page structure AND generate Mermaid diagrams simultaneously. The diagram SVG can be embedded once both complete.
 
 ### Create Notion Concept Canvas
 
@@ -369,6 +373,8 @@ Output to `braindump/crystallized-concept.md`:
 
 ## Sub-Phase 0e: MOCKUP (Optional)
 
+> **⚡ PARALLEL EXECUTION:** When generating multiple mockup types (Mermaid, WiseMapping, architecture diagrams), launch all diagram generations simultaneously as they are independent operations.
+
 ### Generate Visual Artifacts
 
 If the concept benefits from visual mockups, generate them:
@@ -470,6 +476,8 @@ mcp__notion__API-patch-block-children({
 ## Final Outputs
 
 After completing all sub-phases:
+
+> **⚡ PARALLEL EXECUTION:** The three final outputs (context file, status.json, Notion updates) are independent. Write all three simultaneously.
 
 ### 1. Structured Context File
 

@@ -14,6 +14,8 @@ Generate the complete output project - ready to build.
 
 ## Process
 
+> **⚡ PARALLEL EXECUTION:** Steps 2-7 (generating CLAUDE.md, CONTEXT.md, README.md, skills/commands/agents, documentation, and source structure) are independent. Launch parallel Task agents for each generation step to dramatically speed up scaffold creation. Only steps 8-10 (validation, Notion, presentation) must be sequential.
+
 ### 1. Create Output Directory Structure
 
 ```

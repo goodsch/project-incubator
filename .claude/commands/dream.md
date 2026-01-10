@@ -32,6 +32,8 @@ what possibilities exist, and what might help.
 
 ### 2. Ground (thoughtbox 1-3)
 
+> **⚡ PARALLEL EXECUTION:** Reading Design Doc, scanning local projects, and reviewing recent conversation are independent. Execute all three simultaneously.
+
 Review current state:
 - Read the Design Doc (visual + summary sections)
 - Note the current phase
@@ -39,6 +41,8 @@ Review current state:
 - Identify what's solid vs. fuzzy
 
 ### 3. Diverge (thoughtbox 4-12, with branching)
+
+> **⚡ PARALLEL EXECUTION:** Branches A, B, C, D are independent explorations. Launch parallel Task agents for each branch simultaneously, then converge results. This dramatically speeds up the dream cycle.
 
 Explore multiple threads using branching:
 

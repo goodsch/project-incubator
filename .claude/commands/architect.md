@@ -116,6 +116,8 @@ Potential failure modes:
    Mitigation: [Strategy]
 ```
 
+> **⚡ PARALLEL EXECUTION:** Steps 4 and 5 (creating architecture.md and updating Notion) are independent. Execute both simultaneously.
+
 ### 4. Document Architecture
 
 Create `spec/architecture.md`:

@@ -15,6 +15,8 @@ Explore scope and possibilities through guided Socratic dialogue.
 
 ## Process
 
+> **⚡ PARALLEL EXECUTION:** Step 1 (reading CONTEXT.md and Notion) can be parallelized. Steps 5-6 (documentation and Notion updates) are also independent and should run simultaneously.
+
 ### 1. Review Captured Idea
 
 Read CONTEXT.md and Notion THE IDEA section to ground the conversation.

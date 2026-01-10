@@ -127,6 +127,8 @@ Then probe deeper using other incubation insights:
 
 **Key:** These are informed probes, not leading questions. You're excavating the user's idea more deeply, not steering them toward incubation outputs.
 
+> **⚡ PARALLEL EXECUTION:** Steps 4 and 5 (writing CONTEXT.md and updating Notion) are independent. Execute both simultaneously.
+
 ### 4. Capture to CONTEXT.md
 
 Write to CONTEXT.md (project root):
