@@ -38,7 +38,7 @@ The system tells you what to do. You don't have to decide.
 
 | Phase | Name | Purpose |
 |-------|------|---------|
-| 0 | BRAINDUMP | (Optional) Process accumulated materials |
+| 0 | INCUBATE | (Optional) Cognitive incubation from materials and prior projects |
 | 1 | CAPTURE | Get core idea with zero friction |
 | 2 | EXPAND | 6 macro questions via Socratic dialogue |
 | 3 | SPECIFY | Generate PRD with acceptance criteria |

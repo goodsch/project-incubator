@@ -37,7 +37,7 @@ Every project progresses through these phases:
 
 | # | Phase | What Happens |
 |---|-------|--------------|
-| 0 | BRAINDUMP | Dream synthesis + marination. AI suggests, you confirm. |
+| 0 | INCUBATE | Cognitive incubation from materials and prior projects. AI absorbs context, surfaces patterns. |
 | 1 | CAPTURE | Visualization-first walkthrough. Describe it as if it exists. |
 | 2 | EXPAND | Socratic dialogue. Answer the six macro questions. |
 | 3 | SPECIFY | Generate PRD with acceptance criteria. |
@@ -47,7 +47,7 @@ Every project progresses through these phases:
 
 Phases are gate-checked - you must complete one before advancing to the next.
 
-## Cognitive Layer (BRAINDUMP Phase)
+## Cognitive Layer (INCUBATE Phase)
 
 When you create a project, Hatchery automatically generates a **dream synthesis**:
 
@@ -116,7 +116,7 @@ User: "It's automatic watering based on soil moisture"
 ```
 User: "What projects do I have?"
 → hatchery_list_projects()
-→ "3 projects. Smart Garden in EXPAND, Voice Journal in SPECIFY, Home Automation in BRAINDUMP."
+→ "3 projects. Smart Garden in EXPAND, Voice Journal in SPECIFY, Home Automation in INCUBATE."
 
 User: "Work on Voice Journal"
 → hatchery_select("Voice Journal")
@@ -204,7 +204,7 @@ All project state lives in `state/projects.json`:
       "slug": "smart-garden",
       "current_phase": "EXPAND",
       "phase_progress": {
-        "BRAINDUMP": "complete",
+        "INCUBATE": "complete",
         "CAPTURE": "complete"
       },
       "pending_captures": [],

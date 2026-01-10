@@ -26,7 +26,7 @@ Natural language patterns Claude should recognize.
 
 | Pattern | Action |
 |---------|--------|
-| "Process my braindump" | Phase 0: BRAINDUMP |
+| "Start incubation" | Phase 0: INCUBATE |
 | "Let's work on the idea" | Phase 1: CAPTURE |
 | "Let's expand on this" | Phase 2: EXPAND |
 | "Write the PRD" | Phase 3: SPECIFY |

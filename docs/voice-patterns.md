@@ -32,7 +32,7 @@ When using Claude Code, these map to slash commands:
 
 | Voice Pattern | Slash Command | Phase |
 |---------------|---------------|-------|
-| "Let's start with braindump" | `/braindump` | 0 |
+| "Let's start incubation" | `/incubate` | 0 |
 | "Capture my idea" | `/capture` | 1 |
 | "Let's expand on this" | `/expand` | 2 |
 | "Time to specify" | `/specify` | 3 |
@@ -52,12 +52,12 @@ When using Claude Code, these map to slash commands:
 
 ## Phase-Specific Responses
 
-### Phase 0: BRAINDUMP
+### Phase 0: INCUBATE
 
 **Directive prompts:**
 - "Add materials to braindump/source-materials/"
-- "Run /braindump to process your materials"
-- "Skip braindump and run /capture to start fresh"
+- "Run /incubate to build cognitive context from materials and prior projects"
+- "Skip incubation and run /capture to start fresh"
 
 ### Phase 1: CAPTURE
 

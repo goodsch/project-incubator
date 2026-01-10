@@ -16,9 +16,9 @@ Gate-checked progression through phases.
 
 ## Gate Criteria by Phase
 
-### Phase 0 → 1 (Braindump → Capture)
-- Optional phase - can skip with "skip braindump"
-- If used: `braindump/extracted-insights.md` must exist
+### Phase 0 → 1 (Incubate → Capture)
+- Optional phase - can skip with "skip incubation"
+- If used: AI builds cognitive context from materials and prior projects
 
 ### Phase 1 → 2 (Capture → Expand)
 - THE IDEA section must have one-liner and core insight

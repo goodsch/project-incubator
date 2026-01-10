@@ -155,16 +155,16 @@ Missing pieces detected during conversation:
 
 ## Guided Phases
 
-### Phase 0: BRAINDUMP (optional)
-**Goal:** Process accumulated materials before capture
+### Phase 0: INCUBATE (optional)
+**Goal:** Cognitive incubation from materials and prior projects
 
 **Directive prompts:**
-- "Add materials to braindump/source-materials/ or say 'skip braindump'."
-- "If you've added materials, say 'process my braindump materials'."
+- "Add materials to braindump/source-materials/ or say 'skip incubation'."
+- "If you've added materials, say 'run incubation'."
 
-→ Extract explicit and implicit insights
-→ Produce creative synthesis from materials
-→ Update BRAINDUMP MATERIALS section in Notion
+→ Absorb braindump materials + discover local codebases
+→ Build deep understanding through creative synthesis
+→ Update INCUBATION INSIGHTS section in Notion
 
 ### Phase 1: CAPTURE (scenario-first)
 **Goal:** Get the idea out by walking through how it would be used

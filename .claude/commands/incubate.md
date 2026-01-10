@@ -59,31 +59,75 @@ Look for:
 Also check personal-analysis data if available:
 - `/home/chris/claude-workspaces/personal-analysis/obsidian_export/` for synthesized insights
 
-### Step 3: Related Project Discovery
+### Step 3: Local Codebase Discovery (Prior Implementations)
 
-Search Notion for potentially related projects:
+Scan local project directories for codebases that might inform this project:
+
+```bash
+# Scan known project locations
+for dir in ~/dev/projects/claude/* ~/dev/projects/codex/*; do
+  if [ -f "$dir/README.md" ] || [ -f "$dir/CLAUDE.md" ]; then
+    echo "=== $(basename $dir) ==="
+    head -20 "$dir/README.md" 2>/dev/null || head -20 "$dir/CLAUDE.md"
+  fi
+done
+```
+
+Present discovered codebases:
+
+```
+🔧 Found prior implementations:
+   • neurogarden - ADHD-optimized thought capture (n8n, MCP, zero-friction)
+   • fractal - Intelligent Exploration System (thinking space continuity)
+   • synapse - Neural processing second brain (15-layer pipeline, decay)
+   • brain_explore - Therapeutic worldview exploration (guided conversations)
+
+Which feel relevant to this project? [all/none/list specific ones]
+```
+
+**Wait for user confirmation before deep-reading.**
+
+### Step 4a: Deep Read Local Codebases
+
+For each confirmed local project:
+
+```
+Read: README.md, CLAUDE.md, docs/ folder
+```
+
+Extract:
+- **Core purpose** - What problem does it solve?
+- **Architectural patterns** - Data flow, agent models, storage
+- **Key innovations** - What makes it unique?
+- **Transferable patterns** - What could apply here?
+- **Cognitive metaphors** - What mental models does it use?
+
+This provides **real implementation context**, not just design docs.
+
+### Step 4b: Notion Project Discovery (Design Docs)
+
+Search Notion for potentially related design documents:
 
 ```
 mcp__notion__API-post-search with theme keywords
 mcp__notion__API-query-data-source for Design Docs database
 ```
 
-Present candidates to user:
+Present candidates:
 
 ```
-🔍 Found potential connections:
+📋 Found related design docs:
    • Project A (themes: X, Y)
    • Project B (themes: Y, Z)
-   • Project C (themes: X, Z)
 
 Which feel relevant? [all/none/list specific ones]
 ```
 
 **Wait for user confirmation before proceeding.**
 
-### Step 4: Deep Read Confirmed Projects
+### Step 4c: Deep Read Notion Projects
 
-For each confirmed related project:
+For each confirmed Notion project:
 
 ```
 mcp__notion__API-get-block-children to read:
@@ -147,7 +191,13 @@ Present insights conversationally:
 
 **Personal Resonance:** [Why this matters to you specifically—based on patterns]
 
-**Cross-Project Connections:**
+**Prior Art DNA:** (from local codebases)
+- From {neurogarden}: [e.g., "Raw storage first, classify later"]
+- From {fractal}: [e.g., "Context resurrection for thinking continuity"]
+- From {synapse}: [e.g., "Hebbian strengthening for relationships"]
+- From {brain_explore}: [e.g., "Adaptive question taxonomy"]
+
+**Design Doc Lessons:** (from Notion projects)
 - From {Project A}: [relevant pattern or lesson]
 - From {Project B}: [relevant pattern or lesson]
 
@@ -159,6 +209,10 @@ Present insights conversationally:
 **Tensions to Explore:**
 - [Unresolved question 1]
 - [Competing priority to resolve]
+
+**Architectural Suggestions:** (based on prior implementations)
+- [Pattern that could apply]
+- [Tech stack consideration]
 
 This context is now loaded. It will inform my questions during capture
 without constraining what you actually build.
@@ -173,12 +227,19 @@ Ready for /capture when you are.
 | Phase | How Incubation Context Helps |
 |-------|------------------------------|
 | **1 - CAPTURE** | Smarter, personalized questions; probe deeper based on patterns |
-| **2 - EXPAND** | Suggest features informed by related projects |
+| **2 - EXPAND** | Suggest features informed by prior codebases AND design docs |
 | **3 - SPECIFY** | Notice when PRD drifts from core essence |
-| **4 - ARCHITECT** | Reference patterns from past implementations |
-| **5 - CONFIGURE** | Apply lessons about tech choices from similar projects |
+| **4 - ARCHITECT** | Reference **actual implementations** from neurogarden/fractal/synapse/brain_explore |
+| **5 - CONFIGURE** | Apply tech stack lessons from projects you've actually built |
 
 The cognitive layer is **background knowledge**—not explicitly referenced in every interaction, but coloring everything.
+
+**Local Codebases as Living Documentation:**
+Unlike design docs, prior codebases show what you **actually built**, including:
+- Patterns you gravitate toward (agent architectures, decay mechanisms, etc.)
+- Tech choices that worked in practice
+- Code organization you prefer
+- Problems you've already solved
 
 ---
 

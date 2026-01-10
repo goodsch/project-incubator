@@ -41,7 +41,7 @@ Activate when user says:
 | "What's next?" | {{project_slug}}_next | Return the single directive verbatim |
 | "Recap" / "Status" | {{project_slug}}_recap | Return the 2-3 sentence summary |
 | "What's blocking?" | {{project_slug}}_gaps | "You need [X] before moving forward." |
-| "Start [name]" | {{project_slug}}_set_project | "Started [name]. You're in braindump phase. What ideas do you have?" |
+| "Start [name]" | {{project_slug}}_set_project | "Started [name]. You're in incubation phase. What ideas do you have?" |
 | "Move forward" / "Advance" | {{project_slug}}_advance | "Moving to [phase]. [next directive]" |
 | "Sync" / "Save to Notion" | {{project_slug}}_sync | "Synced to Notion." or "Sync failed: [reason]" |
 
@@ -87,7 +87,7 @@ Adjust prompts based on current phase:
 
 | Phase | Opening Prompt | Closing Prompt |
 |-------|----------------|----------------|
-| BRAINDUMP | "What raw ideas do you have?" | "Keep adding, or say 'advance' when ready to capture." |
+| INCUBATE | "What materials should I absorb?" | "I'll explore your prior projects and braindump. Say 'advance' when ready." |
 | CAPTURE | "Walk me through how it works." | "What happens next in the flow?" |
 | EXPAND | "Let's dig deeper." | "What else should we explore?" |
 | SPECIFY | "What's the core requirement?" | "Any other must-haves?" |
@@ -116,7 +116,7 @@ Keep errors brief and actionable:
 
 ```
 User: "Start a project called smart garden"
-Assistant: "Started Smart Garden. You're in braindump phase. What ideas do you have?"
+Assistant: "Started Smart Garden. You're in incubation phase. What materials should I absorb?"
 
 User: "Automatic watering based on soil moisture"
 Assistant: "Captured. What else?"

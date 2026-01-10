@@ -26,7 +26,7 @@ PROJECT: {name}
   ┌────────────────────────────────────────────────┐
   │ PHASE PROGRESS                                  │
   ├────────────────────────────────────────────────┤
-  │ 0. BRAINDUMP   {✓ or ○ or ⏭}  (optional)       │
+  │ 0. INCUBATE    {✓ or ○ or ⏭}  (optional)       │
   │ 1. CAPTURE     {✓ or ○ or →}                   │
   │ 2. EXPAND      {✓ or ○}                        │
   │ 3. SPECIFY     {✓ or ○}                        │

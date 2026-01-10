@@ -70,7 +70,7 @@ Project Incubator guides you through 7 deterministic phases:
 
 | Phase | Name | Purpose |
 |-------|------|---------|
-| 0 | **BRAINDUMP** | (Optional) Process accumulated materials |
+| 0 | **INCUBATE** | (Optional) Cognitive incubation - AI builds deep understanding from materials, prior projects, and personal context |
 | 1 | **CAPTURE** | Get the core idea out with zero friction |
 | 2 | **EXPAND** | Answer 6 macro questions via Socratic dialogue |
 | 3 | **SPECIFY** | Generate PRD with acceptance criteria |

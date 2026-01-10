@@ -48,7 +48,7 @@ fastmcp run src/server.py --transport sse --port 3847
 
 | # | Phase | Purpose |
 |---|-------|---------|
-| 0 | BRAINDUMP | Marination of raw materials |
+| 0 | INCUBATE | Cognitive incubation from materials and prior projects |
 | 1 | CAPTURE | Visualization-first walkthrough |
 | 2 | EXPAND | Socratic expansion (six macro questions) |
 | 3 | SPECIFY | PRD generation |
@@ -70,7 +70,7 @@ All state persists in `state/projects.json`:
       "name": "Smart Garden",
       "slug": "smart-garden",
       "current_phase": "EXPAND",
-      "phase_progress": {"BRAINDUMP": "complete", "CAPTURE": "complete"},
+      "phase_progress": {"INCUBATE": "complete", "CAPTURE": "complete"},
       "pending_captures": [],
       "notion_page_id": null
     },

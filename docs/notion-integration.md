@@ -127,7 +127,7 @@ The Project Incubator Design Doc has these sections:
 
 | Phase | Name | Status |
 |-------|------|--------|
-| 0 | BRAINDUMP | ⏭️ skipped |
+| 0 | INCUBATE | ⏭️ skipped |
 | 1 | CAPTURE | ✅ complete |
 | 2 | EXPAND | → in_progress |
 | 3 | SPECIFY | ○ pending |

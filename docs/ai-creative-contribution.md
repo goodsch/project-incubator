@@ -207,26 +207,87 @@ When starting a new session on an existing project:
 
 ## Related Projects Integration
 
-### Discovery
+### Two Sources of Prior Art
 
-During `/incubate`, the AI:
-1. Identifies themes from braindump materials
-2. Searches Notion Design Docs for matching projects
-3. Presents candidates to user for confirmation
-4. Only deep-reads confirmed related projects
+During `/incubate`, the AI discovers prior implementations from two sources:
 
-### What Gets Pulled
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    Prior Art Discovery                          │
+└─────────────────────────────────────────────────────────────────┘
+                              │
+              ┌───────────────┴───────────────┐
+              ▼                               ▼
+       Local Codebases                  Notion Design Docs
+       (What you BUILT)                 (What you PLANNED)
+       │                                │
+       │ ~/dev/projects/claude/*        │ Design Doc pages
+       │ ~/dev/projects/codex/*         │ Decisions log
+       │ Working implementations        │ Lessons learned
+       │ Proven patterns                │ Transferable ideas
+       └───────────────┬───────────────┘
+                       ▼
+              ┌─────────────────────┐
+              │   Prior Art DNA    │
+              │   (real learnings  │
+              │   from real work)  │
+              └─────────────────────┘
+```
 
-From related projects:
+### Local Codebase Discovery (Primary)
+
+**What gets scanned:**
+- `~/dev/projects/claude/*` - Claude-built projects
+- `~/dev/projects/codex/*` - Codex-built projects
+- Any directory with `README.md` or `CLAUDE.md`
+
+**What gets pulled:**
+- **Core purpose** - What problem does it solve?
+- **Architectural patterns** - Data flow, agent models, storage
+- **Key innovations** - What makes it unique?
+- **Transferable patterns** - What could apply here?
+- **Cognitive metaphors** - What mental models does it use?
+
+**Why local codebases first:**
+Unlike design docs, codebases show what you **actually built**, including:
+- Patterns you gravitate toward (agent architectures, decay mechanisms)
+- Tech choices that worked in practice
+- Code organization you prefer
+- Problems you've already solved
+
+### Notion Design Doc Discovery (Secondary)
+
+**What gets searched:**
+- Design Docs database via Notion MCP
+- Keyword matching on themes from braindump
+
+**What gets pulled:**
 - THE IDEA section (essence of the project)
 - Key decisions from DECISIONS LOG
 - Lessons learned (what worked, what didn't)
 - Transferable patterns and features
 
+### User Confirmation
+
+Both sources present candidates before deep-reading:
+
+```
+🔧 Found prior implementations:
+   • neurogarden - ADHD-optimized thought capture
+   • fractal - Intelligent Exploration System
+
+📋 Found related design docs:
+   • Project A (themes: X, Y)
+   • Project B (themes: Y, Z)
+
+Which feel relevant? [all/none/list specific ones]
+```
+
 ### Notion Integration
 
 Design Doc template includes:
 - **Related Projects** - Relation field to link projects
+- **Prior Art DNA** - Patterns extracted from local codebases
 - **INCUBATION INSIGHTS** - Section for storing cognitive context
 
 ---

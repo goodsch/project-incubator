@@ -49,10 +49,12 @@ Branch A: "Possibilities"
   What's adjacent to this idea?
 
 Branch B: "Prior Art"
-  What similar tools/patterns exist?
+  What have I built before that's relevant?
+  [Scan ~/dev/projects/claude/* and ~/dev/projects/codex/*]
+  What patterns from neurogarden/fractal/synapse/brain_explore apply?
+  What similar external tools exist?
   What can we learn from them?
-  What terminology should I understand?
-  [May use web search if useful]
+  [May use web search for external art]
 
 Branch C: "Risks & Gaps"
   What could go wrong?

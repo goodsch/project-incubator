@@ -214,8 +214,18 @@ graph TD
 ### Personal Resonance
 *Why this matters specifically - based on patterns and motivations*
 
-### Related Projects
-*Cross-project connections discovered during incubation*
+### Prior Art DNA (from local codebases)
+*Patterns extracted from projects you actually built*
+
+| Codebase | Pattern | Application |
+|----------|---------|-------------|
+| *neurogarden* | | |
+| *fractal* | | |
+| *synapse* | | |
+| *brain_explore* | | |
+
+### Related Design Docs
+*Cross-project connections from Notion Design Docs*
 
 | Project | Connection | Transferable Pattern |
 |---------|------------|---------------------|
@@ -234,7 +244,7 @@ graph TD
 
 ---
 
-## 📥 BRAINDUMP MATERIALS
+## 📥 INCUBATION SOURCE MATERIALS
 
 *Raw materials directory: `braindump/source-materials/`*
 *Dream journal: `braindump/dream-journal.md`*

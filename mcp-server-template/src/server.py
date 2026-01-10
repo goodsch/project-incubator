@@ -51,10 +51,10 @@ PORTFOLIO_FILE = HATCHERY_DIR / "portfolio.json"
 CONFIG_FILE = HATCHERY_DIR / "config.json"
 
 # Phase definitions (same as project repos)
-PHASES = ["BRAINDUMP", "CAPTURE", "EXPAND", "SPECIFY", "ARCHITECT", "CONFIGURE", "SEED"]
+PHASES = ["INCUBATE", "CAPTURE", "EXPAND", "SPECIFY", "ARCHITECT", "CONFIGURE", "SEED"]
 
 PHASE_DIRECTIVES = {
-    "BRAINDUMP": "Run /braindump to marinate on raw materials. Let ideas simmer without extracting requirements.",
+    "INCUBATE": "Run /incubate to build cognitive context. I'll absorb materials, scan prior projects, and develop deep understanding.",
     "CAPTURE": "Run /capture to do a visualization-first walkthrough. Describe the tool as if it exists.",
     "EXPAND": "Run /expand to explore with Socratic dialogue. Answer the six macro questions.",
     "SPECIFY": "Run /specify to generate the PRD from captured artifacts.",

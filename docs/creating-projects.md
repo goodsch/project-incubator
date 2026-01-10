@@ -106,7 +106,7 @@ Each phase has gate criteria that must be met before advancing.
 
 | Phase | Name | What Happens | Gate Criteria |
 |-------|------|--------------|---------------|
-| 0 | BRAINDUMP | Process accumulated materials | `extracted-insights.md` exists |
+| 0 | INCUBATE | Cognitive incubation from materials and prior projects | `incubation-insights.md` exists |
 | 1 | CAPTURE | Get core idea out | THE IDEA has one-liner + insight |
 | 2 | EXPAND | 6 macro questions | `expansion.md` complete |
 | 3 | SPECIFY | PRD generation | PRD approved by user |

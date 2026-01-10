@@ -89,10 +89,10 @@ mcp__notion__notion-update-page
 
 ## Phase-Specific Next Steps
 
-### Phase 0 (Braindump)
+### Phase 0 (Incubate)
 - "Add materials to braindump/source-materials/"
-- "Run /braindump to process your materials"
-- "Skip braindump and run /capture to start fresh"
+- "Run /incubate to build cognitive context from materials and prior projects"
+- "Skip incubation and run /capture to start fresh"
 
 ### Phase 1 (Capture)
 - "Tell me your idea in 2-3 sentences"

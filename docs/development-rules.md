@@ -31,7 +31,7 @@ Phases cannot be skipped. Each phase has explicit gate criteria:
 
 | Phase | Gate Criteria |
 |-------|---------------|
-| 0 → 1 | `extracted-insights.md` exists OR "skip braindump" |
+| 0 → 1 | Incubation complete OR "skip incubation" |
 | 1 → 2 | THE IDEA has one-liner + core insight |
 | 2 → 3 | `expansion.md` with 6 questions answered |
 | 3 → 4 | PRD exists and user approved |
@@ -75,7 +75,7 @@ Confirm this update?"
 
 | Phase | Name | Purpose | Output |
 |-------|------|---------|--------|
-| 0 | BRAINDUMP | Process accumulated materials | `extracted-insights.md` |
+| 0 | INCUBATE | Cognitive incubation from materials and prior projects | INCUBATION INSIGHTS |
 | 1 | CAPTURE | Get core idea with zero friction | THE IDEA section |
 | 2 | EXPAND | 6 macro questions via dialogue | `expansion.md` |
 | 3 | SPECIFY | Generate PRD | `spec/prd-v*.md` |
@@ -107,7 +107,7 @@ Every Design Doc must have:
 ```markdown
 | Phase | Name | Status |
 |-------|------|--------|
-| 0 | BRAINDUMP | ⏭️ skipped |
+| 0 | INCUBATE | ⏭️ skipped |
 | 1 | CAPTURE | ✅ complete |
 | 2 | EXPAND | → in_progress |
 | 3 | SPECIFY | ○ pending |
@@ -128,7 +128,7 @@ Status symbols:
 ### Location
 ```
 .claude/commands/
-├── braindump.md      # Phase 0
+├── incubate.md       # Phase 0
 ├── capture.md        # Phase 1
 ├── expand.md         # Phase 2
 ├── specify.md        # Phase 3
@@ -255,11 +255,11 @@ spec/prd-v2.md        # Revised PRD
 spec/architecture.md  # Architecture document
 ```
 
-### Braindump Materials
+### Incubation Materials
 ```
 braindump/source-materials/    # Raw input files
-braindump/extracted-insights.md # Processed output
-braindump/dream-synthesis.md   # Creative synthesis
+braindump/incubation-insights.md # Processed output
+braindump/prior-art-dna.md     # Patterns from local codebases
 ```
 
 ### Config Files

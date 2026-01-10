@@ -74,7 +74,7 @@ Customize opening/closing prompts for your domain:
 ```markdown
 | Phase | Opening Prompt |
 |-------|----------------|
-| BRAINDUMP | "What plants are you thinking about?" |
+| INCUBATE | "What materials should I absorb for context?" |
 | CAPTURE | "Walk me through the garden layout." |
 ```
 

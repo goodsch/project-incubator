@@ -36,7 +36,7 @@ CAPTURE_TYPE_MAP = {
 
 # Phase emoji mapping for visual status
 PHASE_EMOJI = {
-    "BRAINDUMP": "🧠",
+    "INCUBATE": "🧠",
     "CAPTURE": "📸",
     "EXPAND": "🔍",
     "SPECIFY": "📋",
@@ -138,7 +138,7 @@ class NotionSync:
                 "callout": {
                     "icon": {"emoji": "🧠"},
                     "color": "blue_background",
-                    "rich_text": [{"text": {"content": f"Phase: BRAINDUMP | Created: {now}"}}]
+                    "rich_text": [{"text": {"content": f"Phase: INCUBATE | Created: {now}"}}]
                 }
             },
             # Overview section
