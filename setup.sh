@@ -754,8 +754,9 @@ cat > .env << EOF
 PROJECT_NAME="$PROJECT_NAME"
 PROJECT_SLUG="$PROJECT_SLUG"
 
-# Notion API Key (required for MCP server)
-NOTION_API_KEY="$NOTION_TOKEN"
+# Notion API Token (required for MCP server)
+# The MCP server expects NOTION_TOKEN, not NOTION_API_KEY
+NOTION_TOKEN="$NOTION_TOKEN"
 
 # Notion Page IDs
 NOTION_DESIGN_DOC_ID="$PAGE_ID_CLEAN"
